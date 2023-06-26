@@ -19,12 +19,12 @@ public class AuthenticationController : ControllerBase
 
     [AllowAnonymous]
     [HttpPost("login")]
-    public async Task<IActionResult> LoginAsync(LoginModel model)
+    public async Task<IActionResult> LoginAsync([FromBody] LoginModel model)
         => (await _authenticationService.LoginAsync(model)).ToActionResult();
 
     [AllowAnonymous]
     [HttpPost("register")]
-    public async Task<IActionResult> RegisterAsync(RegisterModel model)
+    public async Task<IActionResult> RegisterAsync([FromBody] RegisterModel model)
         => (await _authenticationService.RegisterAsync(model)).ToActionResult();
 
     [HttpGet("logout")]

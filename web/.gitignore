@@ -2,6 +2,7 @@ wwwroot/_assets
 wwwroot/index.html
 .config/
 PublishProfiles/
+src/gen/
 
 /node_modules
 /build
