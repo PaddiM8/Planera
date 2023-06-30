@@ -4,7 +4,7 @@ import {getAuthenticationClient} from "$lib/services";
 import type {LoginModel} from "../../gen/planeraClient";
 
 export const actions = {
-    default: async ({ request, cookies }: RequestEvent) => {
+    default: async ({ request, cookies, locals }: RequestEvent) => {
         const formData = await request.formData();
         const result = await getAuthenticationClient(cookies).login({
             username: formData.get("username") as string,
@@ -19,13 +19,19 @@ export const actions = {
         }
 
         const token = await result.data.text();
-        cookies.set("token", token, {
+        const cookieOptions: any = {
             httpOnly: true,
             sameSite: "strict",
             secure: false,
             path: "/",
             maxAge: 60 * 60 * 24 * 90
-        });
+        };
+        cookies.set("token", token, cookieOptions);
+
+        const user = {
+            username: formData.get("username")!.toString(),
+        }
+        cookies.set("user", JSON.stringify(user), cookieOptions);
 
         throw redirect(302, "/");
     }
