@@ -3,7 +3,7 @@ import {AuthenticationClient, ProjectClient, IConfig} from "../gen/planeraClient
 const serverUrl = "http://localhost:5065";
 
 function extractToken(cookies: any): IConfig {
-    return { token: JSON.parse(cookies.get("token") ?? "{}") };
+    return { token: cookies.get("token") ?? "{}" };
 }
 
 export function getAuthenticationClient(cookies: any): AuthenticationClient {
