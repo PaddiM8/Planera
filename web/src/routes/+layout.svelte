@@ -20,6 +20,15 @@
 </div>
 
 <style lang="sass">
+@import "@fontsource-variable/inter"
+
+:global(body)
+    width: 100%
+    height: 100%
+    margin: 0
+    padding: 0
+    font-family: "Inter", sans-serif
+
 :global(:root)
     --padding: 0.8em
     --border: 1px solid #D3D3D3
