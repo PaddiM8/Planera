@@ -1,10 +1,10 @@
 import {redirect, type ServerLoadEvent} from "@sveltejs/kit";
 import {getAuthenticationClient} from "$lib/services";
 
-export async function load({ cookies, locals }: ServerLoadEvent) {
+export async function load({ cookies }: ServerLoadEvent) {
     await getAuthenticationClient(cookies).logout();
     cookies.delete("token");
-    locals.user = undefined;
+    cookies.delete("user");
 
     throw redirect(302, "/login");
 }

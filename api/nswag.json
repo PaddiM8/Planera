@@ -9,7 +9,7 @@
       "defaultUrlTemplate": "api/{controller}/{id?}",
       "addMissingPathParameters": false,
       "includedVersions": null,
-      "defaultPropertyNameHandling": "Default",
+      "defaultPropertyNameHandling": "CamelCase",
       "defaultReferenceTypeNullHandling": "Null",
       "defaultDictionaryValueReferenceTypeNullHandling": "NotNull",
       "defaultResponseReferenceTypeNullHandling": "NotNull",

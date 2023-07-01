@@ -19,17 +19,17 @@ public class AuthenticationController : ControllerBase
 
     [AllowAnonymous]
     [HttpPost("login")]
+    [ProducesResponseType(typeof(AuthenticationResult), StatusCodes.Status200OK)]
     public async Task<IActionResult> LoginAsync([FromBody] LoginModel model)
         => (await _authenticationService.LoginAsync(model)).ToActionResult();
 
     [AllowAnonymous]
     [HttpPost("register")]
+    [ProducesResponseType(typeof(AuthenticationResult), StatusCodes.Status200OK)]
     public async Task<IActionResult> RegisterAsync([FromBody] RegisterModel model)
         => (await _authenticationService.RegisterAsync(model)).ToActionResult();
 
     [HttpGet("logout")]
     public async Task LogoutAsync()
-    {
-        await _authenticationService.LogoutAsync();
-    }
+        => await _authenticationService.LogoutAsync();
 }

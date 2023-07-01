@@ -1,24 +1,27 @@
 import type {RequestEvent} from "@sveltejs/kit";
 import {fail, redirect} from "@sveltejs/kit";
 import {getAuthenticationClient} from "$lib/services";
-import type {LoginModel} from "../../gen/planeraClient";
+import type {LoginModel, AuthenticationResult, SwaggerException} from "../../gen/planeraClient";
+import {toProblemDetails} from "$lib/problemDetails";
 
 export const actions = {
-    default: async ({ request, cookies, locals }: RequestEvent) => {
+    default: async ({ request, cookies }: RequestEvent) => {
         const formData = await request.formData();
-        const result = await getAuthenticationClient(cookies).login({
-            username: formData.get("username") as string,
-            password: formData.get("password") as string,
-        } as LoginModel);
+        let response: AuthenticationResult;
+        try {
+            response = await getAuthenticationClient(cookies).login({
+                username: formData.get("username") as string,
+                password: formData.get("password") as string,
+            } as LoginModel);
+        } catch (ex) {
+            const problem = toProblemDetails(ex as SwaggerException);
 
-        if (result.status != 200) {
-            return fail(400, {
+            return fail(problem?.status ?? 400, {
                 username: formData.get("username"),
-                incorrect: true
+                errors: problem?.errors,
             });
         }
 
-        const token = await result.data.text();
         const cookieOptions: any = {
             httpOnly: true,
             sameSite: "strict",
@@ -26,11 +29,12 @@ export const actions = {
             path: "/",
             maxAge: 60 * 60 * 24 * 90
         };
-        cookies.set("token", token, cookieOptions);
+        cookies.set("token", response.token, cookieOptions);
 
-        const user = {
-            username: formData.get("username")!.toString(),
-        }
+        const user: User = {
+            username: response.username,
+            email: response.email,
+        };
         cookies.set("user", JSON.stringify(user), cookieOptions);
 
         throw redirect(302, "/");

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Planera.Data;
 using Planera.Extensions;
 using Planera.Models;
 using Planera.Services;
@@ -17,6 +18,7 @@ public class ProjectController : ControllerBase
     }
 
     [HttpGet]
+    [ProducesResponseType(typeof(ICollection<Project>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll(string username)
     {
         // TODO: Allow viewing public projects when that's a thing
@@ -29,6 +31,7 @@ public class ProjectController : ControllerBase
     }
 
     [HttpGet("{slug}")]
+    [ProducesResponseType(typeof(Project), StatusCodes.Status200OK)]
     public async Task<IActionResult> Get(string username, string slug)
     {
         // TODO: Allow viewing public projects when that's a thing

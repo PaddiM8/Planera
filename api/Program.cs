@@ -3,13 +3,14 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using Planera.Data;
-using Planera.Filters;
 using Planera.Services;
 using Planera.Utility;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 Directory.CreateDirectory("./store");
 Directory.CreateDirectory("./wwwroot");

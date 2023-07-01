@@ -26,7 +26,7 @@ public class AuthenticationService
         _signInManager = signInManager;
     }
 
-    public async Task<ErrorOr<string>> LoginAsync(LoginModel model)
+    public async Task<ErrorOr<AuthenticationResult>> LoginAsync(LoginModel model)
     {
         var user = await _userManager.FindByNameAsync(model.Username) ??
                    await _userManager.FindByEmailAsync(model.Username);
@@ -42,7 +42,11 @@ public class AuthenticationService
         );
 
         if (result.Succeeded)
-            return GenerateToken(user.Id, model.Username, model.Username);
+        {
+            var token = GenerateToken(user.Id, model.Username, model.Username);
+
+            return new AuthenticationResult(token, user.UserName!, user.Email!);
+        }
 
         if (result.IsLockedOut)
             Error.Failure("LockedOut", "Locked out.");
@@ -50,13 +54,17 @@ public class AuthenticationService
         return Error.Failure("NotAllowed", "Could not login.");
     }
 
-    public async Task<ErrorOr<string>> RegisterAsync(RegisterModel model)
+    public async Task<ErrorOr<AuthenticationResult>> RegisterAsync(RegisterModel model)
     {
         var user = new User { UserName = model.Username, Email = model.Email };
         var result = await _userManager.CreateAsync(user, model.Password);
 
         if (result.Succeeded)
-            return GenerateToken(user.Id, model.Username, model.Email);
+        {
+            var token = GenerateToken(user.Id, model.Username, model.Username);
+
+            return new AuthenticationResult(token, user.UserName!, user.Email!);
+        }
 
         return result.Errors
             .Select(x => Error.Failure(x.Code, x.Description))
