@@ -14,9 +14,9 @@
         {/if}
     </header>
 
-    <main>
+    <section>
         <slot></slot>
-    </main>
+    </section>
 </div>
 
 <style lang="sass">
@@ -32,6 +32,10 @@
 :global(:root)
     --padding: 0.8em
     --border: 1px solid #D3D3D3
+    --text-gray: #757575
+    --background: white
+    --hover-on-background: #D3D3D3
+    --selected-on-background: #BBDEFB
 
 #content
     display: flex

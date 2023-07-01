@@ -1,7 +1,7 @@
 import type {RequestEvent} from "@sveltejs/kit";
 import {fail, redirect} from "@sveltejs/kit";
 import {getAuthenticationClient} from "$lib/services";
-import type {LoginModel, AuthenticationResult, SwaggerException} from "../../gen/planeraClient";
+import type {LoginModel, AuthenticationResult, SwaggerException} from "../../../gen/planeraClient";
 import {toProblemDetails} from "$lib/problemDetails";
 
 export const actions = {
