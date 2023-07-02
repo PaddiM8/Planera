@@ -13,21 +13,45 @@
 
 <div id="wrapper">
     <aside>
+        <span class="label">Me</span>
         <div class="menu group">
             <a class="entry"
                href="/"
                class:selected={isActive("/")}>
-                Dashboard
+                Overview
             </a>
         </div>
         <span class="label">Projects</span>
         <div class="projects group">
+            <a class="entry"
+               href="/projects/1"
+               class:selected={isActive("/projects/1")}>
+                <span class="logo">
+                    <span class="letter">P</span>
+                </span>
+                <span class="name">Project 1</span>
+            </a>
+            <a class="entry"
+               href="/projects/2"
+               class:selected={isActive("/projects/2")}>
+                <span class="logo">
+                    <span class="letter">P</span>
+                </span>
+                <span class="name">Project 2</span>
+            </a>
             {#each data?.projects ?? [] as project}
                 {@const href = "/projects/{project.author}/{project.slug}"}
                 <a class="entry"
                    {href}
                     class:selected={isActive(href)}>
-                    { project.name }
+                    <span class="logo">
+                        {#if project.logo}
+                            <img class="image" src={project.logo} alt="Project logo" />
+                        {:else}
+                            <span class="letter">{ project.name[0] }</span>
+                        {/if}
+                    </span>
+                    <span class="name">{ project.name }</span>
                 </a>
             {/each}
         </div>
@@ -50,13 +74,15 @@
         display: flex
         flex-direction: column
         border-right: var(--border)
+        padding: 0.4em
 
         .label
-            margin-left: 0.6em
+            margin-top: 0.2em
+            margin-left: 0.2em
             color: var(--text-gray)
             text-transform: uppercase
             font-weight: 600
-            font-size: 0.9em
+            font-size: 0.8em
 
         .group
             display: flex
@@ -64,16 +90,41 @@
             margin-bottom: 2em
 
         .entry
-            padding: var(--spacing)
-            border-bottom: var(--border)
+            display: flex
+            align-items: center
+
+            padding: var(--vertical-padding) var(--horizontal-padding)
+            margin-top: 0.4em
+
+            border-radius: var(--radius)
             color: black
             text-decoration: none
             cursor: pointer
 
+            .logo
+                display: flex
+                align-items: center
+                justify-content: center
+
+                width: 1.35em
+                height: 1.35em
+                margin-left: -0.2em
+                margin-right: 0.4em
+                border-radius: 100%
+                background-color: gray
+
+                .letter
+                    font-size: 0.75em
+                    font-weight: 750
+                    color: white
+
             &.selected
                 cursor: default
-                background-color: var(--selected-on-background)
+                background-color: #dbeafe
 
             &:hover:not(&.selected)
-                background-color: var(--hover-on-background)
+                background-color: #e7e5e4
+
+    main
+        padding: var(--spacing)
 </style>
