@@ -38,47 +38,42 @@
 </div>
 
 <style lang="sass">
-#wrapper
-    display: grid
-    grid-template-columns: 20em auto
-    width: 100%
-    max-width: 80em
-    min-height: 100vh
+    #wrapper
+        display: grid
+        grid-template-columns: 20em auto
+        width: 100%
 
-    margin-left: 50%
-    transform: translateX(-50%)
+        border-left: var(--border)
+        border-right: var(--border)
 
-    border-left: var(--border)
-    border-right: var(--border)
-
-aside
-    display: flex
-    flex-direction: column
-    border-right: var(--border)
-
-    .label
-        margin-left: 0.6em
-        color: var(--text-gray)
-        text-transform: uppercase
-        font-weight: 600
-        font-size: 0.9em
-
-    .group
+    aside
         display: flex
         flex-direction: column
-        margin-bottom: 2em
+        border-right: var(--border)
 
-    .entry
-        padding: var(--padding)
-        border-bottom: var(--border)
-        color: black
-        text-decoration: none
-        cursor: pointer
+        .label
+            margin-left: 0.6em
+            color: var(--text-gray)
+            text-transform: uppercase
+            font-weight: 600
+            font-size: 0.9em
 
-        &.selected
-            cursor: default
-            background-color: var(--selected-on-background)
+        .group
+            display: flex
+            flex-direction: column
+            margin-bottom: 2em
 
-        &:hover:not(&.selected)
-            background-color: var(--hover-on-background)
+        .entry
+            padding: var(--spacing)
+            border-bottom: var(--border)
+            color: black
+            text-decoration: none
+            cursor: pointer
+
+            &.selected
+                cursor: default
+                background-color: var(--selected-on-background)
+
+            &:hover:not(&.selected)
+                background-color: var(--hover-on-background)
 </style>

@@ -1,14 +1,25 @@
 <script lang="ts">
-    import { enhance } from "$app/forms";
-    import type {ActionData} from "../../../.svelte-kit/types/src/routes/login/$types";
-    import FormErrors from "$lib/FormErrors.svelte";
+    import type {ActionData} from "../../../../.svelte-kit/types/src/routes/(other)/login/$types";
+    import Input from "$lib/Input.svelte";
+    import Button from "$lib/Button.svelte";
+    import Form from "$lib/Form.svelte";
 
     export let form : ActionData;
 </script>
 
-<form method="POST" use:enhance>
-    <FormErrors errors={form?.errors} />
-    <input type="text" name="username" placeholder="Username..." value={form?.username ?? ""} />
-    <input type="password" name="password" placeholder="Password..." />
-    <input type="submit" value="Login" />
-</form>
+<div id="content">
+    <h1>Login</h1>
+
+    <Form errors={form?.errors}>
+        <Input name="username" placeholder="Username..." value={form?.username ?? ""} />
+        <Input type="password" name="password" placeholder="Password..." />
+        <Button value="Login" primary submit />
+    </Form>
+</div>
+
+<style lang="sass">
+    #content
+        width: 25rem
+        margin: auto 0
+        padding-bottom: 20em
+</style>

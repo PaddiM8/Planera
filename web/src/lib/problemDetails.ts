@@ -3,7 +3,7 @@ import type {SwaggerException} from "../gen/planeraClient";
 interface ProblemDetails {
     title?: string;
     status?: number;
-    errors?: { string: Array<string> };
+    errors?: { string: string[] };
 }
 
 export function toProblemDetails(exception: SwaggerException) {
