@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using ErrorOr;
 using Planera.Data;
@@ -7,10 +8,12 @@ namespace Planera.Services;
 public class ProjectService
 {
     private readonly DataContext _dataContext;
+    private readonly IMapper _mapper;
 
-    public ProjectService(DataContext dataContext)
+    public ProjectService(DataContext dataContext, IMapper mapper)
     {
         _dataContext = dataContext;
+        _mapper = mapper;
     }
 
     public async Task<ErrorOr<ICollection<Project>>> GetAllAsync(string authorName)
@@ -19,9 +22,11 @@ public class ProjectService
             .Include(x => x.Projects)
             .SingleOrDefaultAsync(x => x.UserName == authorName);
 
-        return user == null
-            ? Error.NotFound("Id.NotFound", "A user with that id does not exist.")
-            : ErrorOrFactory.From(user.Projects);
+        if (user == null)
+            return Error.NotFound("Id.NotFound", "A user with that id does not exist.");
+        return ErrorOrFactory.From(
+            _mapper.Map<ICollection<Project>, ICollection<Project>>(user.Projects)
+        );
     }
 
     public async Task<ErrorOr<Project>> GetAsync(string authorName, string slug)

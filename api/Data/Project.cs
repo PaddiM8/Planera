@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 using Microsoft.EntityFrameworkCore;
 
 namespace Planera.Data;
@@ -14,9 +14,12 @@ public class Project
 
     public required string Name { get; set; }
 
-    [ForeignKey(nameof(Author))]
+    [ForeignKey(nameof(InternalAuthor))]
     public required string AuthorId { get; set; }
 
     [JsonIgnore]
-    public User Author { get; set; } = null!;
+    public User InternalAuthor { get; set; } = null!;
+
+    [NotMapped]
+    public Author Author { get; set; } = null!;
 }

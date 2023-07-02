@@ -1,6 +1,4 @@
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using ErrorOr;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Planera.Extensions;

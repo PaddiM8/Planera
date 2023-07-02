@@ -43,9 +43,9 @@ public class AuthenticationService
 
         if (result.Succeeded)
         {
-            var token = GenerateToken(user.Id, model.Username, model.Username);
+            var token = GenerateToken(user.Id, user.UserName, user.Email);
 
-            return new AuthenticationResult(token, user.UserName!, user.Email!);
+            return new AuthenticationResult(token, user.UserName, user.Email);
         }
 
         if (result.IsLockedOut)
@@ -63,7 +63,7 @@ public class AuthenticationService
         {
             var token = GenerateToken(user.Id, model.Username, model.Username);
 
-            return new AuthenticationResult(token, user.UserName!, user.Email!);
+            return new AuthenticationResult(token, user.UserName, user.Email);
         }
 
         return result.Errors

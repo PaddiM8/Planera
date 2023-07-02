@@ -1,16 +1,14 @@
 using System.Text;
-using System.Text.Json;
-using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using Planera.Data;
 using Planera.Services;
 using Planera.Utility;
-using JsonSerializer = System.Text.Json.JsonSerializer;
 
 Directory.CreateDirectory("./store");
 Directory.CreateDirectory("./wwwroot");
@@ -21,17 +19,21 @@ var builder = WebApplication.CreateBuilder(args);
 if (string.IsNullOrEmpty(builder.Configuration["Jwt:Key"]))
 {
     builder.Configuration["Jwt:Key"] = Generation.GenerateJwtKey();
-    var configJson = JsonSerializer.Deserialize<JsonObject>(File.ReadAllText("appsettings.json"));
+    var configJson = JsonConvert.DeserializeObject<JObject>(File.ReadAllText("appsettings.json"));
     configJson!["Jwt"]!["Key"] = builder.Configuration["Jwt:Key"];
-    File.WriteAllText("appsettings.json", JsonSerializer.Serialize(
-        configJson,
-        new JsonSerializerOptions { WriteIndented = true })
+    File.WriteAllText(
+        "appsettings.json",
+        JsonConvert.SerializeObject(configJson, Formatting.Indented)
     );
 }
 
 builder.Services.AddControllers()
-    .AddJsonOptions(o => {
-        o.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    .AddNewtonsoftJson(options =>
+    {
+        options.SerializerSettings.ContractResolver = new DefaultContractResolver
+        {
+            NamingStrategy = new CamelCaseNamingStrategy(),
+        };
     });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -77,6 +79,7 @@ builder.Services.AddAuthentication(o =>
 
 builder.Services.AddTransient<AuthenticationService>();
 builder.Services.AddTransient<ProjectService>();
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 var app = builder.Build();
 app.UseHttpsRedirection();
