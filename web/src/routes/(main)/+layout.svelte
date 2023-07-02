@@ -2,7 +2,8 @@
     import type {Project} from "../../gen/planeraClient";
     import {page} from "$app/stores";
     import ErrorText from "$lib/ErrorText.svelte";
-    import Icon from "$lib/Icon.svelte";
+    import UserIcon from "$lib/UserIcon.svelte";
+    import Label from "$lib/Label.svelte";
 
     export let data: {
         projects: Project[],
@@ -14,7 +15,7 @@
 
 <div id="wrapper">
     <aside>
-        <span class="label">General</span>
+        <Label value="General" />
         <div class="menu group">
             <a class="entry"
                href="/"
@@ -22,7 +23,7 @@
                 Overview
             </a>
         </div>
-        <span class="label">Projects</span>
+        <Label value="Projects" />
         <div class="projects group">
             {#if data.error}
                 <ErrorText value="Error loading projects." />
@@ -32,7 +33,7 @@
                 <a class="entry"
                    {href}
                     class:selected={path === href}>
-                    <Icon type="project" name="{project.name}" />
+                    <UserIcon type="project" name="{project.name}" />
                     <span class="name">{ project.name }</span>
                 </a>
             {/each}
@@ -57,14 +58,6 @@
         flex-direction: column
         border-right: var(--border)
         padding: 0.4em
-
-        .label
-            margin-top: 0.2em
-            margin-left: 0.2em
-            color: var(--text-gray)
-            text-transform: uppercase
-            font-weight: 600
-            font-size: 0.8em
 
         .group
             display: flex

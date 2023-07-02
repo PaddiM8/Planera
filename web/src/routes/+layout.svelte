@@ -1,17 +1,38 @@
 <script lang="ts">
     import PageData = App.PageData;
-    import Icon from "$lib/Icon.svelte";
+    import UserIcon from "$lib/UserIcon.svelte";
+    import ContextMenu from "$lib/ContextMenu.svelte";
+    import ContextMenuEntry from "$lib/ContextMenuEntry.svelte";
+    import { Icon, Cog, ArrowRightOnRectangle } from "svelte-hero-icons";
+    import Label from "$lib/Label.svelte";
 
     export let data: PageData;
+
+    let contextMenuTarget: HTMLElement | undefined;
+
+    function handleUserClick(e) {
+        contextMenuTarget = contextMenuTarget
+            ? undefined
+            : e.target;
+    }
 </script>
+
+<ContextMenu bind:target={contextMenuTarget}>
+    <Label value="@{data.user?.username}" />
+    <ContextMenuEntry name="User Settings" href="/settings">
+        <Icon src={Cog} />
+    </ContextMenuEntry>
+    <ContextMenuEntry name="Log Out" href="/logout">
+        <Icon src={ArrowRightOnRectangle} />
+    </ContextMenuEntry>
+</ContextMenu>
 
 <div id="content">
     <header>
         <span class="logo">Planera</span>
         {#if data?.user}
-            <div class="user">
-                <span class="username">{ data.user.username }</span>
-                <Icon type="user" name={ data.user.username } />
+            <div class="user" on:click={handleUserClick}>
+                <UserIcon type="user" name={ data.user.username } />
             </div>
         {/if}
     </header>
@@ -33,7 +54,9 @@
         font-family: "Inter", sans-serif
 
     :global(:root)
-        --background: white
+        --background: #fafaf9
+        --on-background: black
+        --background-secondary: #f5f5f4
         --primary: #1d4ed8
         --on-primary: #fafafa
         --primary-hover: #2563eb
@@ -62,18 +85,30 @@
     header
         display: flex
         align-items: center
-        padding: var(--spacing)
+        padding: var(--vertical-padding)
         border-bottom: var(--border)
 
         .logo
-            font-size: 1.6em
-            font-weight: 550
-            margin: 0
+            font-size: 1.5em
+            font-weight: 600
+            margin: 0 0 0 0.4em
 
         .user
-            display: flex
+            position: relative
             margin-left: auto
-            gap: 0.4em
+            border-radius: 100%
+            font-size: 1.6em
+            cursor: pointer
+
+            &:hover::before
+                position: absolute
+                content: ''
+                top: 0
+                bottom: 0
+                width: 100%
+                height: 100%
+                border-radius: 100%
+                background-color: rgba(0, 0, 0, 0.1)
 
     .page
         display: flex

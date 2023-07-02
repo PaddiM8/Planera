@@ -1,6 +1,6 @@
 <script lang="ts">
     export let name: string;
-    export let image: string | undefined;
+    export let image: string | undefined = undefined;
     export let type: "user" | "project";
 </script>
 
