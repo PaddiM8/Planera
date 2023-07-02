@@ -1,5 +1,6 @@
 <script lang="ts">
     import PageData = App.PageData;
+    import Icon from "$lib/Icon.svelte";
 
     export let data: PageData;
 </script>
@@ -10,6 +11,7 @@
         {#if data?.user}
             <div class="user">
                 <span class="username">{ data.user.username }</span>
+                <Icon type="user" name={ data.user.username } />
             </div>
         {/if}
     </header>
@@ -69,7 +71,9 @@
             margin: 0
 
         .user
+            display: flex
             margin-left: auto
+            gap: 0.4em
 
     .page
         display: flex

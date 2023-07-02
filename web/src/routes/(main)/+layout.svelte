@@ -2,6 +2,7 @@
     import type {Project} from "../../gen/planeraClient";
     import {page} from "$app/stores";
     import ErrorText from "$lib/ErrorText.svelte";
+    import Icon from "$lib/Icon.svelte";
 
     export let data: {
         projects: Project[],
@@ -13,7 +14,7 @@
 
 <div id="wrapper">
     <aside>
-        <span class="label">Me</span>
+        <span class="label">General</span>
         <div class="menu group">
             <a class="entry"
                href="/"
@@ -31,13 +32,7 @@
                 <a class="entry"
                    {href}
                     class:selected={path === href}>
-                    <span class="logo">
-                        {#if project.logo}
-                            <img class="image" src={project.logo} alt="Project logo" />
-                        {:else}
-                            <span class="letter">{ project.name[0] }</span>
-                        {/if}
-                    </span>
+                    <Icon type="project" name="{project.name}" />
                     <span class="name">{ project.name }</span>
                 </a>
             {/each}
@@ -79,6 +74,7 @@
         .entry
             display: flex
             align-items: center
+            gap: 0.4em
 
             padding: var(--vertical-padding) var(--horizontal-padding)
             margin-top: 0.4em
@@ -87,23 +83,6 @@
             color: black
             text-decoration: none
             cursor: pointer
-
-            .logo
-                display: flex
-                align-items: center
-                justify-content: center
-
-                width: 1.35em
-                height: 1.35em
-                margin-left: -0.2em
-                margin-right: 0.4em
-                border-radius: 100%
-                background-color: gray
-
-                .letter
-                    font-size: 0.75em
-                    font-weight: 750
-                    color: white
 
             &.selected
                 cursor: default
