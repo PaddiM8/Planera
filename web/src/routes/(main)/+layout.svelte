@@ -8,9 +8,7 @@
         error: boolean,
     };
 
-    function isActive(path) {
-        return $page.url.pathname.startsWith(path);
-    }
+    $: path = $page.url.pathname
 </script>
 
 <div id="wrapper">
@@ -19,7 +17,7 @@
         <div class="menu group">
             <a class="entry"
                href="/"
-               class:selected={isActive("/")}>
+               class:selected={path === "/"}>
                 Overview
             </a>
         </div>
@@ -32,7 +30,7 @@
                 {@const href = `/projects/${project.author.userName}/${project.slug}`}
                 <a class="entry"
                    {href}
-                    class:selected={isActive(href)}>
+                    class:selected={path === href}>
                     <span class="logo">
                         {#if project.logo}
                             <img class="image" src={project.logo} alt="Project logo" />
