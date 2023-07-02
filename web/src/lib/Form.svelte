@@ -1,5 +1,6 @@
 <script lang="ts">
     import { enhance } from "$app/forms";
+    import ErrorText from "$lib/ErrorText.svelte";
 
     export let errors: { string: string[] };
 </script>
@@ -7,7 +8,7 @@
 <form method="POST" use:enhance>
     <div class="errors">
         {#each Object.values(errors ?? {}) as error}
-            <span class="error">{ error }</span>
+            <ErrorText value={error} />
         {/each}
     </div>
     <slot></slot>
@@ -22,8 +23,4 @@
     .errors
         display: flex
         flex-direction: column
-
-    .error
-        color: red
-        margin-bottom: 0.2em
 </style>

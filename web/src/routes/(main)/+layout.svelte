@@ -1,9 +1,11 @@
 <script lang="ts">
     import type {Project} from "../../gen/planeraClient";
     import {page} from "$app/stores";
+    import ErrorText from "$lib/ErrorText.svelte";
 
     export let data: {
-        projects: Array<Project>,
+        projects: Project[],
+        error: boolean,
     };
 
     function isActive(path) {
@@ -23,24 +25,11 @@
         </div>
         <span class="label">Projects</span>
         <div class="projects group">
-            <a class="entry"
-               href="/projects/1"
-               class:selected={isActive("/projects/1")}>
-                <span class="logo">
-                    <span class="letter">P</span>
-                </span>
-                <span class="name">Project 1</span>
-            </a>
-            <a class="entry"
-               href="/projects/2"
-               class:selected={isActive("/projects/2")}>
-                <span class="logo">
-                    <span class="letter">P</span>
-                </span>
-                <span class="name">Project 2</span>
-            </a>
+            {#if data.error}
+                <ErrorText value="Error loading projects." />
+            {/if}
             {#each data?.projects ?? [] as project}
-                {@const href = "/projects/{project.author}/{project.slug}"}
+                {@const href = `/projects/${project.author.userName}/${project.slug}`}
                 <a class="entry"
                    {href}
                     class:selected={isActive(href)}>
