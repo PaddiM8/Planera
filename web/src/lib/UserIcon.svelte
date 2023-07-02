@@ -18,8 +18,8 @@
         align-items: center
         justify-content: center
 
-        width: 1.35em
-        height: 1.35em
+        width: 100%
+        height: 100%
         border-radius: 100%
 
         &.user

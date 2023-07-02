@@ -81,6 +81,7 @@
         display: grid
         grid-template-rows: auto 1fr
         min-height: 100vh
+        background-color: var(--background)
 
     header
         display: flex
@@ -97,6 +98,8 @@
             position: relative
             margin-left: auto
             border-radius: 100%
+            width: 1.35em
+            height: 1.35em
             font-size: 1.6em
             cursor: pointer
 

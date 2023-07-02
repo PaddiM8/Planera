@@ -4,6 +4,7 @@
     import ErrorText from "$lib/ErrorText.svelte";
     import UserIcon from "$lib/UserIcon.svelte";
     import Label from "$lib/Label.svelte";
+    import {ListBullet, Icon} from "svelte-hero-icons";
 
     export let data: {
         projects: Project[],
@@ -20,7 +21,10 @@
             <a class="entry"
                href="/"
                class:selected={path === "/"}>
-                Overview
+                <span class="icon">
+                    <Icon src={ListBullet} />
+                </span>
+                <span class="name">Overview</span>
             </a>
         </div>
         <Label value="Projects" />
@@ -33,7 +37,9 @@
                 <a class="entry"
                    {href}
                     class:selected={path === href}>
-                    <UserIcon type="project" name="{project.name}" />
+                    <span class="icon">
+                        <UserIcon type="project" name="{project.name}" />
+                    </span>
                     <span class="name">{ project.name }</span>
                 </a>
             {/each}
@@ -83,6 +89,10 @@
 
             &:hover:not(&.selected)
                 background-color: #e7e5e4
+
+            .icon
+                width: 1.5em
+                height: 1.5em
 
     main
         padding: var(--spacing)
