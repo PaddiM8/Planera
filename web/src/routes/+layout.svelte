@@ -65,7 +65,7 @@
         --hover-on-background: #d3d3d3
         --selected-on-background: #bbdefb
         --border-width: 1px
-        --border: var(--border-width) solid #d6d3d1
+        --border: var(--border-width) solid #d1d5db
         --text-gray: #757575
         --spacing: 0.8rem
         --vertical-padding: 0.55rem
@@ -74,8 +74,21 @@
 
     :global(h1)
         font-size: 2.1em
-        margin-bottom: 0.4em
+        margin-top: 0
+        margin-bottom: 0.2em
         font-weight: 650
+
+    :global(h2)
+        font-size: 1.7em
+        margin-top: 0
+        margin-bottom: 0.2em
+        font-weight: 600
+
+    :global(h3)
+        font-size: 1.2em
+        margin-top: 0
+        margin-bottom: 0.2em
+        font-weight: 500
 
     #content
         display: grid

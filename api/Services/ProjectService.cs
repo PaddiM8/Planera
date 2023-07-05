@@ -1,4 +1,5 @@
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using ErrorOr;
 using Planera.Data;
@@ -32,7 +33,8 @@ public class ProjectService
     public async Task<ErrorOr<Project>> GetAsync(string authorName, string slug)
     {
         var project = await _dataContext.Projects
-            .Where(x => x.Author.UserName == authorName && x.Slug == slug)
+            .Where(x => x.InternalAuthor.UserName == authorName && x.Slug == slug)
+            .ProjectTo<Project>(_mapper.ConfigurationProvider)
             .SingleOrDefaultAsync();
 
         if (project == null)
@@ -75,7 +77,7 @@ public class ProjectService
     public async Task<ErrorOr<Deleted>> RemoveAsync(string authorName, string slug)
     {
         var project = await _dataContext.Projects
-            .Where(x => x.Author.UserName == authorName && x.Slug == slug)
+            .Where(x => x.InternalAuthor.UserName == authorName && x.Slug == slug)
             .SingleOrDefaultAsync();
 
         if (project == null)

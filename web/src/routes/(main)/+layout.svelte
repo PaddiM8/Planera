@@ -81,11 +81,12 @@
             border-radius: var(--radius)
             color: black
             text-decoration: none
+            font-weight: 500
             cursor: pointer
 
             &.selected
                 cursor: default
-                background-color: #dbeafe
+                background-color: #e7e5e4
 
             &:hover:not(&.selected)
                 background-color: #e7e5e4
