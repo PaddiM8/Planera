@@ -1,10 +1,10 @@
 <script lang="ts">
     import PageData = App.PageData;
-    import UserIcon from "$lib/UserIcon.svelte";
-    import ContextMenu from "$lib/ContextMenu.svelte";
-    import ContextMenuEntry from "$lib/ContextMenuEntry.svelte";
+    import UserIcon from "$lib/components/UserIcon.svelte";
+    import ContextMenu from "$lib/components/ContextMenu.svelte";
+    import ContextMenuEntry from "$lib/components/ContextMenuEntry.svelte";
     import { Icon, Cog, ArrowRightOnRectangle } from "svelte-hero-icons";
-    import Label from "$lib/Label.svelte";
+    import Label from "$lib/components/Label.svelte";
 
     export let data: PageData;
 
@@ -43,7 +43,7 @@
 </div>
 
 <style lang="sass">
-    @import "@fontsource-variable/inter"
+    @use "@fontsource-variable/inter"
 
     :global(body)
         width: 100%

@@ -26,6 +26,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@fontsource-variable/inter": "^5.0.4",
 		"svelte-lexical": "^0.3.2"
 	}
 }

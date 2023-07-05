@@ -49,7 +49,7 @@
     } from "svelte-lexical";
 
     import "./editor.css";
-    import TaskEditorTheme from "$lib/Editor/taskEditorTheme";
+    import TaskEditorTheme from "$lib/components/editor/taskEditorTheme";
     import {onMount} from "svelte";
 
     let editorShellElement: HTMLElement;

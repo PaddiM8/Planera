@@ -1,6 +1,6 @@
 <script lang="ts">
     import { enhance } from "$app/forms";
-    import ErrorText from "$lib/ErrorText.svelte";
+    import ErrorText from "$lib/components/ErrorText.svelte";
 
     export let errors: { string: string[] } = [] as { string: string[] };
 </script>

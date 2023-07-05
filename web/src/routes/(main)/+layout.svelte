@@ -1,9 +1,9 @@
 <script lang="ts">
     import type {Project} from "../../gen/planeraClient";
     import {page} from "$app/stores";
-    import ErrorText from "$lib/ErrorText.svelte";
-    import UserIcon from "$lib/UserIcon.svelte";
-    import Label from "$lib/Label.svelte";
+    import ErrorText from "$lib/components/ErrorText.svelte";
+    import UserIcon from "$lib/components/UserIcon.svelte";
+    import Label from "$lib/components/Label.svelte";
     import {ListBullet, Icon} from "svelte-hero-icons";
 
     export let data: {

@@ -1,10 +1,9 @@
 <script lang="ts">
     import type {Project} from "../../../../../gen/planeraClient";
-    import Form from "$lib/Form.svelte";
-    import Input from "$lib/Input.svelte";
-    import Button from "$lib/Button.svelte";
-    import Editor from "$lib/Editor/Editor.svelte";
-    import {RichTextComposer} from "svelte-lexical";
+    import Form from "$lib/components/Form.svelte";
+    import Input from "$lib/components/Input.svelte";
+    import Button from "$lib/components/Button.svelte";
+    import Editor from "$lib/components/editor/Editor.svelte";
 
     export let data: {
         project: Project | undefined,
