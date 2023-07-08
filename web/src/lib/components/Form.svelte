@@ -3,9 +3,25 @@
     import ErrorText from "$lib/components/ErrorText.svelte";
 
     export let errors: { string: string[] } = [] as { string: string[] };
+    export let beforeSubmit = undefined;
+    export let afterSubmit = undefined;
+
+    async function enhanceHandler(e) {
+        if (beforeSubmit) {
+            await beforeSubmit(e);
+        }
+
+        return async ({ result, update }) => {
+            await update();
+
+            if (afterSubmit) {
+                await afterSubmit(result.type === "success");
+            }
+        };
+    }
 </script>
 
-<form method="POST" use:enhance>
+<form method="POST" use:enhance={enhanceHandler}>
     <div class="errors">
         {#each Object.values(errors ?? {}) as error}
             <ErrorText value={error} />

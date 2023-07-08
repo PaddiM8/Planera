@@ -81,7 +81,7 @@
             border-radius: var(--radius)
             color: black
             text-decoration: none
-            font-weight: 500
+            font-weight: 425
             cursor: pointer
 
             &.selected

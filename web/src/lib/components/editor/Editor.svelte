@@ -45,14 +45,17 @@
         FormatCodeButton,
         InsertDropDown,
         InsertHRDropDownItem,
-        DropDownAlign, HistoryPlugin, KeywordNode,
+        DropDownAlign,
+        HistoryPlugin,
+        $getRoot as getRoot,
     } from "svelte-lexical";
 
     import "./editor.css";
-    import TaskEditorTheme from "$lib/components/editor/taskEditorTheme";
+    import TaskEditorTheme from "$lib/components/editor/ticketEditorTheme";
     import {onMount} from "svelte";
+    import {$generateHtmlFromNodes as generateHtmlFromNodes} from '@lexical/html';
 
-    let editorShellElement: HTMLElement;
+    export let placeholder: string = "";
 
     const initialConfig = {
         namespace: "TaskEditor",
@@ -64,7 +67,6 @@
             QuoteNode,
             HorizontalRuleNode,
             ImageNode,
-            KeywordNode,
             AutoLinkNode,
             LinkNode,
             CodeNode,
@@ -75,19 +77,30 @@
         },
     };
 
+    let editor;
+    let composer: Composer;
+
     onMount(() => {
-        // Slight hack until the next version of svelte-lexical is released.
-        // Without this, clicking dropdowns would cause forms to submit, which
-        // is fixed but not released.
-        // TODO: Remove this when possible.
-        for (const button of editorShellElement.querySelectorAll("button")) {
-            button.setAttribute("type", "button");
-        }
-    })
+        editor = composer.getEditor();
+    });
+
+    export function getHtml(): Promise<string> {
+        return new Promise((resolve, _) => {
+            editor.update(() => {
+                resolve(generateHtmlFromNodes(editor));
+            });
+        });
+    }
+
+    export function reset() {
+        editor.update(() => {
+            getRoot().clear();
+        });
+    }
 </script>
 
-<Composer {initialConfig}>
-    <div class="editor-shell" bind:this={editorShellElement}>
+<Composer {initialConfig} bind:this={composer}>
+    <div class="editor-shell">
         <Toolbar let:editor let:activeEditor let:blockType>
             <UndoButton />
             <RedoButton />
@@ -130,7 +143,7 @@
             <div class="editor-scroller">
                 <div class="editor">
                     <ContentEditable />
-                    <PlaceHolder>Describe the task...</PlaceHolder>
+                    <PlaceHolder>{placeholder}</PlaceHolder>
                 </div>
             </div>
 

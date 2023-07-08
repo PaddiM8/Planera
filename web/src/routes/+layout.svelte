@@ -60,8 +60,10 @@
         --primary: #1d4ed8
         --on-primary: #fafafa
         --primary-hover: #2563eb
-        --button-background: #cbd5e1
+        --button-background: #d4d4d4
         --on-button-background: #0a0a0a
+        --button-hover-background: #bbbbbb
+        --button-selected-background: #a8a8a8
         --hover-on-background: #d3d3d3
         --selected-on-background: #bbdefb
         --border-width: 1px

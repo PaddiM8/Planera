@@ -1,14 +1,14 @@
-.TaskEditorTheme__ltr {
+.TicketEditorTheme__ltr {
     text-align: left;
 }
-.TaskEditorTheme__rtl {
+.TicketEditorTheme__rtl {
     text-align: right;
 }
-.TaskEditorTheme__paragraph {
+.TicketEditorTheme__paragraph {
     margin: 0;
     position: relative;
 }
-.TaskEditorTheme__quote {
+.TicketEditorTheme__quote {
     margin: 0;
     margin-left: 20px;
     margin-bottom: 10px;
@@ -19,69 +19,69 @@
     border-left-style: solid;
     padding-left: 16px;
 }
-.TaskEditorTheme__h1 {
+.TicketEditorTheme__h1 {
     font-size: 24px;
     color: rgb(5, 5, 5);
     font-weight: 400;
     margin: 0;
 }
-.TaskEditorTheme__h2 {
+.TicketEditorTheme__h2 {
     font-size: 15px;
     color: rgb(101, 103, 107);
     font-weight: 700;
     margin: 0;
     text-transform: uppercase;
 }
-.TaskEditorTheme__h3 {
+.TicketEditorTheme__h3 {
     font-size: 12px;
     margin: 0;
     text-transform: uppercase;
 }
-.TaskEditorTheme__indent {
+.TicketEditorTheme__indent {
     --lexical-indent-base-value: 40px;
 }
-.TaskEditorTheme__textBold {
+.TicketEditorTheme__textBold {
     font-weight: bold;
 }
-.TaskEditorTheme__textItalic {
+.TicketEditorTheme__textItalic {
     font-style: italic;
 }
-.TaskEditorTheme__textUnderline {
+.TicketEditorTheme__textUnderline {
     text-decoration: underline;
 }
-.TaskEditorTheme__textStrikethrough {
+.TicketEditorTheme__textStrikethrough {
     text-decoration: line-through;
 }
-.TaskEditorTheme__textUnderlineStrikethrough {
+.TicketEditorTheme__textUnderlineStrikethrough {
     text-decoration: underline line-through;
 }
-.TaskEditorTheme__textSubscript {
+.TicketEditorTheme__textSubscript {
     font-size: 0.8em;
     vertical-align: sub !important;
 }
-.TaskEditorTheme__textSuperscript {
+.TicketEditorTheme__textSuperscript {
     font-size: 0.8em;
     vertical-align: super;
 }
-.TaskEditorTheme__textCode {
+.TicketEditorTheme__textCode {
     background-color: rgb(240, 242, 245);
     padding: 1px 0.25rem;
     font-family: Menlo, Consolas, Monaco, monospace;
     font-size: 94%;
 }
-.TaskEditorTheme__hashtag {
+.TicketEditorTheme__hashtag {
     background-color: rgba(88, 144, 255, 0.15);
     border-bottom: 1px solid rgba(88, 144, 255, 0.3);
 }
-.TaskEditorTheme__link {
+.TicketEditorTheme__link {
     color: rgb(33, 111, 219);
     text-decoration: none;
 }
-.TaskEditorTheme__link:hover {
+.TicketEditorTheme__link:hover {
     text-decoration: underline;
     cursor: pointer;
 }
-.TaskEditorTheme__code {
+.TicketEditorTheme__code {
     background-color: rgb(240, 242, 245);
     font-family: Menlo, Consolas, Monaco, monospace;
     display: block;
@@ -96,7 +96,7 @@
     overflow-x: auto;
     position: relative;
 }
-.TaskEditorTheme__code:before {
+.TicketEditorTheme__code:before {
     content: attr(data-gutter);
     position: absolute;
     background-color: #eee;
@@ -109,7 +109,7 @@
     text-align: right;
     min-width: 25px;
 }
-.TaskEditorTheme__table {
+.TicketEditorTheme__table {
     border-collapse: collapse;
     border-spacing: 0;
     max-width: 100%;
@@ -118,10 +118,10 @@
     width: calc(100% - 25px);
     margin: 30px 0;
 }
-.TaskEditorTheme__tableSelected {
+.TicketEditorTheme__tableSelected {
     outline: 2px solid rgb(60, 132, 244);
 }
-.TaskEditorTheme__tableCell {
+.TicketEditorTheme__tableCell {
     border: 1px solid #bbb;
     min-width: 75px;
     vertical-align: top;
@@ -131,7 +131,7 @@
     cursor: default;
     outline: none;
 }
-.TaskEditorTheme__tableCellSortedIndicator {
+.TicketEditorTheme__tableCellSortedIndicator {
     display: block;
     opacity: 0.5;
     position: absolute;
@@ -141,7 +141,7 @@
     height: 4px;
     background-color: #999;
 }
-.TaskEditorTheme__tableCellResizer {
+.TicketEditorTheme__tableCellResizer {
     position: absolute;
     right: -4px;
     height: 100%;
@@ -150,14 +150,14 @@
     z-index: 10;
     top: 0;
 }
-.TaskEditorTheme__tableCellHeader {
+.TicketEditorTheme__tableCellHeader {
     background-color: #f2f3f5;
     text-align: start;
 }
-.TaskEditorTheme__tableCellSelected {
+.TicketEditorTheme__tableCellSelected {
     background-color: #c9dbf0;
 }
-.TaskEditorTheme__tableCellPrimarySelected {
+.TicketEditorTheme__tableCellPrimarySelected {
     border: 2px solid rgb(60, 132, 244);
     display: block;
     height: calc(100% - 2px);
@@ -167,11 +167,11 @@
     top: -1px;
     z-index: 2;
 }
-.TaskEditorTheme__tableCellEditing {
+.TicketEditorTheme__tableCellEditing {
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.4);
     border-radius: 3px;
 }
-.TaskEditorTheme__tableAddColumns {
+.TicketEditorTheme__tableAddColumns {
     position: absolute;
     top: 0;
     width: 20px;
@@ -182,7 +182,7 @@
     border: 0;
     cursor: pointer;
 }
-.TaskEditorTheme__tableAddColumns:after {
+.TicketEditorTheme__tableAddColumns:after {
     /*background-image: url(../images/icons/plus.svg);*/
     background-size: contain;
     background-position: center;
@@ -196,10 +196,10 @@
     height: 100%;
     opacity: 0.4;
 }
-.TaskEditorTheme__tableAddColumns:hover {
+.TicketEditorTheme__tableAddColumns:hover {
     background-color: #c9dbf0;
 }
-.TaskEditorTheme__tableAddRows {
+.TicketEditorTheme__tableAddRows {
     position: absolute;
     bottom: -25px;
     width: calc(100% - 25px);
@@ -210,7 +210,7 @@
     border: 0;
     cursor: pointer;
 }
-.TaskEditorTheme__tableAddRows:after {
+.TicketEditorTheme__tableAddRows:after {
     /*background-image: url(../images/icons/plus.svg);*/
     background-size: contain;
     background-position: center;
@@ -224,7 +224,7 @@
     height: 100%;
     opacity: 0.4;
 }
-.TaskEditorTheme__tableAddRows:hover {
+.TicketEditorTheme__tableAddRows:hover {
     background-color: #c9dbf0;
 }
 @keyframes table-controls {
@@ -235,7 +235,7 @@
         opacity: 1;
     }
 }
-.TaskEditorTheme__tableCellResizeRuler {
+.TicketEditorTheme__tableCellResizeRuler {
     display: block;
     position: absolute;
     width: 1px;
@@ -243,7 +243,7 @@
     height: 100%;
     top: 0;
 }
-.TaskEditorTheme__tableCellActionButtonContainer {
+.TicketEditorTheme__tableCellActionButtonContainer {
     display: block;
     right: 5px;
     top: 6px;
@@ -252,7 +252,7 @@
     width: 20px;
     height: 20px;
 }
-.TaskEditorTheme__tableCellActionButton {
+.TicketEditorTheme__tableCellActionButton {
     background-color: #eee;
     display: block;
     border: 0;
@@ -262,52 +262,52 @@
     color: #222;
     cursor: pointer;
 }
-.TaskEditorTheme__tableCellActionButton:hover {
+.TicketEditorTheme__tableCellActionButton:hover {
     background-color: #ddd;
 }
-.TaskEditorTheme__characterLimit {
+.TicketEditorTheme__characterLimit {
     display: inline;
     background-color: #ffbbbb !important;
 }
-.TaskEditorTheme__ol1 {
+.TicketEditorTheme__ol1 {
     padding: 0;
     margin: 0;
     list-style-position: inside;
 }
-.TaskEditorTheme__ol2 {
+.TicketEditorTheme__ol2 {
     padding: 0;
     margin: 0;
     list-style-type: upper-alpha;
     list-style-position: inside;
 }
-.TaskEditorTheme__ol3 {
+.TicketEditorTheme__ol3 {
     padding: 0;
     margin: 0;
     list-style-type: lower-alpha;
     list-style-position: inside;
 }
-.TaskEditorTheme__ol4 {
+.TicketEditorTheme__ol4 {
     padding: 0;
     margin: 0;
     list-style-type: upper-roman;
     list-style-position: inside;
 }
-.TaskEditorTheme__ol5 {
+.TicketEditorTheme__ol5 {
     padding: 0;
     margin: 0;
     list-style-type: lower-roman;
     list-style-position: inside;
 }
-.TaskEditorTheme__ul {
+.TicketEditorTheme__ul {
     padding: 0;
     margin: 0;
     list-style-position: inside;
 }
-.TaskEditorTheme__listItem {
+.TicketEditorTheme__listItem {
     margin: 0 32px;
 }
-.TaskEditorTheme__listItemChecked,
-.TaskEditorTheme__listItemUnchecked {
+.TicketEditorTheme__listItemChecked,
+.TicketEditorTheme__listItemUnchecked {
     position: relative;
     margin-left: 8px;
     margin-right: 8px;
@@ -316,11 +316,11 @@
     list-style-type: none;
     outline: none;
 }
-.TaskEditorTheme__listItemChecked {
+.TicketEditorTheme__listItemChecked {
     text-decoration: line-through;
 }
-.TaskEditorTheme__listItemUnchecked:before,
-.TaskEditorTheme__listItemChecked:before {
+.TicketEditorTheme__listItemUnchecked:before,
+.TicketEditorTheme__listItemChecked:before {
     content: '';
     width: 16px;
     height: 16px;
@@ -331,27 +331,27 @@
     background-size: cover;
     position: absolute;
 }
-.TaskEditorTheme__listItemUnchecked[dir='rtl']:before,
-.TaskEditorTheme__listItemChecked[dir='rtl']:before {
+.TicketEditorTheme__listItemUnchecked[dir='rtl']:before,
+.TicketEditorTheme__listItemChecked[dir='rtl']:before {
     left: auto;
     right: 0;
 }
-.TaskEditorTheme__listItemUnchecked:focus:before,
-.TaskEditorTheme__listItemChecked:focus:before {
+.TicketEditorTheme__listItemUnchecked:focus:before,
+.TicketEditorTheme__listItemChecked:focus:before {
     box-shadow: 0 0 0 2px #a6cdfe;
     border-radius: 2px;
 }
-.TaskEditorTheme__listItemUnchecked:before {
+.TicketEditorTheme__listItemUnchecked:before {
     border: 1px solid #999;
     border-radius: 2px;
 }
-.TaskEditorTheme__listItemChecked:before {
+.TicketEditorTheme__listItemChecked:before {
     border: 1px solid rgb(61, 135, 245);
     border-radius: 2px;
     background-color: #3d87f5;
     background-repeat: no-repeat;
 }
-.TaskEditorTheme__listItemChecked:after {
+.TicketEditorTheme__listItemChecked:after {
     content: '';
     cursor: pointer;
     border-color: #fff;
@@ -366,57 +366,57 @@
     transform: rotate(45deg);
     border-width: 0 2px 2px 0;
 }
-.TaskEditorTheme__nestedListItem {
+.TicketEditorTheme__nestedListItem {
     list-style-type: none;
 }
-.TaskEditorTheme__nestedListItem:before,
-.TaskEditorTheme__nestedListItem:after {
+.TicketEditorTheme__nestedListItem:before,
+.TicketEditorTheme__nestedListItem:after {
     display: none;
 }
-.TaskEditorTheme__tokenComment {
+.TicketEditorTheme__tokenComment {
     color: slategray;
 }
-.TaskEditorTheme__tokenPunctuation {
+.TicketEditorTheme__tokenPunctuation {
     color: #999;
 }
-.TaskEditorTheme__tokenProperty {
+.TicketEditorTheme__tokenProperty {
     color: #905;
 }
-.TaskEditorTheme__tokenSelector {
+.TicketEditorTheme__tokenSelector {
     color: #690;
 }
-.TaskEditorTheme__tokenOperator {
+.TicketEditorTheme__tokenOperator {
     color: #9a6e3a;
 }
-.TaskEditorTheme__tokenAttr {
+.TicketEditorTheme__tokenAttr {
     color: #07a;
 }
-.TaskEditorTheme__tokenVariable {
+.TicketEditorTheme__tokenVariable {
     color: #e90;
 }
-.TaskEditorTheme__tokenFunction {
+.TicketEditorTheme__tokenFunction {
     color: #dd4a68;
 }
-.TaskEditorTheme__mark {
+.TicketEditorTheme__mark {
     background: rgba(255, 212, 0, 0.14);
     border-bottom: 2px solid rgba(255, 212, 0, 0.3);
     padding-bottom: 2px;
 }
-.TaskEditorTheme__markOverlap {
+.TicketEditorTheme__markOverlap {
     background: rgba(255, 212, 0, 0.3);
     border-bottom: 2px solid rgba(255, 212, 0, 0.7);
 }
-.TaskEditorTheme__mark.selected {
+.TicketEditorTheme__mark.selected {
     background: rgba(255, 212, 0, 0.5);
     border-bottom: 2px solid rgba(255, 212, 0, 1);
 }
-.TaskEditorTheme__markOverlap.selected {
+.TicketEditorTheme__markOverlap.selected {
     background: rgba(255, 212, 0, 0.7);
     border-bottom: 2px solid rgba(255, 212, 0, 0.7);
 }
-.TaskEditorTheme__embedBlock {
+.TicketEditorTheme__embedBlock {
     user-select: none;
 }
-.TaskEditorTheme__embedBlockFocus {
+.TicketEditorTheme__embedBlockFocus {
     outline: 2px solid rgb(60, 132, 244);
 }
