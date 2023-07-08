@@ -3,6 +3,7 @@ using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using ErrorOr;
 using Planera.Data;
+using Planera.Data.Dto;
 
 namespace Planera.Services;
 
@@ -17,7 +18,7 @@ public class ProjectService
         _mapper = mapper;
     }
 
-    public async Task<ErrorOr<ICollection<Project>>> GetAllAsync(string authorName)
+    public async Task<ErrorOr<ICollection<ProjectDto>>> GetAllAsync(string authorName)
     {
         var user = await _dataContext.Users
             .Include(x => x.Projects)
@@ -26,15 +27,15 @@ public class ProjectService
         if (user == null)
             return Error.NotFound("Id.NotFound", "A user with that id does not exist.");
         return ErrorOrFactory.From(
-            _mapper.Map<ICollection<Project>, ICollection<Project>>(user.Projects)
+            _mapper.Map<ICollection<Project>, ICollection<ProjectDto>>(user.Projects)
         );
     }
 
-    public async Task<ErrorOr<Project>> GetAsync(string authorName, string slug)
+    public async Task<ErrorOr<ProjectDto>> GetAsync(string authorName, string slug)
     {
         var project = await _dataContext.Projects
-            .Where(x => x.InternalAuthor.UserName == authorName && x.Slug == slug)
-            .ProjectTo<Project>(_mapper.ConfigurationProvider)
+            .Where(x => x.Author.UserName == authorName && x.Slug == slug)
+            .ProjectTo<ProjectDto>(_mapper.ConfigurationProvider)
             .SingleOrDefaultAsync();
 
         if (project == null)
@@ -43,29 +44,32 @@ public class ProjectService
         return project;
     }
 
-    public async Task<ErrorOr<Created>> AddAsync(string authorId, string slug, string name)
+    public async Task<ErrorOr<int>> AddAsync(string authorId, string slug, string name)
     {
         if (await _dataContext.Projects.AnyAsync(x => x.Slug == slug))
             return Error.Conflict("Slug.AlreadyExists", "A project with the given slug already exists.");
 
-        await _dataContext.Projects.AddAsync(new Project
+        var project = new Project
         {
             Name = name,
             Slug = slug,
             AuthorId = authorId,
-        });
+        };
+        await _dataContext.Projects.AddAsync(project);
         await _dataContext.SaveChangesAsync();
 
-        return new ErrorOr<Created>();
+        return project.Id;
     }
 
     public async Task<ErrorOr<Updated>> EditAsync(string authorName, string slug, string name)
     {
-        var result = await GetAsync(authorName, slug);
-        if (result.IsError)
-            return result.Errors;
+        var project = await _dataContext.Projects
+            .Where(x => x.Author.UserName == authorName && x.Slug == slug)
+            .SingleOrDefaultAsync();
 
-        var project = result.Value;
+        if (project == null)
+            return Error.NotFound("Slug.NotFound", "A project with the given slug was not found.");
+
         project.Name = name;
 
         _dataContext.Projects.Update(project);
@@ -77,7 +81,7 @@ public class ProjectService
     public async Task<ErrorOr<Deleted>> RemoveAsync(string authorName, string slug)
     {
         var project = await _dataContext.Projects
-            .Where(x => x.InternalAuthor.UserName == authorName && x.Slug == slug)
+            .Where(x => x.Author.UserName == authorName && x.Slug == slug)
             .SingleOrDefaultAsync();
 
         if (project == null)

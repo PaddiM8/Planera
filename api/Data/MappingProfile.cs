@@ -1,4 +1,5 @@
 using AutoMapper;
+using Planera.Data.Dto;
 
 namespace Planera.Data;
 
@@ -6,7 +7,11 @@ public class MappingProfile : Profile
 {
     public MappingProfile()
     {
-        CreateMap<User, Author>()
+        CreateMap<User, UserDto>()
+            .ForMember(
+                dest => dest.Id,
+                opt => opt.MapFrom(src => src.Id)
+            )
             .ForMember(
                 dest => dest.UserName,
                 opt => opt.MapFrom(src => src.UserName)
@@ -16,14 +21,22 @@ public class MappingProfile : Profile
                 opt => opt.MapFrom(src => src.Email)
             );
 
-        CreateMap<Project, Project>()
+        CreateMap<Project, ProjectDto>()
             .ForMember(
-                dest => dest.Author,
-                opt => opt.MapFrom(src => src.InternalAuthor)
+                dest => dest.Id,
+                opt => opt.MapFrom(src => src.Id)
             )
             .ForMember(
-                dest => dest.InternalAuthor,
-                opt => opt.MapFrom<User>(_ => null!)
+                dest => dest.Author,
+                opt => opt.MapFrom(src => src.Author)
+            )
+            .ForMember(
+                dest => dest.Slug,
+                opt => opt.MapFrom(src => src.Slug)
+            )
+            .ForMember(
+                dest => dest.Name,
+                opt => opt.MapFrom(src => src.Name)
             );
     }
 }

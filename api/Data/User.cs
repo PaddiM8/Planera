@@ -11,6 +11,5 @@ public class User : IdentityUser
     public override string Email
         => base.Email!;
 
-    [JsonIgnore]
-    public ICollection<Project> Projects { get; set; } = new List<Project>();
+    public ICollection<Project> Projects { get; init; } = new List<Project>();
 }
