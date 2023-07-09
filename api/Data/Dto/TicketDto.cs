@@ -6,6 +6,8 @@ public class TicketDto
 
     public required int ProjectId { get; set; }
 
+    public required string ProjectSlug { get; set; }
+
     public required string Title { get; set; }
 
     public required string Description { get; set; }

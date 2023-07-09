@@ -45,6 +45,10 @@ public class MappingProfile : Profile
                 opt => opt.MapFrom(src => src.ProjectId)
             )
             .ForMember(
+                dest => dest.ProjectSlug,
+                opt => opt.MapFrom(src => src.Project.Slug)
+            )
+            .ForMember(
                 dest => dest.Title,
                 opt => opt.MapFrom(src => src.Title)
             )

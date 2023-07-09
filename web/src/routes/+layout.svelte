@@ -57,6 +57,8 @@
         --background: #fafaf9
         --on-background: black
         --background-secondary: #f5f5f4
+        --background-component-rgb: 255, 255, 255
+        --background-component: rgb(var(--background-component-rgb))
         --primary: #1d4ed8
         --on-primary: #fafafa
         --primary-hover: #2563eb
@@ -64,7 +66,8 @@
         --on-button-background: #0a0a0a
         --button-hover-background: #bbbbbb
         --button-selected-background: #a8a8a8
-        --hover-on-background: #d3d3d3
+        --hover-on-background-rgb: 211, 211, 211
+        --hover-on-background: rgb(var(--hover-on-background-rgb))
         --selected-on-background: #bbdefb
         --border-width: 1px
         --border: var(--border-width) solid #d1d5db
@@ -73,6 +76,10 @@
         --vertical-padding: 0.55rem
         --horizontal-padding: 0.7rem
         --radius: 0.375rem
+        --low: #2563eb
+        --normal: #059669
+        --high: #f97316
+        --severe: #ef4444
 
     :global(h1)
         font-size: 2.1em

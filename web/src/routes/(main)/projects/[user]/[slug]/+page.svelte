@@ -92,6 +92,10 @@
         margin-bottom: 1em
         padding-bottom: 1em
 
+    .tickets
+        h2
+            margin-bottom: 0.6em
+
     .group
         display: flex
         flex-direction: column

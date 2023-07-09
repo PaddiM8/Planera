@@ -8,10 +8,8 @@ const priorityNames = [
     "Severe",
 ];
 
-export function priorityToName(priority: Priority, noneAsEmpty = false): string {
-    return priority == Priority.None && noneAsEmpty
-        ? ""
-        : priorityNames[priority];
+export function priorityToName(priority: Priority): string {
+    return priorityNames[priority];
 }
 
 export function parsePriority(priorityName: string): Priority {

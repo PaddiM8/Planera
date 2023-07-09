@@ -116,7 +116,7 @@
         border-radius: var(--radius)
         border: 0
         outline: var(--border)
-        background-color: white
+        background-color: var(--background-component)
         box-sizing: border-box
 
         &.no-blocks
