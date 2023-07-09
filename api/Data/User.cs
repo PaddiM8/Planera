@@ -1,4 +1,3 @@
-using Newtonsoft.Json;
 using Microsoft.AspNetCore.Identity;
 
 namespace Planera.Data;
@@ -12,4 +11,8 @@ public class User : IdentityUser
         => base.Email!;
 
     public ICollection<Project> Projects { get; init; } = new List<Project>();
+
+    public ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
+
+    public ICollection<Ticket> AssignedTickets { get; set; } = new List<Ticket>();
 }

@@ -30,6 +30,7 @@ if (string.IsNullOrEmpty(builder.Configuration["Jwt:Key"]))
 builder.Services.AddControllers()
     .AddNewtonsoftJson(options =>
     {
+        options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
         options.SerializerSettings.ContractResolver = new DefaultContractResolver
         {
             NamingStrategy = new CamelCaseNamingStrategy(),

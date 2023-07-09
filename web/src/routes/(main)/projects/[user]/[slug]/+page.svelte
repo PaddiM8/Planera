@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type {Project} from "../../../../../gen/planeraClient";
+    import type {ProjectDto, TicketDto} from "../../../../../gen/planeraClient";
     import Form from "$lib/components/Form.svelte";
     import Input from "$lib/components/Input.svelte";
     import Button from "$lib/components/Button.svelte";
@@ -7,10 +7,15 @@
     import MultiButton from "$lib/components/MultiButton.svelte";
     import Label from "$lib/components/Label.svelte";
     import BlockInput from "$lib/components/BlockInput.svelte";
+    import TicketEntry from "$lib/components/TicketEntry.svelte";
 
     export let data: {
-        project: Project | undefined,
-        error: boolean,
+        project: ProjectDto | undefined,
+        tickets: TicketDto[] | undefined,
+    };
+
+    export let form: {
+        errors: { string: string[] } | undefined,
     };
 
     let projectUsers = [
@@ -46,7 +51,7 @@
 
 <section class="new-ticket">
     <h2>New Ticket</h2>
-    <Form {beforeSubmit} {afterSubmit}>
+    <Form {beforeSubmit} {afterSubmit} errors={form?.errors}>
         <Input type="text" name="title" placeholder="Title..." />
         <Editor placeholder="Describe the ticket..." bind:this={editor} />
         <div class="bottom-row">
@@ -76,6 +81,9 @@
 
 <section class="tickets">
     <h2>Tickets</h2>
+    {#each data?.tickets as ticket}
+        <TicketEntry {ticket} />
+    {/each}
 </section>
 
 <style lang="sass">

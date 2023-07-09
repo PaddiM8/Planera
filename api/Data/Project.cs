@@ -7,7 +7,7 @@ namespace Planera.Data;
 public class Project
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public int Id { get; init; }
+    public int Id { get; set; }
 
     public required string Slug { get; set; }
 
@@ -16,4 +16,6 @@ public class Project
     public required string AuthorId { get; set; }
 
     public User Author { get; set; } = null!;
+
+    public ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
 }
