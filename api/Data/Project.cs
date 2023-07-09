@@ -13,9 +13,13 @@ public class Project
 
     public required string Name { get; set; }
 
+    public required string Description { get; set; }
+
     public required string AuthorId { get; set; }
 
     public User Author { get; set; } = null!;
 
     public ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
+
+    public ICollection<User> Participants { get; set; } = new List<User>();
 }

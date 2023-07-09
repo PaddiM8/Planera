@@ -6,7 +6,7 @@
     export let value: string = "";
     export let name: string = "";
     export let placeholder: string;
-    export let contenteditable: boolean = false;
+    export let label: string | undefined = undefined;
 
     const dispatch = createEventDispatcher();
 
@@ -15,30 +15,39 @@
     }
 </script>
 
+{#if label}
+    <label for="input-{name}">{label}</label>
+{/if}
+
 {#if type === "text"}
     <input type="text"
+           id="input-{name}"
            bind:value={value}
            placeholder={placeholder}
-           {contenteditable}
            {name}
            on:input={handleInput} />
 {:else if type === "password"}
     <input type="password"
+           id="input-{name}"
            bind:value={value}
            {placeholder}
-           {contenteditable}
            {name}
            on:input={handleInput} />
 {:else if type === "email"}
     <input type="email"
+           id="input-{name}"
            bind:value={value}
            placeholder={placeholder}
-           {contenteditable}
            {name}
            on:input={handleInput} />
 {/if}
 
 <style lang="sass">
+    label
+        margin-bottom: -0.4em
+        font-size: 1em
+        font-weight: 450
+
     input
         font-size: 1rem
         padding: var(--vertical-padding) var(--horizontal-padding)

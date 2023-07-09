@@ -6,6 +6,7 @@
     export let options: { value: string, image: string | undefined }[];
     export let showUserIcons: boolean = false;
     export let values: string[] = [];
+    export let label: string | undefined = undefined;
     export let name: string = "";
 
     export function reset() {
@@ -67,6 +68,10 @@
     }
 </script>
 
+{#if label}
+    <label>{label}</label>
+{/if}
+
 <span class="wrapper"
       class:no-blocks={values.length === 0}
       bind:this={blockAreaElement}>
@@ -106,6 +111,9 @@
 
 <style lang="sass">
     $block-padding: calc(var(--vertical-padding) / 2)
+
+    label
+        margin-bottom: -0.4em
 
     .wrapper
         position: relative

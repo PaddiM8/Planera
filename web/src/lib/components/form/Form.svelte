@@ -6,6 +6,7 @@
     export let errors: { string: string[] } = [] as { string: string[] };
     export let beforeSubmit = undefined;
     export let afterSubmit = undefined;
+    export let reset = true;
 
     async function enhanceHandler(e) {
         if (beforeSubmit) {
@@ -13,7 +14,7 @@
         }
 
         return async ({ result, update }) => {
-            await update();
+            await update({ reset });
 
             if (afterSubmit) {
                 await afterSubmit(result.type === "success");

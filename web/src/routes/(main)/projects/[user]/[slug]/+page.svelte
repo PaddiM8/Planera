@@ -46,7 +46,7 @@
 
 <section class="description">
     <h1>{ data.project.name }</h1>
-    <h3>A short description of the project.</h3>
+    <h3>{ data.project.description }</h3>
 </section>
 
 <section class="new-ticket">

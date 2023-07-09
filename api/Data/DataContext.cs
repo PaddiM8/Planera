@@ -26,6 +26,13 @@ public class DataContext : IdentityDbContext<User>
         modelBuilder.Entity<Ticket>()
             .HasMany(e => e.Assignees)
             .WithMany(e => e.AssignedTickets);
+        modelBuilder.Entity<Project>()
+            .HasMany(e => e.Participants)
+            .WithMany(e => e.JoinedProjects);
+        modelBuilder.Entity<User>()
+            .HasMany(e => e.Projects)
+            .WithOne(e => e.Author)
+            .HasForeignKey(e => e.AuthorId);
     }
 
 }

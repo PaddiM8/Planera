@@ -56,6 +56,7 @@
     :global(:root)
         --background: #fafaf9
         --on-background: black
+        --on-background-inactive: #404040
         --background-hover: #e7e5e4
         --background-selected: #bbdefb
         --background-secondary: #f5f5f4

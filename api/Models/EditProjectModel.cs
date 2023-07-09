@@ -7,4 +7,7 @@ public class EditProjectModel
     [MinLength(2)]
     [StringLength(100)]
     public required string Name { get; init; }
+
+    [StringLength(512)]
+    public required string Description { get; init; }
 }

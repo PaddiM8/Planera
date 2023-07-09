@@ -27,6 +27,9 @@
             background-color: var(--primary)
             color: var(--on-primary)
 
+            &:hover
+                background-color: var(--primary-hover)
+
         &:hover
-            background-color: var(--primary-hover)
+            background-color: var(--button-background-hover)
 </style>

@@ -54,7 +54,8 @@ public class ProjectController : ControllerBase
         var result = await _projectService.AddAsync(
             User.FindFirst("Id")!.Value,
             model.Slug,
-            model.Name
+            model.Name,
+            model.Description
         );
 
         return result.ToActionResult();
@@ -69,7 +70,8 @@ public class ProjectController : ControllerBase
         var result = await _projectService.EditAsync(
             username,
             slug,
-            model.Name
+            model.Name,
+            model.Description
         );
 
         return result.ToActionResult();

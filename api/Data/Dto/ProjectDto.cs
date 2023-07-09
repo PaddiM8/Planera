@@ -11,5 +11,9 @@ public class ProjectDto
 
     public required string Name { get; init; }
 
+    public required string Description { get; set; }
+
     public UserDto Author { get; init; } = null!;
+
+    public ICollection<UserDto> Participants { get; set; } = new List<UserDto>();
 }

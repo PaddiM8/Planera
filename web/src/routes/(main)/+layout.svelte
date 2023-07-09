@@ -4,7 +4,7 @@
     import ErrorText from "$lib/components/form/ErrorText.svelte";
     import UserIcon from "$lib/components/UserIcon.svelte";
     import Label from "$lib/components/form/Label.svelte";
-    import {ListBullet, Icon} from "svelte-hero-icons";
+    import {ListBullet, Icon, Cog} from "svelte-hero-icons";
 
     export let data: {
         projects: ProjectDto[],
@@ -41,6 +41,9 @@
                         <UserIcon type="project" name="{project.name}" />
                     </span>
                     <span class="name">{ project.name }</span>
+                    <a class="settings" href="{href}/settings">
+                        <Icon src={Cog} />
+                    </a>
                 </a>
             {/each}
         </div>
@@ -90,9 +93,23 @@
             &:hover, &.selected
                 background-color: var(--background-hover)
 
+                .settings
+                    visibility: visible
+
             .icon
                 width: 1.5em
                 height: 1.5em
+
+            .settings
+                margin-left: auto
+                visibility: hidden
+                width: 1.5em
+                height: 1.5em
+                color: var(--on-background-inactive)
+                text-decoration: none
+
+                &:hover
+                    color: var(--on-background)
 
     main
         padding: var(--spacing)

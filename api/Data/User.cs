@@ -15,4 +15,6 @@ public class User : IdentityUser
     public ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
 
     public ICollection<Ticket> AssignedTickets { get; set; } = new List<Ticket>();
+
+    public ICollection<Project> JoinedProjects { get; set; } = new List<Project>();
 }

@@ -44,16 +44,17 @@ public class ProjectService
         return project;
     }
 
-    public async Task<ErrorOr<int>> AddAsync(string authorId, string slug, string name)
+    public async Task<ErrorOr<int>> AddAsync(string authorId, string slug, string name, string description)
     {
         if (await _dataContext.Projects.AnyAsync(x => x.Slug == slug))
             return Error.Conflict("Slug.AlreadyExists", "A project with the given slug already exists.");
 
         var project = new Project
         {
-            Name = name,
-            Slug = slug,
             AuthorId = authorId,
+            Slug = slug,
+            Name = name,
+            Description = description,
         };
         await _dataContext.Projects.AddAsync(project);
         await _dataContext.SaveChangesAsync();
@@ -61,7 +62,7 @@ public class ProjectService
         return project.Id;
     }
 
-    public async Task<ErrorOr<Updated>> EditAsync(string authorName, string slug, string name)
+    public async Task<ErrorOr<Updated>> EditAsync(string authorName, string slug, string name,string description)
     {
         var project = await _dataContext.Projects
             .Where(x => x.Author.UserName == authorName && x.Slug == slug)
@@ -71,6 +72,7 @@ public class ProjectService
             return Error.NotFound("Slug.NotFound", "A project with the given slug was not found.");
 
         project.Name = name;
+        project.Description = description;
 
         _dataContext.Projects.Update(project);
         await _dataContext.SaveChangesAsync();
