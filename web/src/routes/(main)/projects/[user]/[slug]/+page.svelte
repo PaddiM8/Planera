@@ -1,12 +1,12 @@
 <script lang="ts">
     import type {ProjectDto, TicketDto} from "../../../../../gen/planeraClient";
-    import Form from "$lib/components/Form.svelte";
-    import Input from "$lib/components/Input.svelte";
-    import Button from "$lib/components/Button.svelte";
+    import Form from "$lib/components/form/Form.svelte";
+    import Input from "$lib/components/form/Input.svelte";
+    import Button from "$lib/components/form/Button.svelte";
     import Editor from "$lib/components/editor/Editor.svelte";
-    import MultiButton from "$lib/components/MultiButton.svelte";
-    import Label from "$lib/components/Label.svelte";
-    import BlockInput from "$lib/components/BlockInput.svelte";
+    import MultiButton from "$lib/components/form/MultiButton.svelte";
+    import Label from "$lib/components/form/Label.svelte";
+    import BlockInput from "$lib/components/form/BlockInput.svelte";
     import TicketEntry from "$lib/components/TicketEntry.svelte";
 
     export let data: {

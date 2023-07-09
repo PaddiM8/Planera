@@ -1,8 +1,8 @@
 <script lang="ts">
     import type {ActionData} from "../../../../.svelte-kit/types/src/routes/(other)/login/$types";
-    import Input from "$lib/components/Input.svelte";
-    import Button from "$lib/components/Button.svelte";
-    import Form from "$lib/components/Form.svelte";
+    import Input from "$lib/components/form/Input.svelte";
+    import Button from "$lib/components/form/Button.svelte";
+    import Form from "$lib/components/form/Form.svelte";
 
     export let form : ActionData;
 </script>
@@ -19,7 +19,10 @@
 
 <style lang="sass">
     #content
-        width: 25rem
-        margin: auto 0
+        width: 100%
+        max-width: 25rem
+        margin-left: 50%
+        margin-top: 50%
+        transform: translate(-50%, -50%)
         padding-bottom: 20em
 </style>

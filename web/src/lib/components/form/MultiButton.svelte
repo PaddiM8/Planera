@@ -39,14 +39,14 @@
         display: none
 
     input[type="radio"]:checked + label
-        background-color: var(--button-selected-background)
+        background-color: var(--button-background-selected)
 
     input[type="radio"] + label
         display: block
         content: 'hello'
         padding: var(--vertical-padding) var(--horizontal-padding)
         border: 0
-        border-right: 1px solid var(--button-hover-background)
+        border-right: 1px solid var(--button-background-hover)
         background-color: var(--button-background)
         color: var(--on-button-background)
         font-weight: 450
@@ -54,7 +54,7 @@
         cursor: pointer
 
         &:hover:not(input[type="radio"]:checked + label)
-            background-color: var(--button-hover-background)
+            background-color: var(--button-background-hover)
 
         &:first-of-type
             border-top-left-radius: var(--radius)

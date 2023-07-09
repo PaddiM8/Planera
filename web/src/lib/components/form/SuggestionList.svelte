@@ -94,10 +94,10 @@
             border-bottom: 0
 
         &:hover
-            background-color: var(--hover-on-background)
+            background-color: var(--background-hover)
 
         &.selected
-            background-color: var(--hover-on-background)
+            background-color: var(--background-hover)
 
         .icon
             width: 1.2em

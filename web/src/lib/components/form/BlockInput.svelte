@@ -1,5 +1,5 @@
 <script lang="ts">
-    import SuggestionList from "$lib/components/SuggestionList.svelte";
+    import SuggestionList from "$lib/components/form/SuggestionList.svelte";
     import UserIcon from "$lib/components/UserIcon.svelte";
 
     export let placeholder: string | undefined = undefined;
@@ -116,7 +116,7 @@
         border-radius: var(--radius)
         border: 0
         outline: var(--border)
-        background-color: var(--background-component)
+        background-color: var(--component-background)
         box-sizing: border-box
 
         &.no-blocks
@@ -129,7 +129,7 @@
         margin-bottom: calc(var(--vertical-padding) / 2)
         margin-right: calc(var(--vertical-padding) / 2)
         border-radius: var(--radius)
-        background-color: var(--selected-on-background)
+        background-color: var(--background-selected)
         cursor: pointer
 
         &:hover::before

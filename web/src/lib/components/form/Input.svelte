@@ -44,7 +44,7 @@
         padding: var(--vertical-padding) var(--horizontal-padding)
         border-radius: var(--radius)
         border: 0
-        background-color: var(--background-component)
+        background-color: var(--component-background)
         outline: var(--border)
         box-sizing: border-box
 

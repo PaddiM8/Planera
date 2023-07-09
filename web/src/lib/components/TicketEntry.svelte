@@ -73,7 +73,7 @@
         margin-bottom: 0.4em
         border: var(--border)
         border-radius: var(--radius)
-        background-color: var(--background-component)
+        background-color: var(--component-background)
 
     .top
         display: flex
@@ -118,7 +118,7 @@
         cursor: pointer
 
         &:hover
-            background-color: #e7e5e4
+            background-color: var(--background-hover)
 
         &:first-of-type
             margin-left: auto
@@ -159,9 +159,9 @@
             width: 100%
             height: $fade-height
 
-            $step1: rgba(var(--background-component-rgb), 0.85) 30%
-            $step2: rgba(var(--background-component-rgb), 0.6) 75%
-            background: linear-gradient(0deg, var(--background-component), $step1, $step2, transparent)
+            $step1: rgba(var(--component-background-rgb), 0.85) 30%
+            $step2: rgba(var(--component-background-rgb), 0.6) 75%
+            background: linear-gradient(0deg, var(--component-background), $step1, $step2, transparent)
             z-index: 999999
 
         :global(br)

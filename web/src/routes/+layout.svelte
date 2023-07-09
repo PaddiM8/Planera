@@ -4,7 +4,7 @@
     import ContextMenu from "$lib/components/ContextMenu.svelte";
     import ContextMenuEntry from "$lib/components/ContextMenuEntry.svelte";
     import { Icon, Cog, ArrowRightOnRectangle } from "svelte-hero-icons";
-    import Label from "$lib/components/Label.svelte";
+    import Label from "$lib/components/form/Label.svelte";
 
     export let data: PageData;
 
@@ -56,19 +56,19 @@
     :global(:root)
         --background: #fafaf9
         --on-background: black
+        --background-hover: #e7e5e4
+        --background-selected: #bbdefb
         --background-secondary: #f5f5f4
-        --background-component-rgb: 255, 255, 255
-        --background-component: rgb(var(--background-component-rgb))
+        --background-secondary-hover: rgb(var(--hover-on-background-rgb))
+        --component-background-rgb: 255, 255, 255
+        --component-background: rgb(var(--component-background-rgb))
         --primary: #1d4ed8
         --on-primary: #fafafa
         --primary-hover: #2563eb
         --button-background: #d4d4d4
         --on-button-background: #0a0a0a
-        --button-hover-background: #bbbbbb
-        --button-selected-background: #a8a8a8
-        --hover-on-background-rgb: 211, 211, 211
-        --hover-on-background: rgb(var(--hover-on-background-rgb))
-        --selected-on-background: #bbdefb
+        --button-background-hover: #bbbbbb
+        --button-background-selected: #a8a8a8
         --border-width: 1px
         --border: var(--border-width) solid #d1d5db
         --text-gray: #757575
@@ -137,9 +137,8 @@
 
     .page
         display: flex
-        max-width: 80em
+        max-width: 75em
+        width: 100%
         height: 100%
-
-        margin-left: 50%
-        transform: translateX(-50%)
+        margin: 0 auto
 </style>

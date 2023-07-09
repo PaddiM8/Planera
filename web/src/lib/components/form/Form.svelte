@@ -1,6 +1,6 @@
 <script lang="ts">
     import { enhance } from "$app/forms";
-    import ErrorText from "$lib/components/ErrorText.svelte";
+    import ErrorText from "$lib/components/form/ErrorText.svelte";
 
     export let action: string | undefined = undefined;
     export let errors: { string: string[] } = [] as { string: string[] };

@@ -29,5 +29,5 @@
             height: 1.5em
 
         &:hover
-            background-color: var(--hover-on-background)
+            background-color: var(--background-secondary-hover)
 </style>

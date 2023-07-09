@@ -1,13 +1,13 @@
 <script lang="ts">
-    import type {Project} from "../../gen/planeraClient";
+    import type {ProjectDto} from "../../gen/planeraClient";
     import {page} from "$app/stores";
-    import ErrorText from "$lib/components/ErrorText.svelte";
+    import ErrorText from "$lib/components/form/ErrorText.svelte";
     import UserIcon from "$lib/components/UserIcon.svelte";
-    import Label from "$lib/components/Label.svelte";
+    import Label from "$lib/components/form/Label.svelte";
     import {ListBullet, Icon} from "svelte-hero-icons";
 
     export let data: {
-        projects: Project[],
+        projects: ProjectDto[],
         error: boolean,
     };
 
@@ -86,10 +86,9 @@
 
             &.selected
                 cursor: default
-                background-color: #e7e5e4
 
-            &:hover:not(&.selected)
-                background-color: #e7e5e4
+            &:hover, &.selected
+                background-color: var(--background-hover)
 
             .icon
                 width: 1.5em
