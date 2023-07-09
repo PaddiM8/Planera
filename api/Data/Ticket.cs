@@ -15,11 +15,13 @@ public class Ticket
 
     public required string Description { get; set; }
 
-    public required Priority Priority { get; set; }
+    public required TicketPriority Priority { get; set; }
 
     public ICollection<User> Assignees { get; set; } = new List<User>();
 
     public required string AuthorId { get; set; }
 
     public User Author { get; set; } = null!;
+
+    public TicketStatus Status { get; set; }
 }

@@ -1,12 +1,13 @@
 import type {ServerLoadEvent} from "@sveltejs/kit";
 import type {ProjectDto, TicketDto} from "../../../../../gen/planeraClient";
-import {getProjectClient} from "$lib/services";
+import {getProjectClient, getTicketClient} from "$lib/services";
 import type {RequestEvent} from "@sveltejs/kit";
 import {fail} from "@sveltejs/kit";
 import {parsePriority} from "$lib/priority";
 import {toProblemDetails} from "$lib/problemDetails";
 import type {SwaggerException} from "../../../../../gen/planeraClient";
-import {CreateTaskModel} from "../../../../../gen/planeraClient";
+import type {CreateTicketModel} from "../../../../../gen/planeraClient";
+import type {TicketStatus} from "../../../../../gen/planeraClient";
 
 export async function load({ params, cookies }: ServerLoadEvent) {
     let response: ProjectDto;
@@ -28,18 +29,17 @@ export async function load({ params, cookies }: ServerLoadEvent) {
     };
 }
 export const actions = {
-    default: async ({ request, cookies, params }: RequestEvent) => {
+    create: async ({ request, cookies }: RequestEvent) => {
         const formData = await request.formData();
         try {
-            const response = await getProjectClient(cookies).createTicket(
-                params.user!,
-                params.slug!,
+            await getTicketClient(cookies).create(
+                Number(formData.get("projectId")),
                 {
                     title: formData.get("title") as string,
                     description: formData.get("description") as string,
                     priority: parsePriority(formData.get("priority") as string),
                     assigneeIds: formData.getAll("assignee").map(x => x as string),
-                } as CreateTaskModel);
+                } as CreateTicketModel);
         } catch (ex) {
             const problem = toProblemDetails(ex as SwaggerException);
 
@@ -48,4 +48,20 @@ export const actions = {
             });
         }
     },
+    setStatus: async({ request, cookies }: RequestEvent) => {
+        const formData = await request.formData();
+        try {
+            await getTicketClient(cookies).setStatus(
+                Number(formData.get("projectId")),
+                Number(formData.get("ticketId")),
+                Number(formData.get("status")) as TicketStatus,
+            );
+        } catch (ex) {
+            const problem = toProblemDetails(ex as SwaggerException);
+
+            return fail(400, {
+                errors: problem?.errors,
+            });
+        }
+    }
 };

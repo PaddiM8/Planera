@@ -3,7 +3,7 @@ using Planera.Data;
 
 namespace Planera.Models;
 
-public class CreateTaskModel
+public class CreateTicketModel
 {
     [MinLength(2)]
     [StringLength(150)]
@@ -12,7 +12,7 @@ public class CreateTaskModel
     [StringLength(10000)]
     public required string Description { get; init; }
 
-    public required Priority Priority { get; init; }
+    public required TicketPriority Priority { get; init; }
 
     public required IEnumerable<string> AssigneeIds { get; init; } = new List<string>();
 }

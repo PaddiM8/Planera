@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Planera.Data;
 using Planera.Data.Dto;
 using Planera.Extensions;
 using Planera.Models;
@@ -93,25 +94,6 @@ public class ProjectController : ControllerBase
             return Unauthorized();
 
         var result = await _projectService.GetTicketsAsync(username, slug);
-
-        return result.ToActionResult();
-    }
-
-    [HttpPost("{slug}")]
-    [ProducesResponseType(typeof(TicketDto), StatusCodes.Status200OK)]
-    public async Task<IActionResult> CreateTicket(string username, string slug, [FromBody] CreateTaskModel model)
-    {
-        if (username != User.Identity?.Name)
-            return Unauthorized();
-
-        var result = await _projectService.AddTaskAsync(
-            username,
-            slug,
-            model.Title,
-            model.Description,
-            model.Priority,
-            model.AssigneeIds
-        );
 
         return result.ToActionResult();
     }

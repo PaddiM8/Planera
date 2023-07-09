@@ -1,4 +1,4 @@
-import {Priority} from "../gen/planeraClient";
+import {TicketPriority} from "../gen/planeraClient";
 
 const priorityNames = [
     "None",
@@ -8,16 +8,16 @@ const priorityNames = [
     "Severe",
 ];
 
-export function priorityToName(priority: Priority): string {
+export function priorityToName(priority: TicketPriority): string {
     return priorityNames[priority];
 }
 
-export function parsePriority(priorityName: string): Priority {
+export function parsePriority(priorityName: string): TicketPriority {
     return {
-        "None": Priority.None,
-        "Low": Priority.Low,
-        "Normal": Priority.Normal,
-        "High": Priority.High,
-        "Severe": Priority.Severe,
-    }[priorityName] ?? Priority.None;
+        "None": TicketPriority.None,
+        "Low": TicketPriority.Low,
+        "Normal": TicketPriority.Normal,
+        "High": TicketPriority.High,
+        "Severe": TicketPriority.Severe,
+    }[priorityName] ?? TicketPriority.None;
 }

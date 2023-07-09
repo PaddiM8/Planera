@@ -2,6 +2,7 @@
     import { enhance } from "$app/forms";
     import ErrorText from "$lib/components/ErrorText.svelte";
 
+    export let action: string | undefined = undefined;
     export let errors: { string: string[] } = [] as { string: string[] };
     export let beforeSubmit = undefined;
     export let afterSubmit = undefined;
@@ -21,7 +22,7 @@
     }
 </script>
 
-<form method="POST" use:enhance={enhanceHandler}>
+<form method="POST" {action} use:enhance={enhanceHandler}>
     <div class="errors">
         {#each Object.values(errors ?? {}) as error}
             <ErrorText value={error} />

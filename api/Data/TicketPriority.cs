@@ -1,6 +1,6 @@
 namespace Planera.Data;
 
-public enum Priority
+public enum TicketPriority
 {
     None,
     Low,

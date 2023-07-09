@@ -12,9 +12,11 @@ public class TicketDto
 
     public required string Description { get; set; }
 
-    public required Priority Priority { get; set; }
+    public required TicketPriority Priority { get; set; }
 
     public required ICollection<UserDto> Assignees { get; set; }
 
     public required UserDto Author { get; set; }
+
+    public TicketStatus Status { get; set; }
 }

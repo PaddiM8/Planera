@@ -51,7 +51,9 @@
 
 <section class="new-ticket">
     <h2>New Ticket</h2>
-    <Form {beforeSubmit} {afterSubmit} errors={form?.errors}>
+    <Form action="?/create" {beforeSubmit} {afterSubmit} errors={form?.errors}>
+        <input type="hidden" name="projectId" value={data.project.id} />
+
         <Input type="text" name="title" placeholder="Title..." />
         <Editor placeholder="Describe the ticket..." bind:this={editor} />
         <div class="bottom-row">

@@ -2,13 +2,50 @@
     import type {TicketDto} from "../../gen/planeraClient";
     import {priorityToName} from "$lib/priority";
     import UserIcon from "$lib/components/UserIcon.svelte";
+    import {Check, Icon, XMark} from "svelte-hero-icons";
+    import {TicketStatus} from "../../gen/planeraClient";
 
     export let ticket: TicketDto;
+
+    async function setStatus(status: TicketStatus) {
+        const formData = new FormData();
+        formData.append("projectId", ticket.projectId.toString());
+        formData.append("ticketId", ticket.id.toString());
+        formData.append("status", status.toString());
+        const response = await fetch("?/setStatus", {
+            method: "POST",
+            body: formData,
+        });
+
+        const result = await response.json();
+        if (result.type === "success") {
+            ticket.status = status;
+        }
+    }
 </script>
 
-<a class="ticket" href="/projects/{ticket.author.userName}/{ticket.projectSlug}/tickets/{ticket.id}">
+<div class="ticket" class:has-status={ticket.status}>
     <div class="top">
-        <h3 class="title">{ticket.title}</h3>
+        {#if ticket.status === TicketStatus.Done}
+            <div class="status done" on:click={() => setStatus(TicketStatus.None)}>
+                <Icon src={Check} />
+            </div>
+        {:else if ticket.status === TicketStatus.Closed}
+            <div class="status closed" on:click={() => setStatus(TicketStatus.None)}>
+                <Icon src={XMark} />
+            </div>
+        {/if}
+        <a href="/projects/{ticket.author.userName}/{ticket.projectSlug}/tickets/{ticket.id}">
+            <h3 class="title">{ticket.title}</h3>
+        </a>
+        <button class="status-button close" on:click={() => setStatus(TicketStatus.Closed)}>
+            <span class="icon"><Icon src={XMark} /></span>
+            <span class="text">Close</span>
+        </button>
+        <button class="status-button done" on:click={() => setStatus(TicketStatus.Done)}>
+            <span class="icon"><Icon src={Check} /></span>
+            <span class="text">Done</span>
+        </button>
         <h3 class="id">{ticket.id}</h3>
     </div>
     <span class="description">{@html ticket.description}</span>
@@ -26,32 +63,83 @@
             {/each}
         </span>
     </div>
-</a>
+</div>
 
 <style lang="sass">
     .ticket
-        --ticket-background-rgb: var(--background-component-rgb)
         display: flex
         flex-direction: column
         padding: calc(var(--vertical-padding) * 1.5) calc(var(--horizontal-padding) * 1.5)
         margin-bottom: 0.4em
         border: var(--border)
         border-radius: var(--radius)
-        color: var(--on-background)
         background-color: var(--background-component)
-        text-decoration: none
-        cursor: pointer
-
-        &:hover
-            --ticket-background-rgb: var(--hover-on-background-rgb)
-            background-color: var(--hover-on-background)
 
     .top
         display: flex
+        align-items: center
         gap: 0.4em
+        margin-bottom: 0.2em
+
+        a
+            color: var(--on-background)
+            text-decoration: none
+
+    .status
+        display: block
+        height: 1.2em
+        margin-right: -0.2em
+        cursor: pointer
+
+        &.done
+            color: green
+
+        &.closed
+            color: red
+
+    .title
+        margin-bottom: 0
+
+        &:hover
+            text-decoration: underline
+
+    .ticket:not(:hover) .status-button, .ticket.has-status .status-button
+        visibility: hidden
+
+    .status-button
+        display: flex
+        align-items: center
+        background-color: transparent
+        border: 0
+        padding: 0.2em 0.4em
+        border-radius: var(--radius)
+        font-family: inherit
+        font-weight: 500
+        cursor: pointer
+
+        &:hover
+            background-color: #e7e5e4
+
+        &:first-of-type
+            margin-left: auto
+            margin-right: -0.4em
+
+        &:last-of-type
+            margin-right: 0.4em
+
+        &.done .icon
+            color: green
+
+        &.close .icon
+            color: red
+
+        .icon
+            display: block
+            margin-right: 0.1em
+            height: 1.4em
 
     .id
-        margin-left: auto
+        margin-bottom: 0
 
         &::before
             content: '#'
@@ -71,9 +159,9 @@
             width: 100%
             height: $fade-height
 
-            $step1: rgba(var(--ticket-background-rgb), 0.85) 30%
-            $step2: rgba(var(--ticket-background-rgb), 0.6) 75%
-            background: linear-gradient(0deg, rgb(var(--ticket-background-rgb)), $step1, $step2, transparent)
+            $step1: rgba(var(--background-component-rgb), 0.85) 30%
+            $step2: rgba(var(--background-component-rgb), 0.6) 75%
+            background: linear-gradient(0deg, var(--background-component), $step1, $step2, transparent)
             z-index: 999999
 
         :global(br)
