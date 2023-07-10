@@ -94,22 +94,22 @@
                 background-color: var(--background-hover)
 
                 .settings
-                    visibility: visible
+                    display: block
 
             .icon
                 width: 1.5em
                 height: 1.5em
 
-            .settings
-                margin-left: auto
-                visibility: hidden
-                width: 1.5em
-                height: 1.5em
-                color: var(--on-background-inactive)
-                text-decoration: none
+    .settings
+        display: none
+        margin-left: auto
+        width: 1.5em
+        height: 1.5em
+        color: var(--on-background-inactive)
+        text-decoration: none
 
-                &:hover
-                    color: var(--on-background)
+        &:hover
+            color: var(--on-background)
 
     main
         padding: var(--spacing)

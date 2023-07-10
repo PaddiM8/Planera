@@ -22,7 +22,7 @@ export async function load({ params, cookies }: ServerLoadEvent) {
     };
 }
 export const actions = {
-    default: async ({ request, cookies, params }: RequestEvent) => {
+    update: async ({ request, cookies, params }: RequestEvent) => {
         const formData = await request.formData();
         try {
             await getProjectClient(cookies).edit(
@@ -42,5 +42,37 @@ export const actions = {
         }
 
         throw redirect(302, `/projects/${params.user!}/${params.slug!}`)
+    },
+    addParticipant: async ({ request, cookies, params }: RequestEvent) => {
+        const formData = await request.formData();
+        try {
+            await getProjectClient(cookies).addParticipant(
+                params.user!,
+                params.slug!,
+                formData.get("username") as string,
+            );
+        } catch (ex) {
+            const problem = toProblemDetails(ex as SwaggerException);
+
+            return fail(400, {
+                errors: problem?.errors,
+            });
+        }
+    },
+    removeParticipant: async ({ request, cookies, params }: RequestEvent) => {
+        const formData = await request.formData();
+        try {
+            await getProjectClient(cookies).removeParticipant(
+                params.user!,
+                params.slug!,
+                formData.get("username") as string,
+            );
+        } catch (ex) {
+            const problem = toProblemDetails(ex as SwaggerException);
+
+            return fail(400, {
+                errors: problem?.errors,
+            });
+        }
     },
 };

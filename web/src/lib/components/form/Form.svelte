@@ -37,6 +37,7 @@
         display: flex
         flex-direction: column
         gap: var(--spacing)
+        margin-top: calc(-1 * var(--spacing))
 
     .errors
         display: flex

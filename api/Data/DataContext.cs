@@ -9,6 +9,8 @@ public class DataContext : IdentityDbContext<User>
 
     public DbSet<Ticket> Tickets { get; set; } = null!;
 
+    public DbSet<ProjectParticipant> ProjectParticipants { get; set; } = null!;
+
     public DataContext(DbContextOptions<DataContext> context)
         : base(context)
     {
@@ -28,7 +30,8 @@ public class DataContext : IdentityDbContext<User>
             .WithMany(e => e.AssignedTickets);
         modelBuilder.Entity<Project>()
             .HasMany(e => e.Participants)
-            .WithMany(e => e.JoinedProjects);
+            .WithMany(e => e.JoinedProjects)
+            .UsingEntity<ProjectParticipant>();
         modelBuilder.Entity<User>()
             .HasMany(e => e.Projects)
             .WithOne(e => e.Author)

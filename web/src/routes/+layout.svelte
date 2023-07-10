@@ -89,16 +89,22 @@
         font-weight: 650
 
     :global(h2)
-        font-size: 1.7em
-        margin-top: 0
-        margin-bottom: 0.2em
+        font-size: 1.6em
+        margin-top: 0.2em
+        margin-bottom: 0.6em
         font-weight: 600
 
     :global(h3)
         font-size: 1.2em
-        margin-top: 0
+        margin-top: 0.2em
         margin-bottom: 0.2em
         font-weight: 500
+
+    :global(hr)
+        border: 0
+        border-top: var(--border)
+        margin-top: 1.2em
+        margin-bottom: 1.2em
 
     #content
         display: grid

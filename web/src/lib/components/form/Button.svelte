@@ -1,13 +1,31 @@
 <script lang="ts">
+    import {createEventDispatcher} from "svelte";
+
     export let value: string;
-    export let primary: boolean;
-    export let submit: boolean;
+    export let primary: boolean = false;
+    export let submit: boolean = false;
+
+    const dispatch = createEventDispatcher();
+    let element: HTMLElement;
+
+    function handleClick(e) {
+        dispatch("click", e.details);
+    }
+
+    export function click() {
+        element.click();
+    }
 </script>
 
 {#if submit}
-    <input type="submit" class:primary={primary} bind:value={value} />
+    <input type="submit"
+           class:primary={primary}
+           bind:value={value}
+           bind:this={element} />
 {:else}
-    <button class:primary={primary}>{value}</button>
+    <button class:primary={primary}
+            on:click={handleClick}
+            bind:this={element}>{value}</button>
 {/if}
 
 <style lang="sass">

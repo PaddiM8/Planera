@@ -35,6 +35,7 @@ public class ProjectService
     {
         var project = await _dataContext.Projects
             .Where(x => x.Author.UserName == authorName && x.Slug == slug)
+            .Include(x => x.Participants)
             .ProjectTo<ProjectDto>(_mapper.ConfigurationProvider)
             .SingleOrDefaultAsync();
 
@@ -108,5 +109,50 @@ public class ProjectService
         return project == null
             ? Error.NotFound("Slug.NotFound", "A project with the given slug was not found.")
             : ErrorOrFactory.From(_mapper.Map<ICollection<TicketDto>>(project.Tickets));
+    }
+
+    public async Task<ErrorOr<UserDto>> AddParticipantAsync(string projectAuthor, string projectSlug, string participantName)
+    {
+        var project = await _dataContext.Projects
+            .Where(x => x.Author.UserName == projectAuthor && x.Slug == projectSlug)
+            .SingleOrDefaultAsync();
+        if (project == null)
+            return Error.NotFound("Slug.NotFound", "A project with the given slug was not found.");
+
+        var participant = await _dataContext.Users
+            .Where(x => x.UserName == participantName)
+            .SingleOrDefaultAsync();
+        if (participant == null)
+            return Error.NotFound("Participant.NotFound", "A user with the given name was not found.");
+
+        await _dataContext.ProjectParticipants.AddAsync(new ProjectParticipant
+        {
+            Project = project,
+            User = participant,
+        });
+        await _dataContext.SaveChangesAsync();
+
+        return _mapper.Map<UserDto>(participant);
+    }
+
+    public async Task<ErrorOr<Deleted>> RemoveParticipantAsync(string projectAuthor, string projectSlug, string participantName)
+    {
+        var project = await _dataContext.Projects
+            .Where(x => x.Author.UserName == projectAuthor && x.Slug == projectSlug)
+            .SingleOrDefaultAsync();
+        if (project == null)
+            return Error.NotFound("Slug.NotFound", "A project with the given slug was not found.");
+
+        var participant = await _dataContext.ProjectParticipants
+            .Where(x => x.ProjectId == project.Id)
+            .Where(x => x.User.UserName == participantName)
+            .SingleOrDefaultAsync();
+        if (participant == null)
+            return Error.NotFound("Participant.NotFound", "A user with the given name was not found in the current project.");
+
+        _dataContext.ProjectParticipants.Remove(participant);
+        await _dataContext.SaveChangesAsync();
+
+        return new ErrorOr<Deleted>();
     }
 }

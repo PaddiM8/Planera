@@ -3,6 +3,7 @@
     import {createEventDispatcher} from "svelte";
 
     export let items: { value: string, image: string | undefined }[] = [];
+    export let key: string | undefined = undefined;
     export let query: string = "";
     export let shown: boolean = true;
     export let showUserIcons: boolean = false;
@@ -12,12 +13,17 @@
 
     let shownItems = [];
     let previousIndex = 0;
-
     const dispatch = createEventDispatcher();
+
+    function getValue(obj) {
+        return key
+            ? obj[key]
+            : obj;
+    }
 
     $: {
         if (items.length > 0) {
-            selectedValue = items[selectedIndex].value;
+            selectedValue = getValue(items[selectedIndex]);
         }
 
         if (previousIndex == selectedIndex) {
@@ -26,7 +32,7 @@
             });
 
             shownItems = indexedItems.filter(x =>
-                !ignored.includes(x.value) && x.value.includes(query)
+                !ignored.includes(getValue(x)) && getValue(x).includes(query)
             );
             selectedIndex = 0;
             previousIndex = selectedIndex;
@@ -54,10 +60,10 @@
               on:mousedown={handleItemClick}>
             {#if showUserIcons}
                 <span class="icon">
-                    <UserIcon name={item.value} image={item.image} type="user" />
+                    <UserIcon name={getValue(item)} image={item.image} type="user" />
                 </span>
             {/if}
-            <span class="value">{item.value}</span>
+            <span class="value">{getValue(item)}</span>
         </span>
     {/each}
 </div>

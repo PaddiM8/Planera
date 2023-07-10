@@ -18,15 +18,6 @@
         errors: { string: string[] } | undefined,
     };
 
-    let projectUsers = [
-        { value: "user1" },
-        { value: "user2" },
-        { value: "user3" },
-        { value: "user4" },
-        { value: "user5" },
-        { value: "user6" },
-    ];
-
     let editor;
     let assignees;
     let priority;
@@ -71,7 +62,8 @@
                     <Label value="Assigned To" />
                 </span>
                 <BlockInput placeholder="Assignee..."
-                            options={projectUsers}
+                            options={data.project.participants}
+                            key="userName"
                             name="assignee"
                             bind:this={assignees}
                             showUserIcons={true} />

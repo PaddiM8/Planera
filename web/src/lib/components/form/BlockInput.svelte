@@ -6,6 +6,7 @@
     export let options: { value: string, image: string | undefined }[];
     export let showUserIcons: boolean = false;
     export let values: string[] = [];
+    export let key: string | undefined = undefined;
     export let label: string | undefined = undefined;
     export let name: string = "";
 
@@ -18,6 +19,12 @@
     let value: string = "";
     let isFocused: boolean = false;
     let selectedSuggestion: string | undefined = undefined;
+
+    function getValue(obj) {
+        return key
+            ? obj[key]
+            : obj;
+    }
 
     function addBlock(value: string) {
         values = [...values, value];
@@ -39,7 +46,7 @@
             return;
         }
 
-        if (!options.some(x => x.value === inputElement.value)) {
+        if (!options.some(x => getValue(x) === inputElement.value)) {
             return;
         }
 
@@ -61,10 +68,12 @@
     }
 
     function handleSelectedSuggestion(e: CustomEvent<{ index: number }>) {
-        const selectedValue = options.at(e.detail.index)?.value;
-        if (selectedValue) {
-            addBlock(selectedValue);
+        const selectedObject = options.at(e.detail.index);
+        if (!selectedObject) {
+            return
         }
+
+        addBlock(getValue(selectedObject));
     }
 </script>
 
@@ -75,17 +84,17 @@
 <span class="wrapper"
       class:no-blocks={values.length === 0}
       bind:this={blockAreaElement}>
-    {#each values as value}
+    {#each values as item}
         <span class="block" on:click={handleBlockClick}>
             {#if showUserIcons}
                 <span class="icon">
-                    <UserIcon name={value} type="user" />
+                    <UserIcon name={item} type="user" />
                 </span>
             {/if}
-            <span class="value">{value}</span>
+            <span class="value">{item}</span>
             <input type="text"
                    name={name}
-                   value={value}
+                   value={item}
                    hidden />
         </span>
     {/each}
@@ -102,6 +111,7 @@
     </span>
     <SuggestionList query={value}
                     items={options}
+                    key={key}
                     ignored={values}
                     shown={isFocused}
                     {showUserIcons}

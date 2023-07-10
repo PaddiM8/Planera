@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Planera.Data;
 using Planera.Data.Dto;
 using Planera.Extensions;
 using Planera.Models;
@@ -96,6 +95,29 @@ public class ProjectController : ControllerBase
             return Unauthorized();
 
         var result = await _projectService.GetTicketsAsync(username, slug);
+
+        return result.ToActionResult();
+    }
+
+    [HttpPut("{slug}/addParticipant")]
+    [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> AddParticipant(string username, string slug, string participantName)
+    {
+        if (username != User.Identity?.Name)
+            return Unauthorized();
+
+        var result = await _projectService.AddParticipantAsync(username, slug, participantName);
+
+        return result.ToActionResult();
+    }
+
+    [HttpDelete("{slug}/removeParticipant")]
+    public async Task<IActionResult> RemoveParticipant(string username, string slug, string participantName)
+    {
+        if (username != User.Identity?.Name)
+            return Unauthorized();
+
+        var result = await _projectService.RemoveParticipantAsync(username, slug, participantName);
 
         return result.ToActionResult();
     }
