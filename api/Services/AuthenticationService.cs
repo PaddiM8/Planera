@@ -32,7 +32,12 @@ public class AuthenticationService
                    await _userManager.FindByEmailAsync(model.Username);
 
         if (user == null)
-            return Error.NotFound("Username.NotFound", "A user with the given username/email was not found");
+        {
+            return Error.NotFound(
+                "Username.NotFound",
+                "A user with the given username/email was not found"
+            );
+        }
 
         var result = await _signInManager.PasswordSignInAsync(
             user,
@@ -89,7 +94,10 @@ public class AuthenticationService
                 new Claim(ClaimTypes.Role, "User"),
             }),
             Expires = DateTime.UtcNow.AddDays(90),
-            SigningCredentials = new SigningCredentials(_secretKey, SecurityAlgorithms.HmacSha256Signature),
+            SigningCredentials = new SigningCredentials(
+                _secretKey,
+                SecurityAlgorithms.HmacSha256Signature
+            ),
         };
 
         return tokenHandler.WriteToken(tokenHandler.CreateToken(tokenDescriptor));

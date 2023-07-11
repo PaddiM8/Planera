@@ -14,7 +14,7 @@ export async function load({ params, cookies }: ServerLoadEvent) {
     let ticketsResponse: TicketDto[];
     try {
         response = await getProjectClient(cookies).get(params.user!, params.slug!);
-        ticketsResponse = await getProjectClient(cookies).getTickets(params.user!, params.slug!);
+        ticketsResponse = await getProjectClient(cookies).getTickets(response.id);
     } catch (ex) {
         const problem = toProblemDetails(ex as SwaggerException);
 

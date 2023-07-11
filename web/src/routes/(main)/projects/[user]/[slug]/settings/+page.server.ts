@@ -47,8 +47,7 @@ export const actions = {
         const formData = await request.formData();
         try {
             await getProjectClient(cookies).addParticipant(
-                params.user!,
-                params.slug!,
+                Number(formData.get("projectId")),
                 formData.get("username") as string,
             );
         } catch (ex) {
@@ -63,8 +62,7 @@ export const actions = {
         const formData = await request.formData();
         try {
             await getProjectClient(cookies).removeParticipant(
-                params.user!,
-                params.slug!,
+                Number(formData.get("projectId")),
                 formData.get("username") as string,
             );
         } catch (ex) {

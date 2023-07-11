@@ -10,24 +10,27 @@ public class TicketService
 {
     private readonly DataContext _dataContext;
     private readonly IMapper _mapper;
+    private readonly ProjectService _projectService;
 
-    public TicketService(DataContext dataContext, IMapper mapper)
+    public TicketService(DataContext dataContext, IMapper mapper, ProjectService projectService)
     {
         _dataContext = dataContext;
         _mapper = mapper;
+        _projectService = projectService;
     }
 
-    public async Task<ErrorOr<TicketDto>> AddTicketAsync(
+    public async Task<ErrorOr<TicketDto>> AddTicketAsync(string userId,
         int projectId,
-        string authorId,
         string title,
         string description,
         TicketPriority priority,
         IEnumerable<string> assigneeIds)
     {
-        var project = await _dataContext.Projects.FindAsync(projectId);
+        var project = await _projectService
+            .QueryById(userId, projectId)
+            .SingleOrDefaultAsync();
         if (project == null)
-            return Error.NotFound("ProjectId.NotFound", "A project with the given slug was not found.");
+            return ProjectService.ProjectNotFoundError<TicketDto>();
 
         int id = await _dataContext.Tickets
             .Where(x => x.ProjectId == project.Id)
@@ -45,7 +48,7 @@ public class TicketService
             Description = description,
             Priority = priority,
             Assignees = assignees,
-            AuthorId = authorId,
+            AuthorId = userId,
         };
         await _dataContext.Tickets.AddAsync(ticket);
         await _dataContext.SaveChangesAsync();
@@ -53,18 +56,26 @@ public class TicketService
         return _mapper.Map<TicketDto>(ticket);
     }
 
-    public async Task<ErrorOr<Updated>> SetStatus(string currentUserId, int projectId, int ticketId, TicketStatus status)
+    public async Task<ErrorOr<Updated>> SetStatus(
+        string userId,
+        int projectId,
+        int ticketId,
+        TicketStatus status)
     {
-        var project = await _dataContext.Projects.FindAsync(projectId);
+        var project = await _projectService
+            .QueryById(userId, projectId)
+            .SingleOrDefaultAsync();
         if (project == null)
-            return Error.NotFound("ProjectId.NotFound", "A project with the given slug was not found.");
-
-        if (project.AuthorId != currentUserId)
-            return Error.NotFound("NotAllowed", "You are not allowed to perform this action.");
+            return ProjectService.ProjectNotFoundError<Updated>();
 
         var ticket = await _dataContext.Tickets.FindAsync(ticketId, projectId);
         if (ticket == null)
-            return Error.NotFound("TicketId.NotFound", "A ticket with the given ID was not found.");
+        {
+            return Error.NotFound(
+                "TicketId.NotFound",
+                "A ticket with the given ID was not found."
+            );
+        }
 
         ticket.Status = status;
         _dataContext.Tickets.Update(ticket);

@@ -9,6 +9,7 @@ export let form;
 
 async function handleAddParticipant(name: string): Promise<[string, boolean]> {
     const formData = new FormData();
+    formData.append("projectId", data.project.id);
     formData.append("username", name);
     const response = await fetch("?/addParticipant", {
         method: "POST",
@@ -24,6 +25,7 @@ async function handleAddParticipant(name: string): Promise<[string, boolean]> {
 
 async function handleRemoveParticipant(name: string): Promise<[string, boolean]> {
     const formData = new FormData();
+    formData.append("projectId", data.project.id);
     formData.append("username", name);
     const response = await fetch("?/removeParticipant", {
         method: "POST",

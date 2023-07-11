@@ -7,7 +7,7 @@ using Planera.Services;
 namespace Planera.Controllers;
 
 [ApiController]
-[Route("projects/{username}")]
+[Route("projects")]
 public class ProjectController : ControllerBase
 {
     private readonly ProjectService _projectService;
@@ -17,7 +17,7 @@ public class ProjectController : ControllerBase
         _projectService = projectService;
     }
 
-    [HttpGet]
+    [HttpGet("{username}")]
     [ProducesResponseType(typeof(ICollection<ProjectDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll(string username)
     {
@@ -30,22 +30,24 @@ public class ProjectController : ControllerBase
         return result.ToActionResult();
     }
 
-    [HttpGet("{slug}")]
+    [HttpGet("{username}/{slug}")]
     [ProducesResponseType(typeof(ProjectDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> Get(string username, string slug)
     {
-        // TODO: Allow viewing public projects when that's a thing
-        if (username != User.Identity?.Name)
-            return Unauthorized();
-
-        var result = await _projectService.GetAsync(username, slug);
+        var result = await _projectService.GetAsync(
+            User.FindFirst("Id")!.Value,
+            username,
+            slug
+        );
 
         return result.ToActionResult();
     }
 
-    [HttpPost]
+    [HttpPost("{username}")]
     [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
-    public async Task<IActionResult> Create(string username, [FromBody] CreateProjectModel model)
+    public async Task<IActionResult> Create(
+        string username,
+        [FromBody] CreateProjectModel model)
     {
         if (username != User.Identity?.Name)
             return Unauthorized();
@@ -60,13 +62,14 @@ public class ProjectController : ControllerBase
         return result.ToActionResult();
     }
 
-    [HttpPut("{slug}")]
-    public async Task<IActionResult> Edit(string username, string slug, [FromBody] EditProjectModel model)
+    [HttpPut("{username}/{slug}")]
+    public async Task<IActionResult> Edit(
+        string username,
+        string slug,
+        [FromBody] EditProjectModel model)
     {
-        if (username != User.Identity?.Name)
-            return Unauthorized();
-
         var result = await _projectService.EditAsync(
+            User.FindFirst("Id")!.Value,
             username,
             slug,
             model.Name,
@@ -76,48 +79,50 @@ public class ProjectController : ControllerBase
         return result.ToActionResult();
     }
 
-    [HttpDelete("{slug}")]
-    public async Task<IActionResult> Remove(string username, string slug)
+    [HttpDelete("{projectId}")]
+    public async Task<IActionResult> Remove(int projectId)
     {
-        if (username != User.Identity?.Name)
-            return Unauthorized();
-
-        var result = await _projectService.RemoveAsync(username, slug);
+        var result = await _projectService.RemoveAsync(
+            User.FindFirst("Id")!.Value,
+            projectId
+        );
 
         return result.ToActionResult();
     }
 
-    [HttpGet("{slug}/tickets")]
+    [HttpGet("{projectId}/tickets")]
     [ProducesResponseType(typeof(ICollection<TicketDto>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetTickets(string username, string slug)
+    public async Task<IActionResult> GetTickets(int projectId)
     {
-        if (username != User.Identity?.Name)
-            return Unauthorized();
-
-        var result = await _projectService.GetTicketsAsync(username, slug);
+        var result = await _projectService.GetTicketsAsync(
+            User.FindFirst("Id")!.Value,
+            projectId
+        );
 
         return result.ToActionResult();
     }
 
-    [HttpPut("{slug}/addParticipant")]
+    [HttpPut("{projectId}/addParticipant")]
     [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
-    public async Task<IActionResult> AddParticipant(string username, string slug, string participantName)
+    public async Task<IActionResult> AddParticipant(int projectId, string participantName)
     {
-        if (username != User.Identity?.Name)
-            return Unauthorized();
-
-        var result = await _projectService.AddParticipantAsync(username, slug, participantName);
+        var result = await _projectService.AddParticipantAsync(
+            User.FindFirst("Id")!.Value,
+            projectId,
+            participantName
+        );
 
         return result.ToActionResult();
     }
 
-    [HttpDelete("{slug}/removeParticipant")]
-    public async Task<IActionResult> RemoveParticipant(string username, string slug, string participantName)
+    [HttpDelete("{projectId}/removeParticipant")]
+    public async Task<IActionResult> RemoveParticipant(int projectId, string participantName)
     {
-        if (username != User.Identity?.Name)
-            return Unauthorized();
-
-        var result = await _projectService.RemoveParticipantAsync(username, slug, participantName);
+        var result = await _projectService.RemoveParticipantAsync(
+            User.FindFirst("Id")!.Value,
+            projectId,
+            participantName
+        );
 
         return result.ToActionResult();
     }

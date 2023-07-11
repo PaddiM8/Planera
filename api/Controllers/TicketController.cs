@@ -23,12 +23,11 @@ public class TicketController : ControllerBase
     public async Task<IActionResult> Create(int projectId, [FromBody] CreateTicketModel model)
     {
         var result = await _ticketService.AddTicketAsync(
-            projectId,
             User.FindFirst("Id")!.Value,
+            projectId,
             model.Title,
             model.Description,
-            model.Priority,
-            model.AssigneeIds
+            model.Priority, model.AssigneeIds
         );
 
         return result.ToActionResult();
