@@ -27,7 +27,8 @@ public class TicketController : ControllerBase
             projectId,
             model.Title,
             model.Description,
-            model.Priority, model.AssigneeIds
+            model.Priority,
+            model.AssigneeIds
         );
 
         return result.ToActionResult();

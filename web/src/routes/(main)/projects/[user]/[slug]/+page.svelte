@@ -64,6 +64,7 @@
                 <BlockInput placeholder="Assignee..."
                             options={data.project.participants}
                             key="userName"
+                            outputKey="id"
                             name="assignee"
                             bind:this={assignees}
                             showUserIcons={true} />

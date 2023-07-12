@@ -19,7 +19,8 @@ public class TicketService
         _projectService = projectService;
     }
 
-    public async Task<ErrorOr<TicketDto>> AddTicketAsync(string userId,
+    public async Task<ErrorOr<TicketDto>> AddTicketAsync(
+        string userId,
         int projectId,
         string title,
         string description,
@@ -35,11 +36,9 @@ public class TicketService
         int id = await _dataContext.Tickets
             .Where(x => x.ProjectId == project.Id)
             .CountAsync() + 1;
-
         var assignees = await _dataContext.Users
             .Where(x => assigneeIds.Contains(x.Id))
             .ToListAsync();
-
         var ticket = new Ticket
         {
             Id = id,

@@ -2,14 +2,14 @@
     import UserIcon from "$lib/components/UserIcon.svelte";
     import {createEventDispatcher} from "svelte";
 
-    export let items: { value: string, image: string | undefined }[] = [];
+    export let items: any[] = [];
     export let key: string | undefined = undefined;
     export let query: string = "";
     export let shown: boolean = true;
     export let showUserIcons: boolean = false;
     export let selectedIndex = 0;
-    export let selectedValue: string | undefined = undefined;
-    export let ignored: string[] = [];
+    export let selectedValue: any | undefined = undefined;
+    export let ignored: any[] = [];
 
     let shownItems = [];
     let previousIndex = 0;
@@ -23,7 +23,7 @@
 
     $: {
         if (items.length > 0) {
-            selectedValue = getValue(items[selectedIndex]);
+            selectedValue = items[selectedIndex];
         }
 
         if (previousIndex == selectedIndex) {
@@ -32,7 +32,7 @@
             });
 
             shownItems = indexedItems.filter(x =>
-                !ignored.includes(getValue(x)) && getValue(x).includes(query)
+                !ignored.includes(x) && getValue(x).includes(query)
             );
             selectedIndex = 0;
             previousIndex = selectedIndex;
@@ -60,7 +60,7 @@
               on:mousedown={handleItemClick}>
             {#if showUserIcons}
                 <span class="icon">
-                    <UserIcon name={getValue(item)} image={item.image} type="user" />
+                    <UserIcon name={getValue(item)} type="user" />
                 </span>
             {/if}
             <span class="value">{getValue(item)}</span>

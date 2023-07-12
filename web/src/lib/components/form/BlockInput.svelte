@@ -3,10 +3,11 @@
     import UserIcon from "$lib/components/UserIcon.svelte";
 
     export let placeholder: string | undefined = undefined;
-    export let options: { value: string, image: string | undefined }[];
+    export let options: any[];
     export let showUserIcons: boolean = false;
-    export let values: string[] = [];
+    export let values: any[] = [];
     export let key: string | undefined = undefined;
+    export let outputKey: string | undefined = undefined;
     export let label: string | undefined = undefined;
     export let name: string = "";
 
@@ -18,7 +19,7 @@
     let inputElement: HTMLInputElement;
     let value: string = "";
     let isFocused: boolean = false;
-    let selectedSuggestion: string | undefined = undefined;
+    let selectedSuggestion: any = undefined;
 
     function getValue(obj) {
         return key
@@ -26,7 +27,7 @@
             : obj;
     }
 
-    function addBlock(value: string) {
+    function addBlock(value: any) {
         values = [...values, value];
     }
 
@@ -62,9 +63,8 @@
         isFocused = false;
     }
 
-    function handleBlockClick(e: PointerEvent) {
-        const target = e.target as HTMLElement;
-        values = values.filter(x => x != target.querySelector(".value").textContent);
+    function handleBlockClick(item: any) {
+        values = values.filter(x => x != item);
     }
 
     function handleSelectedSuggestion(e: CustomEvent<{ index: number }>) {
@@ -73,7 +73,7 @@
             return
         }
 
-        addBlock(getValue(selectedObject));
+        addBlock(selectedObject);
     }
 </script>
 
@@ -85,16 +85,16 @@
       class:no-blocks={values.length === 0}
       bind:this={blockAreaElement}>
     {#each values as item}
-        <span class="block" on:click={handleBlockClick}>
+        <span class="block" on:click={() => handleBlockClick(item)}>
             {#if showUserIcons}
                 <span class="icon">
-                    <UserIcon name={item} type="user" />
+                    <UserIcon name={getValue(item)} type="user" />
                 </span>
             {/if}
-            <span class="value">{item}</span>
+            <span class="value">{getValue(item)}</span>
             <input type="text"
                    name={name}
-                   value={item}
+                   value={outputKey ? item[outputKey] : getValue(item)}
                    hidden />
         </span>
     {/each}
