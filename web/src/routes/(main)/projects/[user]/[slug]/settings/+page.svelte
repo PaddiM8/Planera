@@ -3,6 +3,7 @@ import Form from "$lib/components/form/Form.svelte";
 import Input from "$lib/components/form/Input.svelte";
 import Button from "$lib/components/form/Button.svelte";
 import ListBox from "$lib/components/form/ListBox.svelte";
+import {toast} from "$lib/toast";
 
 export let data;
 export let form;
@@ -17,8 +18,12 @@ async function handleAddParticipant(name: string): Promise<[string | undefined, 
     });
     const result = await response.json();
     if (result.type === "success") {
+        toast.info(`Invited user "${name}".`);
+
         return [undefined, true];
     } else {
+        toast.info("Failed to invite user.");
+
         return ["Failed to add participant.", false];
     }
 }
@@ -33,8 +38,12 @@ async function handleRemoveParticipant(name: string): Promise<[string | undefine
     });
     const result = await response.json();
     if (result.type === "success") {
+        toast.info(`Removed user "${name}".`);
+
         return [undefined, true];
     } else {
+        toast.info("Failed to remove user.");
+
         return ["Failed to remove participant.", false];
     }
 }

@@ -1,6 +1,7 @@
 <script lang="ts">
     import {Check, Icon, XMark} from "svelte-hero-icons";
     import type {ProjectDto} from "../../../gen/planeraClient";
+    import {toast} from "$lib/toast";
 
     export let data;
 
@@ -14,6 +15,10 @@
         const result = await response.json();
         if (result.type === "success") {
             data.invitations = data.invitations.filter(x => x != invitation);
+
+            if (action === "accept") {
+                toast.info("Accepted invitation.");
+            }
         }
     }
 </script>

@@ -50,12 +50,8 @@ export const actions = {
                 Number(formData.get("projectId")),
                 formData.get("username") as string,
             );
-        } catch (ex) {
-            const problem = toProblemDetails(ex as SwaggerException);
-
-            return fail(400, {
-                errors: problem?.errors,
-            });
+        } catch {
+            return fail(400);
         }
     },
     removeParticipant: async ({ request, cookies, params }: RequestEvent) => {
@@ -65,12 +61,8 @@ export const actions = {
                 Number(formData.get("projectId")),
                 formData.get("username") as string,
             );
-        } catch (ex) {
-            const problem = toProblemDetails(ex as SwaggerException);
-
-            return fail(400, {
-                errors: problem?.errors,
-            });
+        } catch {
+            return fail(400);
         }
     },
 };

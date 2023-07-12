@@ -5,6 +5,7 @@
     import ContextMenuEntry from "$lib/components/ContextMenuEntry.svelte";
     import { Icon, Cog, ArrowRightOnRectangle } from "svelte-hero-icons";
     import Label from "$lib/components/form/Label.svelte";
+    import Toast from "$lib/components/Toast.svelte";
 
     export let data: PageData;
 
@@ -16,6 +17,8 @@
             : e.target;
     }
 </script>
+
+<Toast />
 
 <ContextMenu bind:target={contextMenuTarget}>
     <Label value="@{data.user?.username}" />
