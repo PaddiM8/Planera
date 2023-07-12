@@ -4,6 +4,7 @@ import Input from "$lib/components/form/Input.svelte";
 import Button from "$lib/components/form/Button.svelte";
 import ListBox from "$lib/components/form/ListBox.svelte";
 import {toast} from "$lib/toast";
+import {dialog} from "$lib/dialog";
 
 export let data;
 export let form;
@@ -24,11 +25,16 @@ async function handleAddParticipant(name: string): Promise<[string | undefined, 
     } else {
         toast.info("Failed to invite user.");
 
-        return ["Failed to add participant.", false];
+        return [undefined,false];
     }
 }
 
-async function handleRemoveParticipant(name: string): Promise<[string | undefined, boolean]> {
+async function handleRemoveParticipant(name: string): Promise<boolean> {
+    const confirmation = await dialog.yesNo("Remove participant", `Are you sure you want to remove the user "${name}" from the project?`);
+    if (!confirmation) {
+        return false;
+    }
+
     const formData = new FormData();
     formData.append("projectId", data.project.id);
     formData.append("username", name);
@@ -40,11 +46,11 @@ async function handleRemoveParticipant(name: string): Promise<[string | undefine
     if (result.type === "success") {
         toast.info(`Removed user "${name}".`);
 
-        return [undefined, true];
+        return true;
     } else {
         toast.info("Failed to remove user.");
 
-        return ["Failed to remove participant.", false];
+        return false;
     }
 }
 </script>

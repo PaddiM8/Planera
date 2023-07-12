@@ -12,7 +12,7 @@
     export let emptyText: string = "";
     export let addButtonText = "Add";
     export let handleAdd: (value: string) => MaybePromise<[string | undefined, boolean]>;
-    export let handleRemove: (value: string) => MaybePromise<[string | undefined, boolean]>;
+    export let handleRemove: (value: string) => MaybePromise<boolean>;
 
     let inputValue: string;
     let error: string;
@@ -26,18 +26,13 @@
             if (value) {
                 items = [value, ...items];
             }
-        } else {
-            error = value;
         }
     }
 
     async function handleClickRemove(value: string) {
-        const [reply, success] = await handleRemove(value);
+        const success = await handleRemove(value);
         if (success) {
             items = items.filter(x => x !== value);
-        } else {
-            // TODO: These should probably be toasts instead?
-            error = reply;
         }
     }
 </script>
@@ -52,10 +47,6 @@
                 bind:this={addButton}
                 on:click={handleClickAdd} />
     </div>
-{/if}
-
-{#if error}
-    <span class="error">{error}</span>
 {/if}
 
 <div class="list">

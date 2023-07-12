@@ -6,6 +6,7 @@
     import { Icon, Cog, ArrowRightOnRectangle } from "svelte-hero-icons";
     import Label from "$lib/components/form/Label.svelte";
     import Toast from "$lib/components/Toast.svelte";
+    import YesNoDialog from "$lib/components/dialogs/YesNoDialog.svelte";
 
     export let data: PageData;
 
@@ -19,6 +20,7 @@
 </script>
 
 <Toast />
+<YesNoDialog />
 
 <ContextMenu bind:target={contextMenuTarget}>
     <Label value="@{data.user?.username}" />
