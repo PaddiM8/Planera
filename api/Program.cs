@@ -79,6 +79,7 @@ builder.Services.AddAuthentication(o =>
 });
 
 builder.Services.AddTransient<AuthenticationService>();
+builder.Services.AddTransient<UserService>();
 builder.Services.AddTransient<ProjectService>();
 builder.Services.AddTransient<TicketService>();
 builder.Services.AddAutoMapper(typeof(MappingProfile));

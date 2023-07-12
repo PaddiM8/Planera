@@ -4,7 +4,7 @@
     import ErrorText from "$lib/components/form/ErrorText.svelte";
     import UserIcon from "$lib/components/UserIcon.svelte";
     import Label from "$lib/components/form/Label.svelte";
-    import {ListBullet, Icon, Cog} from "svelte-hero-icons";
+    import {ListBullet, Icon, Cog, SquaresPlus} from "svelte-hero-icons";
 
     export let data: {
         projects: ProjectDto[],
@@ -25,6 +25,14 @@
                     <Icon src={ListBullet} />
                 </span>
                 <span class="name">Overview</span>
+            </a>
+            <a class="entry"
+               href="/invitations"
+               class:selected={path === "/invitations"}>
+                <span class="icon">
+                    <Icon src={SquaresPlus} />
+                </span>
+                <span class="name">Invitations</span>
             </a>
         </div>
         <Label value="Projects" />
@@ -58,6 +66,7 @@
         display: grid
         grid-template-columns: 20em auto
         width: 100%
+        overflow-x: hidden
 
         border-left: var(--border)
         border-right: var(--border)
@@ -113,4 +122,5 @@
 
     main
         padding: var(--spacing)
+        overflow-x: hidden
 </style>

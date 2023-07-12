@@ -1,4 +1,4 @@
-import {AuthenticationClient, ProjectClient, TicketClient, IConfig} from "../gen/planeraClient";
+import {AuthenticationClient, UserClient, ProjectClient, TicketClient, IConfig} from "../gen/planeraClient";
 
 const serverUrl = "http://localhost:5065";
 
@@ -8,6 +8,10 @@ function extractToken(cookies: any): IConfig {
 
 export function getAuthenticationClient(cookies: any): AuthenticationClient {
     return new AuthenticationClient(extractToken(cookies), serverUrl, { fetch });
+}
+
+export function getUserClient(cookies: any): UserClient {
+    return new UserClient(extractToken(cookies), serverUrl, { fetch });
 }
 
 export function getProjectClient(cookies: any): ProjectClient {

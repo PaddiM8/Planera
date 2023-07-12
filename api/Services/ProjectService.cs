@@ -39,17 +39,12 @@ public class ProjectService
             .Where(x => x.Participants.Any(user => user.Id == userId));
     }
 
-    public async Task<ErrorOr<ICollection<ProjectDto>>> GetAllAsync(string authorName)
+    public async Task<ErrorOr<ICollection<ProjectDto>>> GetAllAsync(string username)
     {
-        var user = await _dataContext.Users
-            .Include(x => x.Projects)
-            .SingleOrDefaultAsync(x => x.UserName == authorName);
-        if (user == null)
-            return Error.NotFound("Id.NotFound", "A user with that id does not exist.");
-
-        return ErrorOrFactory.From(
-            _mapper.Map<ICollection<Project>, ICollection<ProjectDto>>(user.Projects)
-        );
+        return await _dataContext.Projects
+            .Where(a => a.Participants.Any(b => b.UserName == username))
+            .ProjectTo<ProjectDto>(_mapper.ConfigurationProvider)
+            .ToListAsync();
     }
 
     public async Task<ErrorOr<ProjectDto>> GetAsync(
@@ -173,7 +168,7 @@ public class ProjectService
             );
         }
 
-        await _dataContext.ProjectParticipants.AddAsync(new ProjectParticipant
+        await _dataContext.Invitations.AddAsync(new Invitation
         {
             Project = project,
             User = participant,
@@ -198,14 +193,29 @@ public class ProjectService
             .Where(x => x.User.UserName == participantName)
             .SingleOrDefaultAsync();
         if (participant == null)
+            return await RemoveInvitation(projectId, participantName);
+
+        _dataContext.ProjectParticipants.Remove(participant);
+        await _dataContext.SaveChangesAsync();
+
+        return new ErrorOr<Deleted>();
+    }
+
+    private async Task<ErrorOr<Deleted>> RemoveInvitation(int projectId, string inviteeName)
+    {
+        var invitation = await _dataContext.Invitations
+            .Where(x => x.User.UserName == inviteeName)
+            .Where(x => x.ProjectId == projectId)
+            .SingleOrDefaultAsync();
+        if (invitation == null)
         {
             return Error.NotFound(
-                "Participant.NotFound",
+                "User.NotFound",
                 "A user with the given name was not found in the current project."
             );
         }
 
-        _dataContext.ProjectParticipants.Remove(participant);
+        _dataContext.Invitations.Remove(invitation);
         await _dataContext.SaveChangesAsync();
 
         return new ErrorOr<Deleted>();

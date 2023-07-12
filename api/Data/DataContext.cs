@@ -11,6 +11,8 @@ public class DataContext : IdentityDbContext<User>
 
     public DbSet<ProjectParticipant> ProjectParticipants { get; set; } = null!;
 
+    public DbSet<Invitation> Invitations { get; set; } = null!;
+
     public DataContext(DbContextOptions<DataContext> context)
         : base(context)
     {
@@ -36,6 +38,10 @@ public class DataContext : IdentityDbContext<User>
             .HasMany(e => e.Projects)
             .WithOne(e => e.Author)
             .HasForeignKey(e => e.AuthorId);
+        modelBuilder.Entity<User>()
+            .HasMany(e => e.Invitations)
+            .WithMany(e => e.InvitedUsers)
+            .UsingEntity<Invitation>();
     }
 
 }

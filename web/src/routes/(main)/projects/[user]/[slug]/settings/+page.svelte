@@ -7,7 +7,7 @@ import ListBox from "$lib/components/form/ListBox.svelte";
 export let data;
 export let form;
 
-async function handleAddParticipant(name: string): Promise<[string, boolean]> {
+async function handleAddParticipant(name: string): Promise<[string | undefined, boolean]> {
     const formData = new FormData();
     formData.append("projectId", data.project.id);
     formData.append("username", name);
@@ -17,13 +17,13 @@ async function handleAddParticipant(name: string): Promise<[string, boolean]> {
     });
     const result = await response.json();
     if (result.type === "success") {
-        return [name, true];
+        return [undefined, true];
     } else {
         return ["Failed to add participant.", false];
     }
 }
 
-async function handleRemoveParticipant(name: string): Promise<[string, boolean]> {
+async function handleRemoveParticipant(name: string): Promise<[string | undefined, boolean]> {
     const formData = new FormData();
     formData.append("projectId", data.project.id);
     formData.append("username", name);
@@ -33,7 +33,7 @@ async function handleRemoveParticipant(name: string): Promise<[string, boolean]>
     });
     const result = await response.json();
     if (result.type === "success") {
-        return ["", true];
+        return [undefined, true];
     } else {
         return ["Failed to remove participant.", false];
     }

@@ -11,8 +11,8 @@
     export let placeholder: string = "";
     export let emptyText: string = "";
     export let addButtonText = "Add";
-    export let handleAdd: (value: string) => MaybePromise<[string, boolean]>;
-    export let handleRemove: (value: string) => MaybePromise<[string, boolean]>;
+    export let handleAdd: (value: string) => MaybePromise<[string | undefined, boolean]>;
+    export let handleRemove: (value: string) => MaybePromise<[string | undefined, boolean]>;
 
     let inputValue: string;
     let error: string;
@@ -23,7 +23,9 @@
         if (success) {
             inputValue = "";
             error = "";
-            items = [value, ...items];
+            if (value) {
+                items = [value, ...items];
+            }
         } else {
             error = value;
         }

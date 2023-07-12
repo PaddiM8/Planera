@@ -22,4 +22,6 @@ public class Project
     public ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
 
     public ICollection<User> Participants { get; set; } = new List<User>();
+
+    public ICollection<User> InvitedUsers { get; set; } = new List<User>();
 }
