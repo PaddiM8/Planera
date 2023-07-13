@@ -55,6 +55,10 @@ async function handleRemoveParticipant(name: string): Promise<boolean> {
 }
 </script>
 
+<svelte:head>
+    <title>Project Settings - Planera</title>
+</svelte:head>
+
 <h1>Project Settings</h1>
 
 <h2>About</h2>

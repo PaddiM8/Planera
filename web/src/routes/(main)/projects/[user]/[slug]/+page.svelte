@@ -35,9 +35,13 @@
     }
 </script>
 
+<svelte:head>
+    <title>{data.project.name} - Planera</title>
+</svelte:head>
+
 <section class="description">
-    <h1>{ data.project.name }</h1>
-    <h3>{ data.project.description }</h3>
+    <h1>{data.project.name}</h1>
+    <h3>{data.project.description}</h3>
 </section>
 
 <section class="new-ticket">

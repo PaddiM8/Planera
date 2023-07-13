@@ -23,6 +23,10 @@
     }
 </script>
 
+<svelte:head>
+    <title>Invitations - Planera</title>
+</svelte:head>
+
 <h1>Invitations</h1>
 
 <section class="invitation-list">

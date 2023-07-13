@@ -27,7 +27,7 @@
     <ContextMenuEntry name="User Settings" href="/settings">
         <Icon src={Cog} />
     </ContextMenuEntry>
-    <ContextMenuEntry name="Log Out" href="/logout">
+    <ContextMenuEntry name="Log Out" href="/logout" noPreload>
         <Icon src={ArrowRightOnRectangle} />
     </ContextMenuEntry>
 </ContextMenu>
@@ -65,7 +65,7 @@
         --background-hover: #e7e5e4
         --background-selected: #bbdefb
         --background-secondary: #f5f5f4
-        --background-secondary-hover: rgb(var(--hover-on-background-rgb))
+        --background-secondary-hover: #d4d4d8
         --component-background-rgb: 255, 255, 255
         --component-background: rgb(var(--component-background-rgb))
         --primary: #1d4ed8

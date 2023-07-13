@@ -1,9 +1,10 @@
 <script lang="ts">
     export let name: string;
     export let href: string | undefined = undefined;
+    export let noPreload: boolean = false;
 </script>
 
-<svelte:element this={href ? "a" : "span"} href={href} class="entry">
+<svelte:element this={href ? "a" : "span"} href={href} class="entry" data-sveltekit-preload-data={noPreload ? "tap" : ""}>
     <span class="icon">
         <slot />
     </span>

@@ -7,13 +7,17 @@
     export let form : ActionData;
 </script>
 
+<svelte:head>
+    <title>Sign In - Planera</title>
+</svelte:head>
+
 <div id="content">
-    <h1>Login</h1>
+    <h1>Sign In</h1>
 
     <Form errors={form?.errors}>
         <Input name="username" placeholder="Username..." value={form?.username ?? ""} />
         <Input type="password" name="password" placeholder="Password..." />
-        <Button value="Login" primary submit />
+        <Button value="Sign In" primary submit />
     </Form>
 </div>
 
