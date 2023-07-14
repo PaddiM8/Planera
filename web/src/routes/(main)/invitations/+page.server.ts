@@ -1,4 +1,4 @@
-import {getTicketClient, getUserClient} from "$lib/services";
+import {getUserClient} from "$lib/clients";
 import type {RequestEvent, ServerLoadEvent} from "@sveltejs/kit";
 import type {ProjectDto} from "../../../gen/planeraClient";
 import {fail} from "@sveltejs/kit";

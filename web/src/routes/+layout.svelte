@@ -7,8 +7,11 @@
     import Label from "$lib/components/form/Label.svelte";
     import Toast from "$lib/components/Toast.svelte";
     import YesNoDialog from "$lib/components/dialogs/YesNoDialog.svelte";
+    import {UserDto} from "../gen/planeraClient";
 
-    export let data: PageData;
+    export let data = {
+        user: UserDto,
+    };
 
     let contextMenuTarget: HTMLElement | undefined;
 
@@ -23,7 +26,7 @@
 <YesNoDialog />
 
 <ContextMenu bind:target={contextMenuTarget}>
-    <Label value="@{data.user?.username}" />
+    <Label value="@{data.user?.userName}" />
     <ContextMenuEntry name="User Settings" href="/settings">
         <Icon src={Cog} />
     </ContextMenuEntry>
@@ -37,7 +40,7 @@
         <span class="logo">Planera</span>
         {#if data?.user}
             <div class="user" on:click={handleUserClick}>
-                <UserIcon type="user" name={ data.user.username } />
+                <UserIcon type="user" name={ data.user.userName } />
             </div>
         {/if}
     </header>

@@ -1,6 +1,6 @@
 import type {ServerLoadEvent} from "@sveltejs/kit";
 import type {ProjectDto, SwaggerException, EditProjectModel} from "../../../../../../gen/planeraClient";
-import {getProjectClient} from "$lib/services";
+import {getProjectClient} from "$lib/clients";
 import type {RequestEvent} from "@sveltejs/kit";
 import {fail, redirect} from "@sveltejs/kit";
 import {toProblemDetails} from "$lib/problemDetails";

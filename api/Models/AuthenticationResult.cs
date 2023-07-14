@@ -1,3 +1,5 @@
+using Planera.Data.Dto;
+
 namespace Planera.Models;
 
-public record AuthenticationResult(string Token, string Username, string Email);
+public record AuthenticationResult(string Token, UserDto User);

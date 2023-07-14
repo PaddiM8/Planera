@@ -1,6 +1,6 @@
 import type {ServerLoadEvent} from "@sveltejs/kit";
 import type {ProjectDto, TicketDto} from "../../../../../gen/planeraClient";
-import {getProjectClient, getTicketClient} from "$lib/services";
+import {getProjectClient, getTicketClient} from "$lib/clients";
 import type {RequestEvent} from "@sveltejs/kit";
 import {fail} from "@sveltejs/kit";
 import {parsePriority} from "$lib/priority";

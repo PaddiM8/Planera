@@ -1,4 +1,3 @@
-import type {ServerLoadEvent} from "@sveltejs/kit";
 import type {LayoutServerLoad} from "../../.svelte-kit/types/src/routes/$types";
 import {getUser} from "$lib/cookieParsing";
 

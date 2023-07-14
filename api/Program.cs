@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using Planera.Data;
+using Planera.Hubs;
 using Planera.Services;
 using Planera.Utility;
 
@@ -64,9 +65,9 @@ builder.Services.AddAuthentication(o =>
     o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     o.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 })
-.AddJwtBearer(o =>
+.AddJwtBearer(options =>
 {
-    o.TokenValidationParameters = new TokenValidationParameters
+    options.TokenValidationParameters = new TokenValidationParameters
     {
         IssuerSigningKey = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? string.Empty)
@@ -76,22 +77,50 @@ builder.Services.AddAuthentication(o =>
         ValidateLifetime = false,
         ValidateIssuerSigningKey = true,
     };
+
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            if (context.Request.Cookies.TryGetValue("token", out var jwtCookie))
+                context.Token = jwtCookie;
+
+            return Task.CompletedTask;
+        }
+    };
 });
+builder.Services.AddSignalR();
 
 builder.Services.AddTransient<AuthenticationService>();
 builder.Services.AddTransient<UserService>();
 builder.Services.AddTransient<ProjectService>();
 builder.Services.AddTransient<TicketService>();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
+builder.Services.AddCors(options =>
+    options.AddPolicy("DevelopmentCorsPolicy", cors =>
+    {
+        cors.AllowAnyMethod()
+            .AllowAnyHeader()
+            .SetIsOriginAllowed(_ => true)
+            .AllowCredentials();
+    })
+);
 
 var app = builder.Build();
 app.UseHttpsRedirection();
+
+if (app.Environment.IsDevelopment())
+    app.UseCors("DevelopmentCorsPolicy");
+
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers()
     .RequireAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller}/{action}/{id?}");
+
+app.MapHub<ProjectHub>("/hubs/project");
 
 app.Run();

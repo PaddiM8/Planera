@@ -4,23 +4,18 @@
     import UserIcon from "$lib/components/UserIcon.svelte";
     import {Check, Icon, XMark} from "svelte-hero-icons";
     import {TicketStatus} from "../../gen/planeraClient";
+    import {getProjectHub} from "$lib/hubs";
 
     export let ticket: TicketDto;
 
     async function setStatus(status: TicketStatus) {
-        const formData = new FormData();
-        formData.append("projectId", ticket.projectId.toString());
-        formData.append("ticketId", ticket.id.toString());
-        formData.append("status", status.toString());
-        const response = await fetch("?/setStatus", {
-            method: "POST",
-            body: formData,
-        });
-
-        const result = await response.json();
-        if (result.type === "success") {
-            ticket.status = status;
-        }
+        const projectHub = await getProjectHub();
+        await projectHub.invoke(
+            "setTicketStatus",
+            ticket.projectId,
+            ticket.id,
+            status
+        );
     }
 </script>
 

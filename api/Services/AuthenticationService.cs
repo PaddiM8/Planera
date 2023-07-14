@@ -1,10 +1,12 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using ErrorOr;
 using Planera.Data;
+using Planera.Data.Dto;
 using Planera.Models;
 
 namespace Planera.Services;
@@ -14,16 +16,20 @@ public class AuthenticationService
     private readonly SymmetricSecurityKey _secretKey;
     private readonly UserManager<User> _userManager;
     private readonly SignInManager<User> _signInManager;
+    private readonly IMapper _mapper;
 
-    public AuthenticationService(IConfiguration configuration,
+    public AuthenticationService(
+        IConfiguration configuration,
         UserManager<User> userManager,
-        SignInManager<User> signInManager)
+        SignInManager<User> signInManager,
+        IMapper mapper)
     {
         _secretKey = new SymmetricSecurityKey(
             Encoding.ASCII.GetBytes(configuration["Jwt:Key"] ?? string.Empty)
         );
         _userManager = userManager;
         _signInManager = signInManager;
+        _mapper = mapper;
     }
 
     public async Task<ErrorOr<AuthenticationResult>> LoginAsync(LoginModel model)
@@ -50,7 +56,7 @@ public class AuthenticationService
         {
             var token = GenerateToken(user.Id, user.UserName, user.Email);
 
-            return new AuthenticationResult(token, user.UserName, user.Email);
+            return new AuthenticationResult(token, _mapper.Map<UserDto>(user));
         }
 
         if (result.IsLockedOut)
@@ -68,7 +74,7 @@ public class AuthenticationService
         {
             var token = GenerateToken(user.Id, model.Username, model.Username);
 
-            return new AuthenticationResult(token, user.UserName, user.Email);
+            return new AuthenticationResult(token, _mapper.Map<UserDto>(user));
         }
 
         return result.Errors
