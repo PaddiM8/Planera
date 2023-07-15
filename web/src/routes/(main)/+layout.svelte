@@ -5,13 +5,34 @@
     import UserIcon from "$lib/components/UserIcon.svelte";
     import Label from "$lib/components/form/Label.svelte";
     import {ListBullet, Icon, Cog, SquaresPlus} from "svelte-hero-icons";
+    import {onMount} from "svelte";
+    import {startUserHub} from "$lib/hubs";
+    import {invitations} from "./store";
+    import {userHub} from "./store";
 
     export let data: {
         projects: ProjectDto[],
+        invitations: ProjectDto[],
         error: boolean,
     };
 
     $: path = $page.url.pathname
+
+    onMount(async () => {
+        invitations.set(data.invitations);
+
+        userHub.set(await startUserHub());
+        $userHub?.on("onAddProject", onAddProject);
+        $userHub?.on("onAddInvitation", onAddInvitation);
+    });
+
+    function onAddProject(project: ProjectDto) {
+        data.projects = [project, ...data.projects];
+    }
+
+    function onAddInvitation(project: ProjectDto) {
+        invitations.update(x => [project, ...x]);
+    }
 </script>
 
 <div id="wrapper">
@@ -33,6 +54,9 @@
                     <Icon src={SquaresPlus} />
                 </span>
                 <span class="name">Invitations</span>
+                {#if $invitations.length > 0}
+                    <span class="unread-count">{$invitations.length}</span>
+                {/if}
             </a>
         </div>
         <Label value="Projects" />
@@ -108,6 +132,20 @@
             .icon
                 width: 1.5em
                 height: 1.5em
+
+            .unread-count
+                $size: 1.3em
+                margin-left: auto
+                width: $size
+                height: $size
+                line-height: $size
+                text-align: center
+
+                background-color: crimson
+                font-size: 0.7em
+                font-weight: 550
+                color: white
+                border-radius: 100%
 
     .settings
         display: none

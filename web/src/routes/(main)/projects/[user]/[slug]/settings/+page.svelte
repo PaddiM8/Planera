@@ -1,58 +1,50 @@
 <script lang="ts">
-import Form from "$lib/components/form/Form.svelte";
-import Input from "$lib/components/form/Input.svelte";
-import Button from "$lib/components/form/Button.svelte";
-import ListBox from "$lib/components/form/ListBox.svelte";
-import {toast} from "$lib/toast";
-import {dialog} from "$lib/dialog";
+    import Form from "$lib/components/form/Form.svelte";
+    import Input from "$lib/components/form/Input.svelte";
+    import Button from "$lib/components/form/Button.svelte";
+    import ListBox from "$lib/components/form/ListBox.svelte";
+    import {toast} from "$lib/toast";
+    import {dialog} from "$lib/dialog";
+    import {participants} from "../../../../store";
+    import type {ProjectDto} from "../../../../../../gen/planeraClient";
+    import {projectHub} from "../store";
 
-export let data;
-export let form;
+    export let data: {
+        project: ProjectDto,
+    };
 
-async function handleAddParticipant(name: string): Promise<[string | undefined, boolean]> {
-    const formData = new FormData();
-    formData.append("projectId", data.project.id);
-    formData.append("username", name);
-    const response = await fetch("?/addParticipant", {
-        method: "POST",
-        body: formData,
-    });
-    const result = await response.json();
-    if (result.type === "success") {
-        toast.info(`Invited user "${name}".`);
+    export let form;
 
-        return [undefined, true];
-    } else {
-        toast.info("Failed to invite user.");
+    async function handleAddParticipant(name: string): Promise<boolean> {
+        try {
+            await $projectHub!.invoke("invite", data.project.id, name);
+            toast.info(`Invited user "${name}".`);
 
-        return [undefined,false];
-    }
-}
+            return true;
+        } catch {
+            toast.error("Failed to invite user.");
 
-async function handleRemoveParticipant(name: string): Promise<boolean> {
-    const confirmation = await dialog.yesNo("Remove participant", `Are you sure you want to remove the user "${name}" from the project?`);
-    if (!confirmation) {
-        return false;
+            return false;
+        }
     }
 
-    const formData = new FormData();
-    formData.append("projectId", data.project.id);
-    formData.append("username", name);
-    const response = await fetch("?/removeParticipant", {
-        method: "POST",
-        body: formData,
-    });
-    const result = await response.json();
-    if (result.type === "success") {
-        toast.info(`Removed user "${name}".`);
+    async function handleRemoveParticipant(name: string): Promise<boolean> {
+        const confirmation = await dialog.yesNo("Remove participant", `Are you sure you want to remove the user "${name}" from the project?`);
+        if (!confirmation) {
+            return false;
+        }
 
-        return true;
-    } else {
-        toast.info("Failed to remove user.");
+        await $projectHub!.invoke("removeParticipant", data.project.id, name);
+        try {
+            toast.info(`Removed user "${name}".`);
 
-        return false;
+            return true;
+        } catch {
+            toast.info("Failed to remove user.");
+
+            return false;
+        }
     }
-}
 </script>
 
 <svelte:head>
@@ -87,7 +79,7 @@ async function handleRemoveParticipant(name: string): Promise<boolean> {
 
 <h2>Participants</h2>
 <section class="participants">
-    <ListBox items={data.project.participants.map(x => x.userName)}
+    <ListBox items={$participants.map(x => x.userName)}
              canAdd
              canRemove
              placeholder="Invite someone..."

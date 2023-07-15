@@ -2,24 +2,18 @@
     import {Check, Icon, XMark} from "svelte-hero-icons";
     import type {ProjectDto} from "../../../gen/planeraClient";
     import {toast} from "$lib/toast";
+    import {invitations} from "../store";
+    import {userHub} from "../store";
 
-    export let data;
+    async function handleAccept(invitation: ProjectDto) {
+        await $userHub!.invoke("acceptInvitation", invitation.id);
+        invitations.update(value => value.filter(x => x != invitation));
+        toast.info("Accepted invitation.");
+    }
 
-    async function handle(action: "decline" | "accept", invitation: ProjectDto) {
-        const formData = new FormData();
-        formData.append("projectId", invitation.id.toString());
-        const response = await fetch(`?/${action}`, {
-            method: "POST",
-            body: formData,
-        });
-        const result = await response.json();
-        if (result.type === "success") {
-            data.invitations = data.invitations.filter(x => x != invitation);
-
-            if (action === "accept") {
-                toast.info("Accepted invitation.");
-            }
-        }
+    async function handleDecline(invitation: ProjectDto) {
+        await $userHub!.invoke("declineInvitation", invitation.id);
+        invitations.update(value => value.filter(x => x != invitation));
     }
 </script>
 
@@ -30,12 +24,12 @@
 <h1>Invitations</h1>
 
 <section class="invitation-list">
-    {#if data.invitations.length === 0}
+    {#if $invitations.length === 0}
         <span class="invitation empty">
             <span class="name">No invitations.</span>
         </span>
     {/if}
-    {#each data.invitations as invitation}
+    {#each $invitations as invitation}
         <div class="invitation">
             <div class="about">
                 <span class="name">
@@ -45,11 +39,11 @@
                 </span>
                 <span class="description">{invitation.description}</span>
             </div>
-            <span class="choice decline" on:click={() => handle("decline", invitation)}>
+            <span class="choice decline" on:click={() => handleDecline(invitation)}>
                 <span class="icon"><Icon src={XMark} /></span>
                 <span class="text">Decline</span>
             </span>
-            <span class="choice accept" on:click={() => handle("accept", invitation)}>
+            <span class="choice accept" on:click={() => handleAccept(invitation)}>
                 <span class="icon"><Icon src={Check} /></span>
                 <span class="text">Accept</span>
             </span>
@@ -87,18 +81,21 @@
                 text-decoration: underline
 
         .about
-            overflow-x: hidden
+            display: flex
             white-space: nowrap
-            text-overflow: ellipsis
+            max-width: calc(100% - 10.75em)
 
         .name
             font-weight: 450
             white-space: nowrap
 
         .description
+            margin-left: 0.4em
             color: var(--text-gray)
             font-weight: 400
             white-space: nowrap
+            overflow: hidden
+            text-overflow: ellipsis
 
         .choice
             display: flex

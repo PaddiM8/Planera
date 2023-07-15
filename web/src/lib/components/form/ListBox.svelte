@@ -11,7 +11,7 @@
     export let placeholder: string = "";
     export let emptyText: string = "";
     export let addButtonText = "Add";
-    export let handleAdd: (value: string) => MaybePromise<[string | undefined, boolean]>;
+    export let handleAdd: (value: string) => MaybePromise<boolean>;
     export let handleRemove: (value: string) => MaybePromise<boolean>;
 
     let inputValue: string;
@@ -19,21 +19,15 @@
     let addButton;
 
     async function handleClickAdd() {
-        const [value, success] = await handleAdd(inputValue);
+        const success = await handleAdd(inputValue);
         if (success) {
             inputValue = "";
             error = "";
-            if (value) {
-                items = [value, ...items];
-            }
         }
     }
 
     async function handleClickRemove(value: string) {
-        const success = await handleRemove(value);
-        if (success) {
-            items = items.filter(x => x !== value);
-        }
+        await handleRemove(value);
     }
 </script>
 

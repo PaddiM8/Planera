@@ -5,22 +5,6 @@ import type {RequestEvent} from "@sveltejs/kit";
 import {fail, redirect} from "@sveltejs/kit";
 import {toProblemDetails} from "$lib/problemDetails";
 
-export async function load({ params, cookies }: ServerLoadEvent) {
-    let response: ProjectDto;
-    try {
-        response = await getProjectClient(cookies).get(params.user!, params.slug!);
-    } catch (ex) {
-        const problem = toProblemDetails(ex as SwaggerException);
-
-        return {
-            errors: problem.errors,
-        };
-    }
-
-    return {
-        project: structuredClone(response),
-    };
-}
 export const actions = {
     update: async ({ request, cookies, params }: RequestEvent) => {
         const formData = await request.formData();
@@ -46,7 +30,7 @@ export const actions = {
     addParticipant: async ({ request, cookies, params }: RequestEvent) => {
         const formData = await request.formData();
         try {
-            await getProjectClient(cookies).addParticipant(
+            await getProjectClient(cookies).inviteParticipant(
                 Number(formData.get("projectId")),
                 formData.get("username") as string,
             );

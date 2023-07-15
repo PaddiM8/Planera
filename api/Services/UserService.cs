@@ -29,11 +29,14 @@ public class UserService
         return projects;
     }
 
-    public async Task<ErrorOr<Updated>> AcceptInvitation(string userId, int projectId)
+    public async Task<ErrorOr<InvitationDto>> AcceptInvitation(string userId, int projectId)
     {
         var invitation = await _dataContext.Invitations
             .Where(x => x.UserId == userId)
+            .Include(x => x.User)
             .Where(x => x.ProjectId == projectId)
+            .Include(x => x.Project)
+            .ThenInclude(x => x.Author)
             .SingleOrDefaultAsync();
         if (invitation == null)
             return Error.NotFound("Invitation.NotFound", "Invitation was not found.");
@@ -46,7 +49,7 @@ public class UserService
         _dataContext.Invitations.Remove(invitation);
         await _dataContext.SaveChangesAsync();
 
-        return new ErrorOr<Updated>();
+        return _mapper.Map<InvitationDto>(invitation);
     }
 
     public async Task<ErrorOr<Updated>> DeclineInvitation(string userId, int projectId)

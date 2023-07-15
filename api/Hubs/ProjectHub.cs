@@ -1,22 +1,27 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Planera.Data;
+using Planera.Data.Dto;
+using Planera.Extensions;
 using Planera.Services;
 
 namespace Planera.Hubs;
 
 [Authorize]
-public class ProjectHub : Hub
+public class ProjectHub : Hub<IProjectHubContext>
 {
+    private readonly ProjectService _projectService;
     private readonly TicketService _ticketService;
+    private readonly IHubContext<UserHub, IUserHubContext> _userHub;
 
-    // TODO: Create a UserHub that receives and handles invitations, which are
-    // sent by the ProjectController (if possible, otherwise the ProjectHub)?
-    // Also might want to store the hub clients in a svelte store or something
-    // on the client.
-    public ProjectHub(TicketService ticketService)
+    public ProjectHub(
+        ProjectService projectService,
+        TicketService ticketService,
+        IHubContext<UserHub, IUserHubContext> userHub)
     {
+        _projectService = projectService;
         _ticketService = ticketService;
+        _userHub = userHub;
     }
 
     public async Task Join(int projectId)
@@ -37,11 +42,41 @@ public class ProjectHub : Hub
             ticketId,
             status
         );
-        if (result.IsError)
-            throw new HubException(result.Errors.FirstOrDefault().Description);
+        result.Unwrap();
+
+        var newFields = new Dictionary<string, object>
+        {
+            { nameof(TicketDto.Status), status },
+        };
+        await Clients
+            .Group(projectId.ToString())
+            .OnTicketUpdate(projectId, ticketId, newFields);
+    }
+
+    public async Task Invite(int projectId, string username)
+    {
+        var result = await _projectService.InviteParticipantAsync(
+            Context.User!.FindFirst("Id")!.Value,
+            projectId,
+            username
+        );
+
+        await _userHub.Clients
+            .User(username)
+            .OnAddInvitation(result.Unwrap().project);
+    }
+
+    public async Task RemoveParticipant(int projectId, string username)
+    {
+        var result = await _projectService.RemoveParticipantAsync(
+            Context.User!.FindFirst("Id")!.Value,
+            projectId,
+            username
+        );
+        result.Unwrap();
 
         await Clients
             .Group(projectId.ToString())
-            .SendAsync("getTicketUpdate", projectId, ticketId, new { Status = status });
+            .OnRemoveParticipant(username);
     }
 }

@@ -9,12 +9,10 @@ import type {SwaggerException} from "../../../../../gen/planeraClient";
 import type {CreateTicketModel} from "../../../../../gen/planeraClient";
 import type {TicketStatus} from "../../../../../gen/planeraClient";
 
-export async function load({ params, cookies }: ServerLoadEvent) {
-    let response: ProjectDto;
-    let ticketsResponse: TicketDto[];
+export async function load({ cookies, params }: ServerLoadEvent) {
+    let response: TicketDto[];
     try {
-        response = await getProjectClient(cookies).get(params.user!, params.slug!);
-        ticketsResponse = await getProjectClient(cookies).getTickets(response.id);
+        response = await getProjectClient(cookies).getTickets(params.user!, params.slug!);
     } catch (ex) {
         const problem = toProblemDetails(ex as SwaggerException);
 
@@ -24,8 +22,7 @@ export async function load({ params, cookies }: ServerLoadEvent) {
     }
 
     return {
-        project: structuredClone(response),
-        tickets: structuredClone(ticketsResponse),
+        tickets: structuredClone(response),
     };
 }
 export const actions = {

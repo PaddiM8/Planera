@@ -26,6 +26,7 @@ public class UserController : ControllerBase
     }
 
     [HttpPost("invitations/{projectId}/accept")]
+    [ProducesResponseType(typeof(InvitationDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> AcceptInvitation(int projectId)
     {
         var result = await _userService.AcceptInvitation(

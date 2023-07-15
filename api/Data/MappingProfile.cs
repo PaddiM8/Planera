@@ -68,5 +68,15 @@ public class MappingProfile : Profile
                 dest => dest.Author,
                 opt => opt.MapFrom(src => src.Author)
             );
+
+        CreateMap<Invitation, InvitationDto>()
+            .ForMember(
+                dest => dest.Project,
+                opt => opt.MapFrom(src => src.Project)
+            )
+            .ForMember(
+                dest => dest.User,
+                opt => opt.MapFrom(src => src.User)
+            );
     }
 }

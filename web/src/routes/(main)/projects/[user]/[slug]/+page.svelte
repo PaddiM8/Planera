@@ -8,10 +8,9 @@
     import Label from "$lib/components/form/Label.svelte";
     import BlockInput from "$lib/components/form/BlockInput.svelte";
     import TicketEntry from "$lib/components/TicketEntry.svelte";
-    import {getProjectHub, startProjectHub} from "$lib/hubs";
-    import {toast} from "$lib/toast";
     import {onMount} from "svelte";
-    import {browser} from "$app/environment";
+    import {participants} from "../../../store";
+    import {projectHub} from "./store";
 
     export let data: {
         project: ProjectDto,
@@ -21,43 +20,21 @@
         errors: { string: string[] } | undefined,
     };
 
-    let previousProjectId: number | undefined = undefined;
-
-    async function connectToProject(projectId) {
-        if (!browser || !getProjectHub()) {
-            return;
-        }
-
-        if (previousProjectId == projectId)
-            return;
-
-        if (previousProjectId) {
-            try {
-                await getProjectHub().invoke("leave", previousProjectId);
-            } catch {}
-        }
-
-        try {
-            await getProjectHub().invoke("join", projectId);
-        } catch (ex) {
-            toast.error("Failed to connect to project.");
-        }
-
-        previousProjectId = projectId;
-    }
-
-    $: connectToProject(data?.project.id);
 
     onMount(async () => {
-        await startProjectHub();
-        await connectToProject(data.project.id);
-        getProjectHub().on("getTicketUpdate", onTicketUpdate);
+        projectHub.subscribe(hub => {
+            if (!hub) {
+                return;
+            }
+
+            hub.on("onTicketUpdate", onTicketUpdate);
+        });
     });
 
-    function onTicketUpdate(projectId: number, ticketId: number, ticketStatus: TicketDto) {
+    function onTicketUpdate(projectId: number, ticketId: number, newFields: TicketDto) {
         const index = data.tickets.findIndex(x => x.id === ticketId);
         if (index !== -1) {
-            for (const [key, value] of Object.entries(ticketStatus)) {
+            for (const [key, value] of Object.entries(newFields)) {
                 data.tickets[index][key] = value;
             }
         }
@@ -111,7 +88,7 @@
                     <Label value="Assigned To" />
                 </span>
                 <BlockInput placeholder="Assignee..."
-                            options={data.project.participants}
+                            options={$participants}
                             key="userName"
                             outputKey="id"
                             name="assignee"
@@ -125,7 +102,7 @@
 
 <section class="tickets">
     <h2>Tickets</h2>
-    {#each data?.tickets as ticket}
+    {#each data.tickets as ticket}
         <TicketEntry bind:ticket={ticket} />
     {/each}
 </section>

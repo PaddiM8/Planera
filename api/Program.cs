@@ -1,6 +1,7 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
@@ -28,14 +29,23 @@ if (string.IsNullOrEmpty(builder.Configuration["Jwt:Key"]))
     );
 }
 
-builder.Services.AddControllers()
-    .AddNewtonsoftJson(options =>
+var serializerSettings = new JsonSerializerSettings
+{
+    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+    ContractResolver = new DefaultContractResolver
     {
-        options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-        options.SerializerSettings.ContractResolver = new DefaultContractResolver
+        NamingStrategy = new CamelCaseNamingStrategy
         {
-            NamingStrategy = new CamelCaseNamingStrategy(),
-        };
+            ProcessDictionaryKeys = true,
+        },
+    },
+};
+builder.Services.AddControllers()
+    .AddNewtonsoftJson(
+    options =>
+    {
+        options.SerializerSettings.ReferenceLoopHandling = serializerSettings.ReferenceLoopHandling;
+        options.SerializerSettings.ContractResolver = serializerSettings.ContractResolver;
     });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -89,7 +99,11 @@ builder.Services.AddAuthentication(o =>
         }
     };
 });
-builder.Services.AddSignalR();
+builder.Services.AddSignalR()
+    .AddNewtonsoftJsonProtocol(options =>
+    {
+        options.PayloadSerializerSettings = serializerSettings;
+    });
 
 builder.Services.AddTransient<AuthenticationService>();
 builder.Services.AddTransient<UserService>();
@@ -122,5 +136,6 @@ app.MapControllerRoute(
     pattern: "{controller}/{action}/{id?}");
 
 app.MapHub<ProjectHub>("/hubs/project");
+app.MapHub<UserHub>("/hubs/user");
 
 app.Run();

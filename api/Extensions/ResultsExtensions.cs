@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Planera.Extensions;
 
-public static class Errors
+public static class ResultsExtensions
 {
     public static IActionResult ToActionResult<T>(this ErrorOr<T> errors)
     {
@@ -20,6 +20,14 @@ public static class Errors
         }
 
         return new OkObjectResult(errors.Value);
+    }
+
+    public static T Unwrap<T>(this ErrorOr<T> errors)
+    {
+        if (errors.IsError)
+            throw new Exception(errors.FirstError.Description);
+
+        return errors.Value;
     }
 
     private static Dictionary<string, List<string>> FormatErrors(this List<Error> errors)

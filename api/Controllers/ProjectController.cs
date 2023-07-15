@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Planera.Data.Dto;
 using Planera.Extensions;
+using Planera.Hubs;
 using Planera.Models;
 using Planera.Services;
 
@@ -11,10 +13,17 @@ namespace Planera.Controllers;
 public class ProjectController : ControllerBase
 {
     private readonly ProjectService _projectService;
+    private readonly IHubContext<UserHub, IUserHubContext> _userHub;
+    private readonly IHubContext<ProjectHub, IProjectHubContext> _projectHub;
 
-    public ProjectController(ProjectService projectService)
+    public ProjectController(
+        ProjectService projectService,
+        IHubContext<UserHub, IUserHubContext> userHub,
+        IHubContext<ProjectHub, IProjectHubContext> projectHub)
     {
         _projectService = projectService;
+        _userHub = userHub;
+        _projectHub = projectHub;
     }
 
     [HttpGet("{username}")]
@@ -90,27 +99,31 @@ public class ProjectController : ControllerBase
         return result.ToActionResult();
     }
 
-    [HttpGet("{projectId}/tickets")]
+    [HttpGet("{username}/{slug}/tickets")]
     [ProducesResponseType(typeof(ICollection<TicketDto>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetTickets(int projectId)
+    public async Task<IActionResult> GetTickets(string username, string slug)
     {
         var result = await _projectService.GetTicketsAsync(
             User.FindFirst("Id")!.Value,
-            projectId
+            username,
+            slug
         );
 
         return result.ToActionResult();
     }
 
-    [HttpPut("{projectId}/addParticipant")]
+    [HttpPut("{projectId}/inviteParticipant")]
     [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
-    public async Task<IActionResult> AddParticipant(int projectId, string participantName)
+    public async Task<IActionResult> InviteParticipant(int projectId, string participantName)
     {
-        var result = await _projectService.AddParticipantAsync(
+        var result = await _projectService.InviteParticipantAsync(
             User.FindFirst("Id")!.Value,
             projectId,
             participantName
         );
+        await _userHub.Clients
+            .User(participantName)
+            .OnAddInvitation(result.Value.project);
 
         return result.ToActionResult();
     }
@@ -123,6 +136,9 @@ public class ProjectController : ControllerBase
             projectId,
             participantName
         );
+        await _projectHub.Clients
+            .Group(projectId.ToString())
+            .OnRemoveParticipant(participantName);
 
         return result.ToActionResult();
     }

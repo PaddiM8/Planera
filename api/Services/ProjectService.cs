@@ -28,10 +28,8 @@ public class ProjectService
             .Where(x => x.Participants.Any(user => user.Id == userId));
     }
 
-    public IQueryable<Project> QueryBySlug(
-        string authorName,
-        string slug,
-        string userId)
+    public IQueryable<Project> QueryBySlug(string userId, string authorName,
+        string slug)
     {
         return _dataContext.Projects
             .Where(x => x.Author.UserName == authorName)
@@ -52,7 +50,7 @@ public class ProjectService
         string authorName,
         string slug)
     {
-        var project = await QueryBySlug(authorName, slug, userId)
+        var project = await QueryBySlug(userId, authorName, slug)
             .Include(x => x.Participants)
             .ProjectTo<ProjectDto>(_mapper.ConfigurationProvider)
             .SingleOrDefaultAsync();
@@ -104,7 +102,7 @@ public class ProjectService
         string name,
         string description)
     {
-        var project = await QueryBySlug(authorName, slug, userId)
+        var project = await QueryBySlug(userId, authorName, slug)
             .SingleOrDefaultAsync();
         if (project == null)
             return ProjectNotFoundError<Updated>();
@@ -133,9 +131,10 @@ public class ProjectService
 
     public async Task<ErrorOr<ICollection<TicketDto>>> GetTicketsAsync(
         string userId,
-        int projectId)
+        string authorName,
+        string slug)
     {
-        var project = await QueryById(userId, projectId)
+        var project = await QueryBySlug(userId, authorName, slug)
             .Include(x => x.Tickets)
             .ThenInclude(x => x.Author)
             .Include(x => x.Tickets)
@@ -147,15 +146,16 @@ public class ProjectService
             : ErrorOrFactory.From(_mapper.Map<ICollection<TicketDto>>(project.Tickets));
     }
 
-    public async Task<ErrorOr<UserDto>> AddParticipantAsync(
+    public async Task<ErrorOr<(UserDto user, ProjectDto project)>> InviteParticipantAsync(
         string userId,
         int projectId,
         string participantName)
     {
         var project = await QueryById(userId, projectId)
+            .Include(x => x.Author)
             .SingleOrDefaultAsync();
         if (project == null)
-            return ProjectNotFoundError<UserDto>();
+            return ProjectNotFoundError<(UserDto, ProjectDto)>();
 
         var participant = await _dataContext.Users
             .Where(x => x.UserName == participantName)
@@ -175,7 +175,7 @@ public class ProjectService
         });
         await _dataContext.SaveChangesAsync();
 
-        return _mapper.Map<UserDto>(participant);
+        return (_mapper.Map<UserDto>(participant), _mapper.Map<ProjectDto>(project));
     }
 
     public async Task<ErrorOr<Deleted>> RemoveParticipantAsync(

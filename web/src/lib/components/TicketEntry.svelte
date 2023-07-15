@@ -4,13 +4,12 @@
     import UserIcon from "$lib/components/UserIcon.svelte";
     import {Check, Icon, XMark} from "svelte-hero-icons";
     import {TicketStatus} from "../../gen/planeraClient";
-    import {getProjectHub} from "$lib/hubs";
+    import {projectHub} from "../../routes/(main)/projects/[user]/[slug]/store";
 
     export let ticket: TicketDto;
 
     async function setStatus(status: TicketStatus) {
-        const projectHub = await getProjectHub();
-        await projectHub.invoke(
+        await $projectHub?.invoke(
             "setTicketStatus",
             ticket.projectId,
             ticket.id,

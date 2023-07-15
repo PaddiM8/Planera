@@ -96,6 +96,7 @@ public class AuthenticationService
             {
                 new Claim("Id", id),
                 new Claim(ClaimTypes.Name, username),
+                new Claim(ClaimTypes.NameIdentifier, username),
                 new Claim(ClaimTypes.Email, email),
                 new Claim(ClaimTypes.Role, "User"),
             }),
