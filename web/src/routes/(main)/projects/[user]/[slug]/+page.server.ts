@@ -2,7 +2,7 @@ import type {ServerLoadEvent} from "@sveltejs/kit";
 import type {ProjectDto, TicketDto} from "../../../../../gen/planeraClient";
 import {getProjectClient, getTicketClient} from "$lib/clients";
 import type {RequestEvent} from "@sveltejs/kit";
-import {fail} from "@sveltejs/kit";
+import {error, fail} from "@sveltejs/kit";
 import {parsePriority} from "$lib/priority";
 import {toProblemDetails} from "$lib/problemDetails";
 import type {SwaggerException} from "../../../../../gen/planeraClient";
@@ -15,10 +15,7 @@ export async function load({ cookies, params }: ServerLoadEvent) {
         response = await getProjectClient(cookies).getTickets(params.user!, params.slug!);
     } catch (ex) {
         const problem = toProblemDetails(ex as SwaggerException);
-
-        return {
-            errors: problem.errors,
-        };
+        throw error(problem.status ?? 400, problem.summary);
     }
 
     return {
@@ -45,20 +42,4 @@ export const actions = {
             });
         }
     },
-    setStatus: async({ request, cookies }: RequestEvent) => {
-        const formData = await request.formData();
-        try {
-            await getTicketClient(cookies).setStatus(
-                Number(formData.get("projectId")),
-                Number(formData.get("ticketId")),
-                Number(formData.get("status")) as TicketStatus,
-            );
-        } catch (ex) {
-            const problem = toProblemDetails(ex as SwaggerException);
-
-            return fail(400, {
-                errors: problem?.errors,
-            });
-        }
-    }
 };

@@ -1,5 +1,4 @@
-import type {ServerLoadEvent} from "@sveltejs/kit";
-import type {ProjectDto, SwaggerException, EditProjectModel} from "../../../../../../gen/planeraClient";
+import type {SwaggerException, EditProjectModel} from "../../../../../../gen/planeraClient";
 import {getProjectClient} from "$lib/clients";
 import type {RequestEvent} from "@sveltejs/kit";
 import {fail, redirect} from "@sveltejs/kit";
@@ -26,27 +25,5 @@ export const actions = {
         }
 
         throw redirect(302, `/projects/${params.user!}/${params.slug!}`)
-    },
-    addParticipant: async ({ request, cookies, params }: RequestEvent) => {
-        const formData = await request.formData();
-        try {
-            await getProjectClient(cookies).inviteParticipant(
-                Number(formData.get("projectId")),
-                formData.get("username") as string,
-            );
-        } catch {
-            return fail(400);
-        }
-    },
-    removeParticipant: async ({ request, cookies, params }: RequestEvent) => {
-        const formData = await request.formData();
-        try {
-            await getProjectClient(cookies).removeParticipant(
-                Number(formData.get("projectId")),
-                formData.get("username") as string,
-            );
-        } catch {
-            return fail(400);
-        }
     },
 };

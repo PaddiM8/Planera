@@ -1,5 +1,4 @@
 <script lang="ts">
-    import PageData = App.PageData;
     import UserIcon from "$lib/components/UserIcon.svelte";
     import ContextMenu from "$lib/components/ContextMenu.svelte";
     import ContextMenuEntry from "$lib/components/ContextMenuEntry.svelte";
