@@ -2,8 +2,7 @@ import type {RequestEvent, ServerLoadEvent} from "@sveltejs/kit";
 import {getUserClient} from "$lib/clients";
 import {error, fail} from "@sveltejs/kit";
 import {toProblemDetails} from "$lib/problemDetails";
-import type {AccountDto, SwaggerException} from "../../../gen/planeraClient";
-import type {EditUserModel} from "../../../gen/planeraClient";
+import type {EditUserModel, ChangePasswordModel, AccountDto, SwaggerException} from "../../../gen/planeraClient";
 
 export async function load({ cookies }: ServerLoadEvent) {
     let response: AccountDto;
@@ -34,7 +33,29 @@ export const actions = {
             const problem = toProblemDetails(ex as SwaggerException);
 
             return fail(400, {
-                errors: problem?.errors,
+                update: {
+                    errors: problem?.errors,
+                },
+            });
+        }
+    },
+    changePassword: async ({ request, cookies, params }: RequestEvent) => {
+        const formData = await request.formData();
+        try {
+            await getUserClient(cookies).changePassword(
+                {
+                    currentPassword: formData.get("currentPassword"),
+                    newPassword: formData.get("newPassword"),
+                    confirmedPassword: formData.get("confirmedPassword"),
+                } as ChangePasswordModel,
+            );
+        } catch (ex) {
+            const problem = toProblemDetails(ex as SwaggerException);
+
+            return fail(400, {
+                changePassword: {
+                    errors: problem?.errors,
+                },
             });
         }
     },

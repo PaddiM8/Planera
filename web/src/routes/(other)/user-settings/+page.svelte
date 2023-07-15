@@ -15,13 +15,20 @@
             toast.info("Updated account successfully.");
         }
     }
+
+    function afterSubmitChangePassword(success: boolean) {
+        if (success) {
+            toast.info("Updated password successfully.");
+        }
+    }
 </script>
 
 <h1>Account Settings</h1>
 
+<h2>Edit Account</h2>
 <section class="update">
     <Form action="?/update"
-          errors={form?.errors}
+          errors={form?.update?.errors}
           afterSubmit={afterSubmitUpdate}
           reset={false}>
         <Input type="text"
@@ -34,6 +41,28 @@
                label="Email"
                name="email"
                placeholder="Email..." />
+        <Button value="Update" primary submit />
+    </Form>
+</section>
+
+<h2>Change Password</h2>
+<section class="password-change">
+    <Form action="?/changePassword"
+          errors={form?.changePassword?.errors}
+          afterSubmit={afterSubmitChangePassword}>
+        <Input type="password"
+               label="Current Password"
+               name="currentPassword"
+               placeholder="Current Password..." />
+        <Input type="password"
+               label="New Password"
+               name="newPassword"
+               placeholder="New Password..." />
+        <Input type="password"
+               label="Confirm Password"
+               name="confirmedPassword"
+               placeholder="Confirm Password..." />
+
         <Button value="Update" primary submit />
     </Form>
 </section>

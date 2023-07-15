@@ -5,12 +5,13 @@ namespace Planera.Models;
 public class EditUserModel
 {
     [Required]
-    [MinLength(2)]
-    [StringLength(20)]
+    [MinLength(2, ErrorMessage = ErrorStrings.MinLength)]
+    [StringLength(20, ErrorMessage = ErrorStrings.StringLength)]
     public required string Username { get; init; }
 
     [Required]
-    [EmailAddress]
-    [StringLength(60)]
+    [EmailAddress(ErrorMessage = "Invalid email address.")]
+    [StringLength(60, ErrorMessage = ErrorStrings.StringLength)]
+
     public required string Email { get; init; }
 }

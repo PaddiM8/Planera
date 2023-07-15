@@ -39,6 +39,18 @@ public class UserController : ControllerBase
         return result.ToActionResult();
     }
 
+    [HttpPut("/changePassword")]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordModel model)
+    {
+        var result = await _userService.ChangePasswordAsync(
+            User.FindFirst("Id")!.Value,
+            model.CurrentPassword,
+            model.NewPassword
+        );
+
+        return result.ToActionResult();
+    }
+
     [HttpGet("invitations")]
     [ProducesResponseType(typeof(IEnumerable<ProjectDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetInvitations()

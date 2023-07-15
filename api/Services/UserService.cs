@@ -53,6 +53,16 @@ public class UserService
         return new ErrorOr<Updated>();
     }
 
+    public async Task<ErrorOr<Updated>> ChangePasswordAsync(string userId, string currentPassword, string newPassword)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        var identityResult = await _userManager.ChangePasswordAsync(user!, currentPassword, newPassword);
+
+        return !identityResult.Succeeded
+            ? Error.Validation("CurrentPassword.Invalid", "Failed to change password.")
+            : new ErrorOr<Updated>();
+    }
+
     public async Task<ErrorOr<IEnumerable<ProjectDto>>> GetInvitations(string userId)
     {
         return await _dataContext.Invitations
