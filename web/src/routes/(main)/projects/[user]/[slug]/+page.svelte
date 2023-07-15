@@ -5,7 +5,7 @@
     import Button from "$lib/components/form/Button.svelte";
     import Editor from "$lib/components/editor/Editor.svelte";
     import MultiButton from "$lib/components/form/MultiButton.svelte";
-    import Label from "$lib/components/form/Label.svelte";
+    import Label from "$lib/components/GroupLabel.svelte";
     import BlockInput from "$lib/components/form/BlockInput.svelte";
     import TicketEntry from "$lib/components/TicketEntry.svelte";
     import {onMount} from "svelte";
@@ -89,7 +89,7 @@
                 </span>
                 <BlockInput placeholder="Assignee..."
                             options={$participants}
-                            key="userName"
+                            key="username"
                             outputKey="id"
                             name="assignee"
                             bind:this={assignees}

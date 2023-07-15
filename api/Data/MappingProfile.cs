@@ -13,8 +13,22 @@ public class MappingProfile : Profile
                 opt => opt.MapFrom(src => src.Id)
             )
             .ForMember(
-                dest => dest.UserName,
+                dest => dest.Username,
                 opt => opt.MapFrom(src => src.UserName)
+            );
+
+        CreateMap<User, AccountDto>()
+            .ForMember(
+                dest => dest.Id,
+                opt => opt.MapFrom(src => src.Id)
+            )
+            .ForMember(
+                dest => dest.Username,
+                opt => opt.MapFrom(src => src.UserName)
+            )
+            .ForMember(
+                dest => dest.Email,
+                opt => opt.MapFrom(src => src.Email)
             );
 
         CreateMap<Project, ProjectDto>()

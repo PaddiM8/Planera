@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Planera.Data.Dto;
 using Planera.Extensions;
+using Planera.Models;
 using Planera.Services;
 
 namespace Planera.Controllers;
@@ -14,6 +15,28 @@ public class UserController : ControllerBase
     public UserController(UserService userService)
     {
         _userService = userService;
+    }
+
+    [HttpGet]
+    [ProducesResponseType(typeof(AccountDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> Get()
+    {
+        var result = await _userService.GetAsync(User.FindFirst("Id")!.Value);
+
+        return result.ToActionResult();
+    }
+
+    [HttpPut]
+    [ProducesResponseType(typeof(IEnumerable<AccountDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> Edit([FromBody] EditUserModel model)
+    {
+        var result = await _userService.EditAsync(
+            User.FindFirst("Id")!.Value,
+            model.Username,
+            model.Email
+        );
+
+        return result.ToActionResult();
     }
 
     [HttpGet("invitations")]

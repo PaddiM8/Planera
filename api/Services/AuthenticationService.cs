@@ -54,7 +54,7 @@ public class AuthenticationService
 
         if (result.Succeeded)
         {
-            var token = GenerateToken(user.Id, user.UserName, user.Email);
+            var token = GenerateToken(user.Id, user.UserName!, user.Email!);
 
             return new AuthenticationResult(token, _mapper.Map<UserDto>(user));
         }

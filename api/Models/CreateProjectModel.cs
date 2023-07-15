@@ -13,6 +13,6 @@ public class CreateProjectModel
     [StringLength(100)]
     public required string Slug { get; init; }
 
-    [StringLength(512)]
+    [StringLength(150)]
     public required string Description { get; init; }
 }

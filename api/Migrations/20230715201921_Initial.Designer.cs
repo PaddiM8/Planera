@@ -11,8 +11,8 @@ using Planera.Data;
 namespace Planera.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230709210342_AddProjectDescription")]
-    partial class AddProjectDescription
+    [Migration("20230715201921_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -148,6 +148,21 @@ namespace Planera.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Planera.Data.Invitation", b =>
+                {
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("ProjectId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Invitations");
+                });
+
             modelBuilder.Entity("Planera.Data.Project", b =>
                 {
                     b.Property<int>("Id")
@@ -176,6 +191,21 @@ namespace Planera.Migrations
                         .IsUnique();
 
                     b.ToTable("Projects");
+                });
+
+            modelBuilder.Entity("Planera.Data.ProjectParticipant", b =>
+                {
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("ProjectId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ProjectParticipants");
                 });
 
             modelBuilder.Entity("Planera.Data.Ticket", b =>
@@ -226,7 +256,6 @@ namespace Planera.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("TEXT");
 
@@ -263,7 +292,6 @@ namespace Planera.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("UserName")
-                        .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("TEXT");
 
@@ -277,21 +305,6 @@ namespace Planera.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
-                });
-
-            modelBuilder.Entity("ProjectUser", b =>
-                {
-                    b.Property<int>("JoinedProjectsId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("ParticipantsId")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("JoinedProjectsId", "ParticipantsId");
-
-                    b.HasIndex("ParticipantsId");
-
-                    b.ToTable("ProjectUser");
                 });
 
             modelBuilder.Entity("TicketUser", b =>
@@ -363,6 +376,25 @@ namespace Planera.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Planera.Data.Invitation", b =>
+                {
+                    b.HasOne("Planera.Data.Project", "Project")
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Planera.Data.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Planera.Data.Project", b =>
                 {
                     b.HasOne("Planera.Data.User", "Author")
@@ -372,6 +404,25 @@ namespace Planera.Migrations
                         .IsRequired();
 
                     b.Navigation("Author");
+                });
+
+            modelBuilder.Entity("Planera.Data.ProjectParticipant", b =>
+                {
+                    b.HasOne("Planera.Data.Project", "Project")
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Planera.Data.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Planera.Data.Ticket", b =>
@@ -391,21 +442,6 @@ namespace Planera.Migrations
                     b.Navigation("Author");
 
                     b.Navigation("Project");
-                });
-
-            modelBuilder.Entity("ProjectUser", b =>
-                {
-                    b.HasOne("Planera.Data.Project", null)
-                        .WithMany()
-                        .HasForeignKey("JoinedProjectsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Planera.Data.User", null)
-                        .WithMany()
-                        .HasForeignKey("ParticipantsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("TicketUser", b =>

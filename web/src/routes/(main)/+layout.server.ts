@@ -10,7 +10,7 @@ export async function load({ cookies }: ServerLoadEvent) {
     let response: ProjectDto[];
     let invitationsResponse: ProjectDto[];
     try {
-        response = await getProjectClient(cookies).getAll(getUser(cookies)!.userName);
+        response = await getProjectClient(cookies).getAll(getUser(cookies)!.username);
         invitationsResponse = await getUserClient(cookies).getInvitations();
     } catch (ex) {
         const problem = toProblemDetails(ex as SwaggerException);

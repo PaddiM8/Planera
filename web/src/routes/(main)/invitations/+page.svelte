@@ -33,7 +33,7 @@
         <div class="invitation">
             <div class="about">
                 <span class="name">
-                    <a href="/projects/{invitation.author.userName}/{invitation.slug}">
+                    <a href="/projects/{invitation.author.username}/{invitation.slug}">
                         {invitation.name}
                     </a>
                 </span>

@@ -2,6 +2,7 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using ErrorOr;
+using Microsoft.AspNetCore.Identity;
 using Planera.Data;
 using Planera.Data.Dto;
 
@@ -11,11 +12,19 @@ public class ProjectService
 {
     private readonly DataContext _dataContext;
     private readonly IMapper _mapper;
+    private readonly UserManager<User> _userManager;
+    private readonly ILookupNormalizer _normalizer;
 
-    public ProjectService(DataContext dataContext, IMapper mapper)
+    public ProjectService(
+        DataContext dataContext,
+        IMapper mapper,
+        UserManager<User> userManager,
+        ILookupNormalizer normalizer)
     {
         _dataContext = dataContext;
         _mapper = mapper;
+        _userManager = userManager;
+        _normalizer = normalizer;
     }
 
     public static ErrorOr<T> ProjectNotFoundError<T>()
@@ -28,19 +37,22 @@ public class ProjectService
             .Where(x => x.Participants.Any(user => user.Id == userId));
     }
 
-    public IQueryable<Project> QueryBySlug(string userId, string authorName,
-        string slug)
+    public IQueryable<Project> QueryBySlug(string userId, string authorName, string slug)
     {
         return _dataContext.Projects
-            .Where(x => x.Author.UserName == authorName)
+            .Where(x => x.Author.NormalizedUserName == _normalizer.NormalizeName(authorName))
             .Where(x => x.Slug == slug)
             .Where(x => x.Participants.Any(user => user.Id == userId));
     }
 
     public async Task<ErrorOr<ICollection<ProjectDto>>> GetAllAsync(string username)
     {
+        var user = await _userManager.FindByNameAsync(username);
+        if (user == null)
+            return Error.NotFound("Username.NotFound", "A user with the provided name was not found.");
+
         return await _dataContext.Projects
-            .Where(a => a.Participants.Any(b => b.UserName == username))
+            .Where(a => a.Participants.Contains(user))
             .ProjectTo<ProjectDto>(_mapper.ConfigurationProvider)
             .ToListAsync();
     }
@@ -157,16 +169,9 @@ public class ProjectService
         if (project == null)
             return ProjectNotFoundError<(UserDto, ProjectDto)>();
 
-        var participant = await _dataContext.Users
-            .Where(x => x.UserName == participantName)
-            .SingleOrDefaultAsync();
+        var participant = await _userManager.FindByNameAsync(participantName);
         if (participant == null)
-        {
-            return Error.NotFound(
-                "Participant.NotFound",
-                "A user with the given name was not found."
-            );
-        }
+            return Error.NotFound("Participant.NotFound", "A user with the given name was not found.");
 
         await _dataContext.Invitations.AddAsync(new Invitation
         {
@@ -190,7 +195,7 @@ public class ProjectService
 
         var participant = await _dataContext.ProjectParticipants
             .Where(x => x.Project.Id == projectId)
-            .Where(x => x.User.UserName == participantName)
+            .Where(x => x.User.NormalizedUserName == _normalizer.NormalizeName(participantName))
             .SingleOrDefaultAsync();
         if (participant == null)
             return await RemoveInvitation(projectId, participantName);
@@ -207,7 +212,7 @@ public class ProjectService
     private async Task<ErrorOr<Deleted>> RemoveInvitation(int projectId, string inviteeName)
     {
         var invitation = await _dataContext.Invitations
-            .Where(x => x.User.UserName == inviteeName)
+            .Where(x => x.User.NormalizedUserName == _normalizer.NormalizeName(inviteeName))
             .Where(x => x.ProjectId == projectId)
             .SingleOrDefaultAsync();
         if (invitation == null)

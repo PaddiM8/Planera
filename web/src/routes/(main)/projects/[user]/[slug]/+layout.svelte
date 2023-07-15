@@ -62,7 +62,7 @@
     }
 
     function onRemoveParticipant(name: string) {
-        participants.update(x => x.filter(x => x.userName !== name));
+        participants.update(x => x.filter(x => x.username !== name));
     }
 </script>
 

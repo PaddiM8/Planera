@@ -67,7 +67,7 @@
                name="description"
                placeholder="Project description..." />
         <div class="buttons">
-            <a href="/projects/{data.project.author.userName}/{data.project.slug}">
+            <a href="/projects/{data.project.author.username}/{data.project.slug}">
                 <Button value="Cancel" />
             </a>
             <Button value="Update" primary submit />
@@ -80,7 +80,7 @@
 <h2>Participants</h2>
 <section class="participants">
     <ListBox items={$participants}
-             key="userName"
+             key="username"
              canAdd
              canRemove
              placeholder="Invite someone..."

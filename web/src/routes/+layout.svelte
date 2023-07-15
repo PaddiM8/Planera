@@ -3,7 +3,7 @@
     import ContextMenu from "$lib/components/ContextMenu.svelte";
     import ContextMenuEntry from "$lib/components/ContextMenuEntry.svelte";
     import { Icon, Cog, ArrowRightOnRectangle } from "svelte-hero-icons";
-    import Label from "$lib/components/form/Label.svelte";
+    import Label from "$lib/components/GroupLabel.svelte";
     import Toast from "$lib/components/Toast.svelte";
     import YesNoDialog from "$lib/components/dialogs/YesNoDialog.svelte";
     import {UserDto} from "../gen/planeraClient";
@@ -25,8 +25,8 @@
 <YesNoDialog />
 
 <ContextMenu bind:target={contextMenuTarget}>
-    <Label value="@{data.user?.userName}" />
-    <ContextMenuEntry name="User Settings" href="/settings">
+    <Label value="@{data.user?.username}" />
+    <ContextMenuEntry name="User Settings" href="/user-settings">
         <Icon src={Cog} />
     </ContextMenuEntry>
     <ContextMenuEntry name="Log Out" href="/logout" noPreload>
@@ -39,7 +39,7 @@
         <span class="logo">Planera</span>
         {#if data?.user}
             <div class="user" on:click={handleUserClick}>
-                <UserIcon type="user" name={ data.user.userName } />
+                <UserIcon type="user" name={ data.user.username } />
             </div>
         {/if}
     </header>

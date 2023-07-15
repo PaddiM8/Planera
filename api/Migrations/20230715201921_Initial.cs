@@ -156,6 +156,130 @@ namespace Planera.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Projects",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Slug = table.Column<string>(type: "TEXT", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    Description = table.Column<string>(type: "TEXT", nullable: false),
+                    AuthorId = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Projects", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Projects_AspNetUsers_AuthorId",
+                        column: x => x.AuthorId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Invitations",
+                columns: table => new
+                {
+                    ProjectId = table.Column<int>(type: "INTEGER", nullable: false),
+                    UserId = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Invitations", x => new { x.ProjectId, x.UserId });
+                    table.ForeignKey(
+                        name: "FK_Invitations_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Invitations_Projects_ProjectId",
+                        column: x => x.ProjectId,
+                        principalTable: "Projects",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProjectParticipants",
+                columns: table => new
+                {
+                    ProjectId = table.Column<int>(type: "INTEGER", nullable: false),
+                    UserId = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProjectParticipants", x => new { x.ProjectId, x.UserId });
+                    table.ForeignKey(
+                        name: "FK_ProjectParticipants_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ProjectParticipants_Projects_ProjectId",
+                        column: x => x.ProjectId,
+                        principalTable: "Projects",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Tickets",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false),
+                    ProjectId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Title = table.Column<string>(type: "TEXT", nullable: false),
+                    Description = table.Column<string>(type: "TEXT", nullable: false),
+                    Priority = table.Column<int>(type: "INTEGER", nullable: false),
+                    AuthorId = table.Column<string>(type: "TEXT", nullable: false),
+                    Status = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tickets", x => new { x.Id, x.ProjectId });
+                    table.ForeignKey(
+                        name: "FK_Tickets_AspNetUsers_AuthorId",
+                        column: x => x.AuthorId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Tickets_Projects_ProjectId",
+                        column: x => x.ProjectId,
+                        principalTable: "Projects",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TicketUser",
+                columns: table => new
+                {
+                    AssigneesId = table.Column<string>(type: "TEXT", nullable: false),
+                    AssignedTicketsId = table.Column<int>(type: "INTEGER", nullable: false),
+                    AssignedTicketsProjectId = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TicketUser", x => new { x.AssigneesId, x.AssignedTicketsId, x.AssignedTicketsProjectId });
+                    table.ForeignKey(
+                        name: "FK_TicketUser_AspNetUsers_AssigneesId",
+                        column: x => x.AssigneesId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TicketUser_Tickets_AssignedTicketsId_AssignedTicketsProjectId",
+                        columns: x => new { x.AssignedTicketsId, x.AssignedTicketsProjectId },
+                        principalTable: "Tickets",
+                        principalColumns: new[] { "Id", "ProjectId" },
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -192,6 +316,37 @@ namespace Planera.Migrations
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Invitations_UserId",
+                table: "Invitations",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectParticipants_UserId",
+                table: "ProjectParticipants",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Projects_AuthorId_Slug",
+                table: "Projects",
+                columns: new[] { "AuthorId", "Slug" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tickets_AuthorId",
+                table: "Tickets",
+                column: "AuthorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tickets_ProjectId",
+                table: "Tickets",
+                column: "ProjectId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TicketUser_AssignedTicketsId_AssignedTicketsProjectId",
+                table: "TicketUser",
+                columns: new[] { "AssignedTicketsId", "AssignedTicketsProjectId" });
         }
 
         /// <inheritdoc />
@@ -213,7 +368,22 @@ namespace Planera.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "Invitations");
+
+            migrationBuilder.DropTable(
+                name: "ProjectParticipants");
+
+            migrationBuilder.DropTable(
+                name: "TicketUser");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "Tickets");
+
+            migrationBuilder.DropTable(
+                name: "Projects");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

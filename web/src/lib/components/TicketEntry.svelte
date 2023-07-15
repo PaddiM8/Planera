@@ -29,7 +29,7 @@
                 <Icon src={XMark} />
             </div>
         {/if}
-        <a href="/projects/{ticket.author.userName}/{ticket.projectSlug}/tickets/{ticket.id}">
+        <a href="/projects/{ticket.author.username}/{ticket.projectSlug}/tickets/{ticket.id}">
             <h3 class="title">{ticket.title}</h3>
         </a>
         <button class="status-button close" on:click={() => setStatus(TicketStatus.Closed)}>
@@ -50,7 +50,7 @@
             <span class="assignees">
             {#each ticket.assignees as assignee}
                 <span class="assignee">
-                    <UserIcon name={assignee.userName}
+                    <UserIcon name={assignee.username}
                               image={assignee.image}
                               type="user" />
                 </span>
