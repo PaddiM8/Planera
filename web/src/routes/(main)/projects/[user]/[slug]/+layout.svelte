@@ -43,6 +43,12 @@
     $: connectToProject(data?.project.id);
 
     onMount(async () => {
+        for (const participant of data.project.participants) {
+            if (participant.id === data.project.author.id) {
+                participant["removable"] = false;
+            }
+        }
+
         participants.set(data.project.participants);
         projectHub.set(await startProjectHub());
         await connectToProject(data.project.id);

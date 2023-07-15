@@ -79,7 +79,8 @@
 
 <h2>Participants</h2>
 <section class="participants">
-    <ListBox items={$participants.map(x => x.userName)}
+    <ListBox items={$participants}
+             key="userName"
              canAdd
              canRemove
              placeholder="Invite someone..."

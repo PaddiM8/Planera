@@ -195,6 +195,9 @@ public class ProjectService
         if (participant == null)
             return await RemoveInvitation(projectId, participantName);
 
+        if (participant.User.Id == project.Author.Id)
+            return Error.Conflict("ParticipantName.NotAllowed", "Cannot remove project author.");
+
         _dataContext.ProjectParticipants.Remove(participant);
         await _dataContext.SaveChangesAsync();
 

@@ -5,7 +5,8 @@
     import Button from "$lib/components/form/Button.svelte";
     import type {MaybePromise} from "@sveltejs/kit";
 
-    export let items: string[] = [];
+    export let items: {}[] = [];
+    export let key: string | undefined = undefined;
     export let canAdd: boolean = false;
     export let canRemove: boolean = false;
     export let placeholder: string = "";
@@ -26,8 +27,20 @@
         }
     }
 
-    async function handleClickRemove(value: string) {
-        await handleRemove(value);
+    async function handleClickRemove(item: any) {
+        await handleRemove(getValue(item));
+    }
+
+    function getValue(item: any) {
+        return key ? item[key] : item;
+    }
+
+    function isRemovable(item: any) {
+        if (!key || !("removable" in item)) {
+            return true;
+        }
+
+        return item["removable"];
     }
 </script>
 
@@ -51,8 +64,8 @@
     {/if}
     {#each items as item}
         <span class="item">
-            <span class="text">{item}</span>
-            {#if canRemove}
+            <span class="text">{getValue(item)}</span>
+            {#if canRemove && isRemovable(item)}
                 <span class="remove-button" on:click={() => handleClickRemove(item)}>
                     <Icon src={MinusCircle} />
                 </span>
