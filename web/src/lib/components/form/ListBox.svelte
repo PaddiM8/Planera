@@ -81,7 +81,7 @@
     .add-area
         width: 100%
         display: grid
-        gap: 0.4em
+        gap: var(--spacing)
         grid-template-columns: 1fr auto
 
     .list
@@ -89,13 +89,13 @@
         min-height: 4em
         width: 100%
         height: 100%
-        margin-top: 0.4em
+        margin-top: var(--spacing)
+        padding-bottom: 0.4em
         border-radius: var(--radius)
         border: var(--border)
         font-size: 1rem
         background-color: var(--background)
         overflow-y: auto
-        padding-bottom: 0.4em
 
     .item
         display: flex

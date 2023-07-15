@@ -112,7 +112,7 @@
             gap: 0.4em
 
             padding: var(--vertical-padding) var(--horizontal-padding)
-            margin-top: 0.4em
+            margin-top: 0.2em
 
             border-radius: var(--radius)
             color: black
@@ -159,6 +159,6 @@
             color: var(--on-background)
 
     main
-        padding: var(--spacing)
+        padding: calc(var(--spacing) * 1.5)
         overflow-x: hidden
 </style>

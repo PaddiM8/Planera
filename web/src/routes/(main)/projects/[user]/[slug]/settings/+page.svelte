@@ -97,7 +97,7 @@
     .about
         .buttons
             display: flex
-            gap: 0.4em
+            gap: var(--spacing)
             margin-left: auto
 
     .participants
