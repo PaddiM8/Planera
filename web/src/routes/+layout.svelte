@@ -151,7 +151,7 @@
 
     .page
         display: flex
-        max-width: 75em
+        max-width: 75.2em
         width: 100%
         height: 100%
         margin: 0 auto

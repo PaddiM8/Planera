@@ -75,9 +75,6 @@
 </div>
 
 <style lang="sass">
-    .error
-        color: red
-
     .add-area
         width: 100%
         display: grid

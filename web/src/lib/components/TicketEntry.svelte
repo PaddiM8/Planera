@@ -105,7 +105,7 @@
         align-items: center
         background-color: transparent
         border: 0
-        padding: 0.2em 0.4em
+        padding: 0.3em 0.4em
         border-radius: var(--radius)
         font-family: inherit
         font-weight: 500
