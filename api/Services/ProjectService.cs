@@ -166,7 +166,7 @@ public class ProjectService
             return Error.Unexpected("Unknown", "Failed to update project.");
         }
 
-        if (previousIconPath != null)
+        if (previousIconPath != null && previousIconPath != project.IconPath)
         {
             _fileStorage.Delete(previousIconPath, "32");
             _fileStorage.Delete(previousIconPath, "256");

@@ -8,17 +8,15 @@
 </script>
 
 <svelte:head>
-    <title>Register - Planera</title>
+    <title>Reset Password - Planera</title>
 </svelte:head>
 
 <CenteredLayout>
-    <h1>Register</h1>
+    <h1>Reset Password</h1>
 
     <Form errors={form?.errors}>
-        <Input name="username" placeholder="Username..." />
-        <Input name="email" placeholder="Email Address..." />
-        <Input type="password" name="password" placeholder="Password..." />
+        <Input type="password" name="newPassword" placeholder="New Password..." />
         <Input type="password" name="confirmedPassword" placeholder="Repeat Password..." />
-        <Button value="Register" primary submit />
+        <Button value="Reset" primary submit />
     </Form>
 </CenteredLayout>

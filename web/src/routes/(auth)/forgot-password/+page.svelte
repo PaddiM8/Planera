@@ -3,31 +3,28 @@
     import Button from "$lib/components/form/Button.svelte";
     import Form from "$lib/components/form/Form.svelte";
     import CenteredLayout from "$lib/components/CenteredLayout.svelte";
+    import {onMount} from "svelte";
+    import {toast} from "$lib/toast";
 
     export let form;
+    export let data;
+
+    function handleSubmit(success: boolean) {
+        if (success) {
+            toast.info("Sent password reset email.");
+        }
+    }
 </script>
 
 <svelte:head>
-    <title>Sign In - Planera</title>
+    <title>Forgot Password - Planera</title>
 </svelte:head>
 
 <CenteredLayout>
-    <h1>Sign In</h1>
+    <h1>Forgot Password</h1>
 
-    <Form errors={form?.errors}>
+    <Form errors={form?.errors} afterSubmit={handleSubmit}>
         <Input name="username" placeholder="Username..." />
-        <Input type="password" name="password" placeholder="Password..." />
-        <div class="buttons">
-            <a href="/forgot-password">Forgot password?</a>
-            <Button value="Sign In" primary submit />
-        </div>
+        <Button value="Reset" primary submit />
     </Form>
 </CenteredLayout>
-
-<style lang="sass">
-    .buttons
-        display: flex
-
-        a
-            margin-right: auto
-</style>

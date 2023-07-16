@@ -20,16 +20,38 @@ public class AuthenticationController : ControllerBase
     [AllowAnonymous]
     [HttpPost("login")]
     [ProducesResponseType(typeof(AuthenticationResult), StatusCodes.Status200OK)]
-    public async Task<IActionResult> LoginAsync([FromBody] LoginModel model)
+    public async Task<IActionResult> Login([FromBody] LoginModel model)
         => (await _authenticationService.LoginAsync(model)).ToActionResult();
 
     [AllowAnonymous]
     [HttpPost("register")]
     [ProducesResponseType(typeof(AuthenticationResult), StatusCodes.Status200OK)]
-    public async Task<IActionResult> RegisterAsync([FromBody] RegisterModel model)
+    public async Task<IActionResult> Register([FromBody] RegisterModel model)
         => (await _authenticationService.RegisterAsync(model)).ToActionResult();
 
     [HttpGet("logout")]
-    public async Task LogoutAsync()
+    public async Task Logout()
         => await _authenticationService.LogoutAsync();
+
+    [AllowAnonymous]
+    [HttpPost("forgot-password")]
+    public async Task<IActionResult> ForgotPassword([FromBody] string username)
+    {
+        var result = await _authenticationService.ForgotPassword(username);
+
+        return result.ToActionResult();
+    }
+
+    [AllowAnonymous]
+    [HttpPost("reset-password")]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordModel model)
+    {
+        var result = await _authenticationService.ResetPasswordAsync(
+            model.UserId,
+            model.ResetToken,
+            model.NewPassword
+        );
+
+        return result.ToActionResult();
+    }
 }

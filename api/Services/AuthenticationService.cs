@@ -1,10 +1,15 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Web;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using ErrorOr;
+using MailKit.Net.Smtp;
+using MailKit.Security;
+using MimeKit;
+using MimeKit.Text;
 using Planera.Data;
 using Planera.Data.Dto;
 using Planera.Models;
@@ -14,6 +19,7 @@ namespace Planera.Services;
 public class AuthenticationService
 {
     private readonly SymmetricSecurityKey _secretKey;
+    private readonly IConfiguration _configuration;
     private readonly UserManager<User> _userManager;
     private readonly SignInManager<User> _signInManager;
     private readonly IMapper _mapper;
@@ -27,6 +33,7 @@ public class AuthenticationService
         _secretKey = new SymmetricSecurityKey(
             Encoding.ASCII.GetBytes(configuration["Jwt:Key"] ?? string.Empty)
         );
+        _configuration = configuration;
         _userManager = userManager;
         _signInManager = signInManager;
         _mapper = mapper;
@@ -36,7 +43,6 @@ public class AuthenticationService
     {
         var user = await _userManager.FindByNameAsync(model.Username) ??
                    await _userManager.FindByEmailAsync(model.Username);
-
         if (user == null)
         {
             return Error.NotFound(
@@ -108,5 +114,61 @@ public class AuthenticationService
         };
 
         return tokenHandler.WriteToken(tokenHandler.CreateToken(tokenDescriptor));
+    }
+
+    public async Task<ErrorOr<Updated>> ForgotPassword(string username)
+    {
+        var user = await _userManager.FindByNameAsync(username);
+        if (user == null)
+            return Error.NotFound("Username.NotFound", "A user with the given username was not found.");
+
+        if (_configuration["Smtp:Host"] == null)
+            return Error.Conflict("NotSupported", "The server is not equipped to send emails.");
+
+        var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+        var email = new MimeMessage();
+        email.From.Add(MailboxAddress.Parse(_configuration["Smtp:Sender"]));
+        email.To.Add(MailboxAddress.Parse(user.Email));
+        email.Subject = "Password Reset";
+        email.Body = new TextPart(TextFormat.Text)
+        {
+            Text = $"""
+                Someone requested a password reset for your account.
+                If you did this, you can reset your password here:
+                {_configuration["FrontendUrl"]}/reset-password?user={user.Id}&token={HttpUtility.UrlEncode(resetToken)}
+
+                If you did not expect this email, feel free to ignore it.
+
+                - Planera
+                """,
+        };
+
+        using var smtp = new SmtpClient();
+        await smtp.ConnectAsync(
+            _configuration["Smtp:Host"],
+            _configuration.GetValue<int>("Smtp:Port"),
+            SecureSocketOptions.StartTls
+        );
+        await smtp.AuthenticateAsync(_configuration["Smtp:User"], _configuration["Smtp:Password"]);
+        await smtp.SendAsync(email);
+        await smtp.DisconnectAsync(true);
+
+        return new ErrorOr<Updated>();
+    }
+
+    public async Task<ErrorOr<Updated>> ResetPasswordAsync(
+        string userId,
+        string resetToken,
+        string newPassword)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+            return Error.NotFound("UserId.NotFound", "A user with the given ID was not found.");
+
+        var result = await _userManager.ResetPasswordAsync(user, resetToken, newPassword);
+
+        return !result.Succeeded
+            ? Error.Failure("General.Failure", "Failed to reset password.")
+            : new ErrorOr<Updated>();
     }
 }

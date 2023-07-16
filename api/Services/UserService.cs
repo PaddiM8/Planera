@@ -94,7 +94,7 @@ public class UserService
             return Error.Unexpected("Unknown", "Failed to update user.");
         }
 
-        if (previousAvatarPath != null)
+        if (previousAvatarPath != null && previousAvatarPath != user.AvatarPath)
         {
             _fileStorage.Delete(previousAvatarPath, "32");
             _fileStorage.Delete(previousAvatarPath, "256");
