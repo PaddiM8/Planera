@@ -4,7 +4,10 @@
     export let noPreload: boolean = false;
 </script>
 
-<svelte:element this={href ? "a" : "span"} href={href} class="entry" data-sveltekit-preload-data={noPreload ? "tap" : ""}>
+<svelte:element this={href ? "a" : "span"}
+                href={href}
+                class="entry"
+                data-sveltekit-preload-data={noPreload ? "tap" : ""}>
     <span class="icon">
         <slot />
     </span>

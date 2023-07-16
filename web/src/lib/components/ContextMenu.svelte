@@ -20,7 +20,8 @@
     }
 
     function handlePageClick(e) {
-        if (canBeClosed && e.target !== element && !element.contains(e.target)) {
+        const targetIsOutside = e.target !== element && !element.contains(e.target);
+        if (canBeClosed && (targetIsOutside || window.getComputedStyle(e.target).cursor === "pointer")) {
             target = undefined;
         }
     }
