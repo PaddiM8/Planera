@@ -17,16 +17,21 @@ Directory.CreateDirectory("./wwwroot");
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Generate the JWT key if it isn't set
+// Read/generate the JWT key
 if (string.IsNullOrEmpty(builder.Configuration["Jwt:Key"]))
 {
-    builder.Configuration["Jwt:Key"] = Generation.GenerateJwtKey();
-    var configJson = JsonConvert.DeserializeObject<JObject>(File.ReadAllText("appsettings.json"));
-    configJson!["Jwt"]!["Key"] = builder.Configuration["Jwt:Key"];
-    File.WriteAllText(
-        "appsettings.json",
-        JsonConvert.SerializeObject(configJson, Formatting.Indented)
-    );
+    const string jwtKeyPath = "./store/jwt.key";
+    if (File.Exists(jwtKeyPath))
+    {
+        var jwtKey = File.ReadAllText(jwtKeyPath);
+        builder.Configuration["Jwt:Key"] = jwtKey;
+    }
+    else
+    {
+        var jwtKey = Generation.GenerateJwtKey();
+        builder.Configuration["Jwt:Key"] = jwtKey;
+        File.WriteAllText(jwtKeyPath, jwtKey);
+    }
 }
 
 var serializerSettings = new JsonSerializerSettings

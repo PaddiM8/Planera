@@ -6,7 +6,7 @@ public static class Generation
 {
     public static string GenerateJwtKey()
     {
-        byte[] keyBytes = new byte[32]; // 256 bits key size
+        byte[] keyBytes = new byte[32]; // 256 bit key
         using var rng = RandomNumberGenerator.Create();
         rng.GetBytes(keyBytes);
 
