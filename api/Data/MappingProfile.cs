@@ -55,6 +55,10 @@ public class MappingProfile : Profile
             .ForMember(
                 dest => dest.Name,
                 opt => opt.MapFrom(src => src.Name)
+            )
+            .ForMember(
+                dest => dest.IconPath,
+                opt => opt.MapFrom(src => src.IconPath)
             );
 
         CreateMap<Ticket, TicketDto>()

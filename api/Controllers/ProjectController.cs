@@ -91,7 +91,8 @@ public class ProjectController : ControllerBase
             username,
             slug,
             model.Name,
-            model.Description
+            model.Description,
+            model.Icon
         );
 
         return result.ToActionResult();

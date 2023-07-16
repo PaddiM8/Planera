@@ -65,6 +65,7 @@
         display: flex
         flex-direction: column
         padding: calc(var(--vertical-padding) * 1.5) calc(var(--horizontal-padding) * 1.5)
+        padding-top: calc(var(--vertical-padding) * 1.5 - 0.3em)
         margin-bottom: 0.4em
         border: var(--border)
         border-radius: var(--radius)
@@ -93,6 +94,7 @@
             color: red
 
     .title
+        margin-top: 0
         margin-bottom: 0
 
         &:hover
@@ -134,6 +136,7 @@
             height: 1.4em
 
     .id
+        margin-top: 0
         margin-bottom: 0
 
         &::before

@@ -11,6 +11,8 @@
     import {onMount} from "svelte";
     import {participants} from "../../../store";
     import {projectHub} from "./store";
+    import {getAvatarUrl} from "$lib/clients";
+    import UserIcon from "$lib/components/UserIcon.svelte";
 
     export let data: {
         project: ProjectDto,
@@ -62,7 +64,14 @@
 </svelte:head>
 
 <section class="description">
-    <h1>{data.project.name}</h1>
+    <div class="top">
+        <div class="icon">
+            <UserIcon name={data.project.name}
+                      image={getAvatarUrl(data.project.iconPath, "big")}
+                      type="project" />
+        </div>
+        <h1>{data.project.name}</h1>
+    </div>
     <h3>{data.project.description}</h3>
 </section>
 
@@ -112,6 +121,20 @@
         border-bottom: var(--border)
         margin-bottom: 1em
         padding-bottom: 1em
+
+    .description
+        .top
+            display: flex
+            align-items: center
+            gap: 0.5em
+            margin-bottom: 0.4em
+
+            h1
+                margin-bottom: 0
+
+            .icon
+                width: 1.2em
+                font-size: 2em
 
     .tickets
         h2

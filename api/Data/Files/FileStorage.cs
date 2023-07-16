@@ -34,6 +34,11 @@ class FileStorage : IFileStorage
         File.Delete(Path.Combine(_baseDirectory, path));
     }
 
+    public void DeleteDirectory(string name)
+    {
+        Directory.Delete(Path.Combine(_baseDirectory, name));
+    }
+
     public async Task<string> WriteAsync(
         string directory,
         byte[] bytes,

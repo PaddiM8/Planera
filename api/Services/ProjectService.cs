@@ -5,6 +5,7 @@ using ErrorOr;
 using Microsoft.AspNetCore.Identity;
 using Planera.Data;
 using Planera.Data.Dto;
+using Planera.Data.Files;
 
 namespace Planera.Services;
 
@@ -14,17 +15,20 @@ public class ProjectService
     private readonly IMapper _mapper;
     private readonly UserManager<User> _userManager;
     private readonly ILookupNormalizer _normalizer;
+    private readonly IFileStorage _fileStorage;
 
     public ProjectService(
         DataContext dataContext,
         IMapper mapper,
         UserManager<User> userManager,
-        ILookupNormalizer normalizer)
+        ILookupNormalizer normalizer,
+        IFileStorage fileStorage)
     {
         _dataContext = dataContext;
         _mapper = mapper;
         _userManager = userManager;
         _normalizer = normalizer;
+        _fileStorage = fileStorage;
     }
 
     public static ErrorOr<T> ProjectNotFoundError<T>()
@@ -105,25 +109,68 @@ public class ProjectService
         };
         await _dataContext.Projects.AddAsync(project);
         await _dataContext.SaveChangesAsync();
+        _fileStorage.CreateDirectory(project.Id.ToString());
 
         return project.Id;
     }
 
-    public async Task<ErrorOr<Updated>> EditAsync(string userId, string authorName,
+    public async Task<ErrorOr<Updated>> EditAsync(
+        string userId,
+        string authorName,
         string slug,
         string name,
-        string description)
+        string description,
+        string? icon)
     {
         var project = await QueryBySlug(userId, authorName, slug)
             .SingleOrDefaultAsync();
         if (project == null)
             return ProjectNotFoundError<Updated>();
 
+        var previousIconPath = project.IconPath;
+        if (icon?.StartsWith("data:") is true)
+        {
+            // Expected format of icon: `data:image/png;base64,BASE64STRING==`
+            var bytes = Convert.FromBase64String(icon.Split(",")[1]);
+            var avatar256 = ImagePreparer.Resize(bytes, 256, 256);
+            var avatar32 = ImagePreparer.Resize(bytes, 32, 32);
+            project.IconPath = await _fileStorage.WriteManyAsync(
+                project.Id.ToString(),
+                (avatar256, "256"),
+                (avatar32, "32")
+            );
+        }
+        else if (icon == "")
+        {
+            project.IconPath = null;
+        }
+
         project.Name = name;
         project.Description = description;
 
         _dataContext.Projects.Update(project);
-        await _dataContext.SaveChangesAsync();
+        try
+        {
+            await _dataContext.SaveChangesAsync();
+        }
+        catch
+        {
+            // If it didn't update, remove the newly created files, since
+            // they won't be used.
+            if (!string.IsNullOrEmpty(project.IconPath))
+            {
+                _fileStorage.Delete(project.IconPath, "32");
+                _fileStorage.Delete(project.IconPath, "256");
+            }
+
+            return Error.Unexpected("Unknown", "Failed to update project.");
+        }
+
+        if (previousIconPath != null)
+        {
+            _fileStorage.Delete(previousIconPath, "32");
+            _fileStorage.Delete(previousIconPath, "256");
+        }
 
         return new ErrorOr<Updated>();
     }
@@ -137,6 +184,8 @@ public class ProjectService
 
         _dataContext.Projects.Remove(project);
         await _dataContext.SaveChangesAsync();
+
+        _fileStorage.DeleteDirectory(projectId.ToString());
 
         return new ErrorOr<Deleted>();
     }

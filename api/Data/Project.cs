@@ -19,6 +19,8 @@ public class Project
 
     public User Author { get; set; } = null!;
 
+    public string? IconPath { get; set; }
+
     public ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
 
     public ICollection<User> Participants { get; set; } = new List<User>();

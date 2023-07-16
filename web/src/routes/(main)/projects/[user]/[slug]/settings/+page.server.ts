@@ -14,6 +14,7 @@ export const actions = {
                 {
                     name: formData.get("name"),
                     description: formData.get("description"),
+                    icon: formData.get("icon"),
                 } as EditProjectModel
             );
         } catch (ex) {
@@ -23,7 +24,5 @@ export const actions = {
                 errors: problem?.errors,
             });
         }
-
-        throw redirect(302, `/projects/${params.user!}/${params.slug!}`)
     },
 };

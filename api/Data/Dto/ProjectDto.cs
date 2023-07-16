@@ -15,5 +15,7 @@ public class ProjectDto
 
     public UserDto Author { get; init; } = null!;
 
+    public string? IconPath { get; set; }
+
     public ICollection<UserDto> Participants { get; set; } = new List<UserDto>();
 }

@@ -8,6 +8,8 @@ public interface IFileStorage
 
     public void Delete(string path, string? param = null);
 
+    public void DeleteDirectory(string name);
+
     public Task<string> WriteAsync(string directory, byte[] bytes, string? identifier = null);
 
     public Task<string> WriteManyAsync(string directory, params (byte[] bytes, string identifier)[] bytes);

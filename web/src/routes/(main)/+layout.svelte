@@ -13,6 +13,7 @@
     import SidebarGroup from "$lib/components/sidebar/SidebarGroup.svelte";
     import PageLayout from "$lib/components/PageLayout.svelte";
     import MainArea from "$lib/components/MainArea.svelte";
+    import {getAvatarUrl} from "$lib/clients";
 
     export let data: {
         projects: ProjectDto[],
@@ -61,7 +62,9 @@
                 <SidebarEntry src="/projects/{project.author.username}/{project.slug}"
                               value={project.name}
                               settingsSrc="/projects/{project.author.username}/{project.slug}/settings">
-                    <UserIcon type="project" name="{project.name}" />
+                    <UserIcon type="project"
+                              name="{project.name}"
+                              image={getAvatarUrl(project.iconPath, "small")} />
                 </SidebarEntry>
             {/each}
         </SidebarGroup>

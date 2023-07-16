@@ -8,6 +8,8 @@
     import {participants} from "../../../../store";
     import type {ProjectDto} from "../../../../../../gen/planeraClient";
     import {projectHub} from "../store";
+    import {getAvatarUrl} from "$lib/clients";
+    import AvatarPicker from "$lib/components/form/AvatarPicker.svelte";
 
     export let data: {
         project: ProjectDto,
@@ -45,6 +47,12 @@
             return false;
         }
     }
+
+    function handleSubmit(success: boolean) {
+        if (success) {
+            toast.info("Project updated successfully.");
+        }
+    }
 </script>
 
 <svelte:head>
@@ -55,7 +63,14 @@
 
 <h2>About</h2>
 <section class="about">
-    <Form action="?/update" errors={form?.errors} reset={false}>
+    <Form action="?/update"
+          errors={form?.errors}
+          afterSubmit={handleSubmit}
+          reset={false}>
+        <AvatarPicker name="icon"
+                      entityName={data.project.name}
+                      src={getAvatarUrl(data.project.iconPath, "big")}
+                      type="project" />
         <Input type="text"
                value={data.project.name}
                label="Name"
