@@ -7,19 +7,18 @@
 </script>
 
 <svelte:head>
-    <title>Sign In - Planera</title>
+    <title>Register - Planera</title>
 </svelte:head>
 
 <div id="content">
-    <h1>Sign In</h1>
+    <h1>Register</h1>
 
     <Form errors={form?.errors}>
         <Input name="username" placeholder="Username..." />
+        <Input name="email" placeholder="Email Address..." />
         <Input type="password" name="password" placeholder="Password..." />
-        <div class="buttons">
-            <a href="/forgot-password">Forgot password?</a>
-            <Button value="Sign In" primary submit />
-        </div>
+        <Input type="password" name="confirmedPassword" placeholder="Repeat Password..." />
+        <Button value="Register" primary submit />
     </Form>
 </div>
 

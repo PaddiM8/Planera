@@ -1,7 +1,6 @@
-import type {RequestEvent} from "@sveltejs/kit";
-import {fail, redirect} from "@sveltejs/kit";
+import {fail, redirect, type RequestEvent} from "@sveltejs/kit";
+import type {AuthenticationResult, RegisterModel, SwaggerException} from "../../../gen/planeraClient";
 import {getAuthenticationClient} from "$lib/clients";
-import type {LoginModel, AuthenticationResult, SwaggerException} from "../../../gen/planeraClient";
 import {toProblemDetails} from "$lib/problemDetails";
 
 export const actions = {
@@ -9,10 +8,12 @@ export const actions = {
         const formData = await request.formData();
         let response: AuthenticationResult;
         try {
-            response = await getAuthenticationClient(cookies).login({
+            response = await getAuthenticationClient(cookies).register({
                 username: formData.get("username") as string,
+                email: formData.get("email") as string,
                 password: formData.get("password") as string,
-            } as LoginModel);
+                confirmedPassword: formData.get("confirmedPassword") as string,
+            } as RegisterModel);
         } catch (ex) {
             const problem = toProblemDetails(ex as SwaggerException);
 

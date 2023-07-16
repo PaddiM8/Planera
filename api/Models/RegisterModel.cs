@@ -18,4 +18,8 @@ public class RegisterModel
     [MinLength(8, ErrorMessage = ErrorStrings.MinLength)]
     [StringLength(512, ErrorMessage = ErrorStrings.StringLength)]
     public required string Password { get; init; }
+
+    [Required]
+    [Compare(nameof(Password), ErrorMessage = "Passwords don't match.")]
+    public required string ConfirmedPassword { get; init; }
 }

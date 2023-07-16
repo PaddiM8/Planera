@@ -44,6 +44,8 @@
                           name={ data.user.username }
                           image={getAvatarUrl(data.user.avatarPath, "big")} />
             </div>
+        {:else}
+            <a href="/register" class="item">Register</a>
         {/if}
     </header>
 
@@ -95,7 +97,7 @@
     :global(h1)
         font-size: 2.1em
         margin-top: 0
-        margin-bottom: 0.2em
+        margin-bottom: 0.4em
         font-weight: 650
 
     :global(h2)
@@ -152,6 +154,21 @@
                 height: 100%
                 border-radius: 100%
                 background-color: rgba(0, 0, 0, 0.1)
+
+        .item
+            font-size: 1em
+            font-weight: 500
+            padding: 0.25em 0.4em
+            border-radius: var(--radius)
+            color: var(--on-background)
+            text-decoration: none
+            cursor: pointer
+
+            &:hover
+                background-color: var(--background-hover)
+
+            &:first-of-type
+                margin-left: auto
 
     .page
         display: flex
