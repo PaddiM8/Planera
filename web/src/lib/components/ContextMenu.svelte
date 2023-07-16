@@ -51,7 +51,7 @@
 
         border: var(--border)
         border-radius: var(--radius)
-        background-color: var(--background-secondary)
+        background-color: var(--background)
         visibility: hidden
 
         &.visible

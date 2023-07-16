@@ -120,12 +120,13 @@
         display: grid
         grid-template-rows: auto 1fr
         min-height: 100vh
-        background-color: var(--background)
+        background-color: var(--background-secondary)
 
     header
         display: flex
         align-items: center
         padding: var(--vertical-padding)
+        background-color: var(--background)
         border-bottom: var(--border)
 
         .logo
@@ -158,4 +159,5 @@
         width: 100%
         height: 100%
         margin: 0 auto
+        background-color: var(--background)
 </style>
