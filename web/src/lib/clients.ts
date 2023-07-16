@@ -1,6 +1,6 @@
 import {AuthenticationClient, UserClient, ProjectClient, TicketClient, IConfig} from "../gen/planeraClient";
 
-const serverUrl = "http://localhost:5065";
+const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 function extractToken(cookies: any): IConfig {
     return { token: cookies.get("token") ?? "{}" };

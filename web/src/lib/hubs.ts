@@ -1,8 +1,7 @@
 import {type HubConnection, HubConnectionBuilder} from "@microsoft/signalr";
-
 async function buildHub(name: string): Promise<HubConnection> {
     return new HubConnectionBuilder()
-        .withUrl(`http://localhost:5065/hubs/${name}`)
+        .withUrl(`${import.meta.env.VITE_SERVER_URL}/hubs/${name}`)
         .withAutomaticReconnect()
         .build();
 }
