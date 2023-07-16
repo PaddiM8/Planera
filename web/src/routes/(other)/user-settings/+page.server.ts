@@ -7,7 +7,7 @@ import type {EditUserModel, ChangePasswordModel, AccountDto, SwaggerException} f
 export async function load({ cookies }: ServerLoadEvent) {
     let response: AccountDto;
     try {
-        response = await getUserClient(cookies).get();
+        response = await getUserClient(cookies).getAccount();
     } catch (ex) {
         const problem = toProblemDetails(ex as SwaggerException);
         throw error(problem.status ?? 400, problem.summary);
@@ -27,6 +27,7 @@ export const actions = {
                 {
                     username: formData.get("username"),
                     email: formData.get("email"),
+                    avatar: formData.get("avatar"),
                 } as EditUserModel,
             );
         } catch (ex) {

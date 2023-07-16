@@ -30,7 +30,6 @@ export const actions = {
             maxAge: 60 * 60 * 24 * 365
         };
         cookies.set("token", response.token, cookieOptions);
-        cookies.set("user", JSON.stringify(response.user), cookieOptions);
 
         throw redirect(302, "/");
     }

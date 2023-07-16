@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Planera.Data;
 using Planera.Data.Dto;
+using Planera.Data.Files;
 
 namespace Planera.Services;
 
@@ -13,18 +14,30 @@ public class UserService
     private readonly DataContext _dataContext;
     private readonly IMapper _mapper;
     private readonly UserManager<User> _userManager;
+    private readonly IFileStorage _fileStorage;
 
     public UserService(
         DataContext dataContext,
         IMapper mapper,
-        UserManager<User> userManager)
+        UserManager<User> userManager,
+        IFileStorage fileStorage)
     {
         _dataContext = dataContext;
         _mapper = mapper;
         _userManager = userManager;
+        _fileStorage = fileStorage;
     }
 
-    public async Task<ErrorOr<AccountDto>> GetAsync(string userId)
+    public async Task<ErrorOr<UserDto>> GetAsync(string userId)
+    {
+        var user = await _dataContext.Users.FindAsync(userId);
+        if (user == null)
+            return Error.NotFound("UserId.NotFound", "A user with the given ID was not found.");
+
+        return _mapper.Map<UserDto>(user);
+    }
+
+    public async Task<ErrorOr<AccountDto>> GetAccountAsync(string userId)
     {
         var user = await _dataContext.Users.FindAsync(userId);
         if (user == null)
@@ -36,7 +49,8 @@ public class UserService
     public async Task<ErrorOr<Updated>> EditAsync(
         string userId,
         string username,
-        string email)
+        string email,
+        string? avatar)
     {
         var user = await _dataContext.Users.FindAsync(userId);
         if (user == null)
@@ -46,9 +60,45 @@ public class UserService
         if (existingByName != null && existingByName.Id != userId)
             return Error.Conflict("Username.Taken", "Another user with the given username already exists.");
 
+        var previousAvatarPath = user.AvatarPath;
+        if (avatar?.StartsWith("data:") is true)
+        {
+            // Expected format of avatar: `data:image/png;base64,BASE64STRING==`
+            var bytes = Convert.FromBase64String(avatar.Split(",")[1]);
+            var avatar256 = ImagePreparer.Resize(bytes, 256, 256);
+            var avatar32 = ImagePreparer.Resize(bytes, 32, 32);
+            user.AvatarPath = await _fileStorage.WriteManyAsync(
+                "avatars",
+                (avatar256, "256"),
+                (avatar32, "32")
+            );
+        }
+        else if (avatar == "")
+        {
+            user.AvatarPath = null;
+        }
+
         user.UserName = username;
         user.Email = email;
-        await _userManager.UpdateAsync(user);
+        var result = await _userManager.UpdateAsync(user);
+        if (!result.Succeeded)
+        {
+            // If it didn't update, remove the newly created files, since
+            // they won't be used.
+            if (!string.IsNullOrEmpty(user.AvatarPath))
+            {
+                _fileStorage.Delete(user.AvatarPath, "32");
+                _fileStorage.Delete(user.AvatarPath, "256");
+            }
+
+            return Error.Unexpected("Unknown", "Failed to update user.");
+        }
+
+        if (previousAvatarPath != null)
+        {
+            _fileStorage.Delete(previousAvatarPath, "32");
+            _fileStorage.Delete(previousAvatarPath, "256");
+        }
 
         return new ErrorOr<Updated>();
     }

@@ -14,4 +14,6 @@ public class EditUserModel
     [StringLength(60, ErrorMessage = ErrorStrings.StringLength)]
 
     public required string Email { get; init; }
+
+    public string? Avatar { get; init; }
 }

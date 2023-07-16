@@ -18,10 +18,19 @@ public class UserController : ControllerBase
     }
 
     [HttpGet]
-    [ProducesResponseType(typeof(AccountDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> Get()
     {
         var result = await _userService.GetAsync(User.FindFirst("Id")!.Value);
+
+        return result.ToActionResult();
+    }
+
+    [HttpGet("/account")]
+    [ProducesResponseType(typeof(AccountDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAccount()
+    {
+        var result = await _userService.GetAccountAsync(User.FindFirst("Id")!.Value);
 
         return result.ToActionResult();
     }
@@ -33,7 +42,8 @@ public class UserController : ControllerBase
         var result = await _userService.EditAsync(
             User.FindFirst("Id")!.Value,
             model.Username,
-            model.Email
+            model.Email,
+            model.Avatar
         );
 
         return result.ToActionResult();

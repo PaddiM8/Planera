@@ -23,7 +23,8 @@
            bind:value={value}
            bind:this={element} />
 {:else}
-    <button class:primary={primary}
+    <button type="button"
+            class:primary={primary}
             on:click={handleClick}
             bind:this={element}>{value}</button>
 {/if}

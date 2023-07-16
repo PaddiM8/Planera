@@ -15,6 +15,10 @@ public class MappingProfile : Profile
             .ForMember(
                 dest => dest.Username,
                 opt => opt.MapFrom(src => src.UserName)
+            )
+            .ForMember(
+                dest => dest.AvatarPath,
+                opt => opt.MapFrom(src => src.AvatarPath)
             );
 
         CreateMap<User, AccountDto>()
@@ -29,6 +33,10 @@ public class MappingProfile : Profile
             .ForMember(
                 dest => dest.Email,
                 opt => opt.MapFrom(src => src.Email)
+            )
+            .ForMember(
+                dest => dest.AvatarPath,
+                opt => opt.MapFrom(src => src.AvatarPath)
             );
 
         CreateMap<Project, ProjectDto>()

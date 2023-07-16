@@ -1,6 +1,7 @@
 <script lang="ts">
     import SuggestionList from "$lib/components/form/SuggestionList.svelte";
     import UserIcon from "$lib/components/UserIcon.svelte";
+    import {getAvatarUrl} from "$lib/clients";
 
     export let placeholder: string | undefined = undefined;
     export let options: any[];
@@ -88,7 +89,9 @@
         <span class="block" on:click={() => handleBlockClick(item)}>
             {#if showUserIcons}
                 <span class="icon">
-                    <UserIcon name={getValue(item)} type="user" />
+                    <UserIcon name={getValue(item)}
+                              image={getAvatarUrl(item["avatarPath"], "small")}
+                              type="user" />
                 </span>
             {/if}
             <span class="value">{getValue(item)}</span>

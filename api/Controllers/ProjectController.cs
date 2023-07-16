@@ -26,9 +26,18 @@ public class ProjectController : ControllerBase
         _projectHub = projectHub;
     }
 
+    [HttpGet]
+    [ProducesResponseType(typeof(ICollection<ProjectDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAll()
+    {
+        var result = await _projectService.GetAllAsync(User.Identity!.Name!);
+
+        return result.ToActionResult();
+    }
+
     [HttpGet("{username}")]
     [ProducesResponseType(typeof(ICollection<ProjectDto>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAll(string username)
+    public async Task<IActionResult> GetAllFromUser(string username)
     {
         // TODO: Allow viewing public projects when that's a thing
         if (username != User.Identity?.Name)

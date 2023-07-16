@@ -1,13 +1,13 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using Planera.Data;
+using Planera.Data.Files;
 using Planera.Hubs;
 using Planera.Services;
 using Planera.Utility;
@@ -109,7 +109,10 @@ builder.Services.AddTransient<AuthenticationService>();
 builder.Services.AddTransient<UserService>();
 builder.Services.AddTransient<ProjectService>();
 builder.Services.AddTransient<TicketService>();
+builder.Services.AddTransient<IFileStorage, FileStorage>();
+builder.Services.AddTransient<ImagePreparer>();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
+
 builder.Services.AddCors(options =>
     options.AddPolicy("DevelopmentCorsPolicy", cors =>
     {
@@ -137,5 +140,7 @@ app.MapControllerRoute(
 
 app.MapHub<ProjectHub>("/hubs/project");
 app.MapHub<UserHub>("/hubs/user");
+
+app.Services.GetService<IFileStorage>()?.CreateDirectory("avatars");
 
 app.Run();

@@ -6,6 +6,23 @@ function extractToken(cookies: any): IConfig {
     return { token: cookies.get("token") ?? "{}" };
 }
 
+export function getAvatarUrl(path: string | undefined, size: "small" | "big") {
+    if (!path) {
+        return undefined;
+    }
+
+    return getFileUrl(
+        path,
+        "image/png",
+        size === "big" ? "256" : "32"
+    );
+}
+
+export function getFileUrl(path: string, mimeType: string, param: string | undefined) {
+    const paramString = param ? `&param=${param}` : "";
+    return `${serverUrl}/files/${path}?mimeType=${encodeURIComponent(mimeType)}${paramString}`
+}
+
 export function getAuthenticationClient(cookies: any): AuthenticationClient {
     return new AuthenticationClient(extractToken(cookies), serverUrl, { fetch });
 }

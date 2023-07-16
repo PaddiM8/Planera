@@ -7,6 +7,7 @@
     import Toast from "$lib/components/Toast.svelte";
     import YesNoDialog from "$lib/components/dialogs/YesNoDialog.svelte";
     import {UserDto} from "../gen/planeraClient";
+    import {getAvatarUrl} from "$lib/clients";
 
     export let data = {
         user: UserDto,
@@ -39,7 +40,9 @@
         <span class="logo">Planera</span>
         {#if data?.user}
             <div class="user" on:click={handleUserClick}>
-                <UserIcon type="user" name={ data.user.username } />
+                <UserIcon type="user"
+                          name={ data.user.username }
+                          image={getAvatarUrl(data.user.avatarPath, "big")} />
             </div>
         {/if}
     </header>

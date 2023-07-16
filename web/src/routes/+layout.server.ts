@@ -1,8 +1,19 @@
 import type {LayoutServerLoad} from "../../.svelte-kit/types/src/routes/$types";
-import {getUser} from "$lib/cookieParsing";
+import {toProblemDetails} from "$lib/problemDetails";
+import type {UserDto, SwaggerException} from "../gen/planeraClient";
+import {error} from "@sveltejs/kit";
+import {getUserClient} from "$lib/clients";
 
 export const load = (async ({ cookies }) => {
+    let response: UserDto;
+    try {
+        response = await getUserClient(cookies).get();
+    } catch (ex) {
+        const problem = toProblemDetails(ex as SwaggerException);
+        throw error(problem.status ?? 400, problem.summary);
+    }
+
     return {
-        user: getUser(cookies),
+        user: structuredClone(response),
     } satisfies App.PageData;
 }) satisfies LayoutServerLoad;

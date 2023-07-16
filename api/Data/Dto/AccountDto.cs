@@ -7,4 +7,6 @@ public class AccountDto
     public required string Username { get; set; }
 
     public required string Email { get; set; }
+
+    public string? AvatarPath { get; set; }
 }

@@ -2,6 +2,7 @@
     import type {HTMLInputTypeAttribute} from "svelte/elements";
     import {createEventDispatcher} from "svelte";
     import Button from "$lib/components/form/Button.svelte";
+    import FormLabel from "$lib/components/form/FormLabel.svelte";
 
     export let type: HTMLInputTypeAttribute = "text";
     export let value: string = "";
@@ -24,7 +25,7 @@
 </script>
 
 {#if label}
-    <label for="input-{name}">{label}</label>
+    <FormLabel forId="input-{name}" value={label} />
 {/if}
 
 {#if type === "text"}
@@ -54,11 +55,6 @@
 {/if}
 
 <style lang="sass">
-    label
-        margin-bottom: -0.4em
-        font-size: 1em
-        font-weight: 450
-
     input
         font-size: 1rem
         padding: var(--vertical-padding) var(--horizontal-padding)

@@ -23,7 +23,9 @@
     }
 </script>
 
-<form method="POST" {action} use:enhance={enhanceHandler}>
+<form method="POST" {action}
+      enctype="multipart/form-data"
+      use:enhance={enhanceHandler}>
     <div class="errors">
         {#each Object.values(errors ?? {}) as error}
             <ErrorText value={error} />

@@ -5,6 +5,7 @@
     import {Check, Icon, XMark} from "svelte-hero-icons";
     import {TicketStatus} from "../../gen/planeraClient";
     import {projectHub} from "../../routes/(main)/projects/[user]/[slug]/store";
+    import {getAvatarUrl} from "$lib/clients";
 
     export let ticket: TicketDto;
 
@@ -51,7 +52,7 @@
             {#each ticket.assignees as assignee}
                 <span class="assignee">
                     <UserIcon name={assignee.username}
-                              image={assignee.image}
+                              image={getAvatarUrl(assignee.avatarPath, "small")}
                               type="user" />
                 </span>
             {/each}

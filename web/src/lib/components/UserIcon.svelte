@@ -21,12 +21,19 @@
         height: 100%
         aspect-ratio: 1 / 1
         border-radius: 100%
+        cursor: default
+        overflow: hidden
 
         &.user
             background-color: #64748b
 
         &.project
             background-color: #737373
+
+        img
+            width: inherit
+            height: inherit
+            object-fit: cover
 
         .letter
             font-size: 0.75em

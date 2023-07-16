@@ -1,6 +1,7 @@
 <script lang="ts">
     import UserIcon from "$lib/components/UserIcon.svelte";
     import {createEventDispatcher} from "svelte";
+    import {getAvatarUrl} from "$lib/clients";
 
     export let items: any[] = [];
     export let key: string | undefined = undefined;
@@ -60,7 +61,9 @@
               on:mousedown={handleItemClick}>
             {#if showUserIcons}
                 <span class="icon">
-                    <UserIcon name={getValue(item)} type="user" />
+                    <UserIcon name={getValue(item)}
+                              image={getAvatarUrl(item["avatarPath"], "small")}
+                              type="user" />
                 </span>
             {/if}
             <span class="value">{getValue(item)}</span>
