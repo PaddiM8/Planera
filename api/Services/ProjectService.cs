@@ -238,6 +238,7 @@ public class ProjectService
         string participantName)
     {
         var project = await QueryById(userId, projectId)
+            .Include(x => x.Author)
             .SingleOrDefaultAsync();
         if (project == null)
             return ProjectNotFoundError<Deleted>();
@@ -245,6 +246,7 @@ public class ProjectService
         var participant = await _dataContext.ProjectParticipants
             .Where(x => x.Project.Id == projectId)
             .Where(x => x.User.NormalizedUserName == _normalizer.NormalizeName(participantName))
+            .Include(x => x.User)
             .SingleOrDefaultAsync();
         if (participant == null)
             return await RemoveInvitation(projectId, participantName);
