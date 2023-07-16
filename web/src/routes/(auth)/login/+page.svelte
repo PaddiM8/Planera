@@ -1,10 +1,9 @@
 <script lang="ts">
-    import type {ActionData} from "../../../../.svelte-kit/types/src/routes/(other)/login/$types";
     import Input from "$lib/components/form/Input.svelte";
     import Button from "$lib/components/form/Button.svelte";
     import Form from "$lib/components/form/Form.svelte";
 
-    export let form : ActionData;
+    export let form;
 </script>
 
 <svelte:head>

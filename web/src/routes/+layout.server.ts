@@ -5,6 +5,10 @@ import {error} from "@sveltejs/kit";
 import {getUserClient} from "$lib/clients";
 
 export const load = (async ({ cookies }) => {
+    if (!cookies.get("token")) {
+        return {};
+    }
+
     let response: UserDto;
     try {
         response = await getUserClient(cookies).get();
@@ -15,5 +19,5 @@ export const load = (async ({ cookies }) => {
 
     return {
         user: structuredClone(response),
-    } satisfies App.PageData;
+    };
 }) satisfies LayoutServerLoad;
