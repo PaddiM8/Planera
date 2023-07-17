@@ -54,4 +54,22 @@ public class AuthenticationController : ControllerBase
 
         return result.ToActionResult();
     }
+
+    [AllowAnonymous]
+    [HttpGet("confirm-email")]
+    public async Task<IActionResult> ConfirmEmail(string userId, string token)
+    {
+        var result = await _authenticationService.ConfirmEmailAsync(userId, token);
+
+        return result.ToActionResult();
+    }
+
+    [AllowAnonymous]
+    [HttpPost("send-confirmation-email")]
+    public async Task<IActionResult> SendConfirmationEmail(string username)
+    {
+        var result = await _authenticationService.SendConfirmationEmailAsync(username);
+
+        return result.ToActionResult();
+    }
 }

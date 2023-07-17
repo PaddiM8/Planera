@@ -3,8 +3,17 @@
     import Button from "$lib/components/form/Button.svelte";
     import Form from "$lib/components/form/Form.svelte";
     import CenteredLayout from "$lib/components/CenteredLayout.svelte";
+    import {toast} from "$lib/toast";
+    import {browser} from "$app/environment";
 
     export let form;
+    export let data;
+
+    $: {
+        if (browser && form?.mailSent) {
+            toast.info("Confirmation email sent.", 7500);
+        }
+    }
 </script>
 
 <svelte:head>

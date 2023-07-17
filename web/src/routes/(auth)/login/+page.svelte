@@ -3,8 +3,35 @@
     import Button from "$lib/components/form/Button.svelte";
     import Form from "$lib/components/form/Form.svelte";
     import CenteredLayout from "$lib/components/CenteredLayout.svelte";
+    import {toast} from "$lib/toast";
+    import {onMount} from "svelte";
+    import {browser} from "$app/environment";
 
     export let form;
+    export let data;
+
+    let isEmailConfirmationFailure;
+    let usernameValue: string;
+
+    onMount(() => {
+        if (data?.emailConfirmed) {
+            toast.info("Email confirmed successfully.", 4000);
+        }
+    });
+
+    $: {
+        isEmailConfirmationFailure = form?.errors &&
+            Object.keys(form.errors).some(x => x === "email");
+    }
+
+    async function sendConfirmationMail() {
+        const result = await fetch(`/send-confirmation-email?username=${usernameValue}`);
+        if (result.ok) {
+            toast.info("Sent confirmation email.", 7000);
+        } else {
+            toast.error("Failed to send confirmation email.");
+        }
+    }
 </script>
 
 <svelte:head>
@@ -15,7 +42,12 @@
     <h1>Sign In</h1>
 
     <Form errors={form?.errors}>
-        <Input name="username" placeholder="Username..." />
+        {#if isEmailConfirmationFailure}
+            <a href="./"
+               class="resend-confirmation-email"
+               on:click={sendConfirmationMail}>Resend Confirmation Email</a>
+        {/if}
+        <Input name="username" placeholder="Username..." bind:value={usernameValue} />
         <Input type="password" name="password" placeholder="Password..." />
         <div class="buttons">
             <a href="/forgot-password">Forgot password?</a>
@@ -30,4 +62,7 @@
 
         a
             margin-right: auto
+
+    .resend-confirmation-email
+        margin-top: -0.6em
 </style>

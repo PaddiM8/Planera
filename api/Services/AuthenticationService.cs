@@ -6,8 +6,6 @@ using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using ErrorOr;
-using MailKit.Net.Smtp;
-using MailKit.Security;
 using MimeKit;
 using MimeKit.Text;
 using Planera.Data;
@@ -23,12 +21,14 @@ public class AuthenticationService
     private readonly UserManager<User> _userManager;
     private readonly SignInManager<User> _signInManager;
     private readonly IMapper _mapper;
+    private readonly EmailService _emailService;
 
     public AuthenticationService(
         IConfiguration configuration,
         UserManager<User> userManager,
         SignInManager<User> signInManager,
-        IMapper mapper)
+        IMapper mapper,
+        EmailService emailService)
     {
         _secretKey = new SymmetricSecurityKey(
             Encoding.ASCII.GetBytes(configuration["Jwt:Key"] ?? string.Empty)
@@ -37,6 +37,7 @@ public class AuthenticationService
         _userManager = userManager;
         _signInManager = signInManager;
         _mapper = mapper;
+        _emailService = emailService;
     }
 
     public async Task<ErrorOr<AuthenticationResult>> LoginAsync(LoginModel model)
@@ -48,6 +49,14 @@ public class AuthenticationService
             return Error.NotFound(
                 "Username.NotFound",
                 "A user with the given username/email was not found"
+            );
+        }
+
+        if (_configuration.GetValue<bool>("EmailConfirmation") && !user.EmailConfirmed)
+        {
+            return Error.Conflict(
+                "Email.NotConfirmed",
+                "The email address of this user has not been confirmed."
             );
         }
 
@@ -71,17 +80,39 @@ public class AuthenticationService
         return Error.Failure("NotAllowed", "Could not login.");
     }
 
-    public async Task<ErrorOr<AuthenticationResult>> RegisterAsync(RegisterModel model)
+    public async Task<ErrorOr<AuthenticationResult?>> RegisterAsync(RegisterModel model)
     {
-        var user = new User { UserName = model.Username, Email = model.Email };
-        var result = await _userManager.CreateAsync(user, model.Password);
+        var userResult = await CreateUserAsync(
+            model.Username,
+            model.Email,
+            model.Password
+        );
+        if (userResult.IsError)
+            return userResult.Errors;
+
+        var user = userResult.Value;
+        if (_configuration.GetValue<bool>("EmailConfirmation"))
+        {
+            await SendConfirmationEmailAsync(user);
+
+            return ErrorOrFactory.From<AuthenticationResult?>(null);
+        }
+
+        var loginToken = GenerateToken(user.Id, model.Username, model.Email);
+
+        return new AuthenticationResult(loginToken, _mapper.Map<UserDto>(user));
+    }
+
+    private async Task<ErrorOr<User>> CreateUserAsync(
+        string username,
+        string email,
+        string password)
+    {
+        var user = new User { UserName = username, Email = email };
+        var result = await _userManager.CreateAsync(user, password);
 
         if (result.Succeeded)
-        {
-            var token = GenerateToken(user.Id, model.Username, model.Username);
-
-            return new AuthenticationResult(token, _mapper.Map<UserDto>(user));
-        }
+            return user;
 
         return result.Errors
             .Select(x => Error.Failure(x.Code, x.Description))
@@ -116,21 +147,14 @@ public class AuthenticationService
         return tokenHandler.WriteToken(tokenHandler.CreateToken(tokenDescriptor));
     }
 
-    public async Task<ErrorOr<Updated>> ForgotPassword(string username)
+    public async Task<ErrorOr<Success>> ForgotPassword(string username)
     {
         var user = await _userManager.FindByNameAsync(username);
         if (user == null)
             return Error.NotFound("Username.NotFound", "A user with the given username was not found.");
 
-        if (_configuration["Smtp:Host"] == null)
-            return Error.Conflict("NotSupported", "The server is not equipped to send emails.");
-
         var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
-        var email = new MimeMessage();
-        email.From.Add(MailboxAddress.Parse(_configuration["Smtp:Sender"]));
-        email.To.Add(MailboxAddress.Parse(user.Email));
-        email.Subject = "Password Reset";
-        email.Body = new TextPart(TextFormat.Text)
+        var emailBody = new TextPart(TextFormat.Text)
         {
             Text = $"""
                 Someone requested a password reset for your account.
@@ -143,17 +167,7 @@ public class AuthenticationService
                 """,
         };
 
-        using var smtp = new SmtpClient();
-        await smtp.ConnectAsync(
-            _configuration["Smtp:Host"],
-            _configuration.GetValue<int>("Smtp:Port"),
-            SecureSocketOptions.StartTls
-        );
-        await smtp.AuthenticateAsync(_configuration["Smtp:User"], _configuration["Smtp:Password"]);
-        await smtp.SendAsync(email);
-        await smtp.DisconnectAsync(true);
-
-        return new ErrorOr<Updated>();
+        return await _emailService.SendAsync("Password Reset", emailBody, user.Email!);
     }
 
     public async Task<ErrorOr<Updated>> ResetPasswordAsync(
@@ -170,5 +184,44 @@ public class AuthenticationService
         return !result.Succeeded
             ? Error.Failure("General.Failure", "Failed to reset password.")
             : new ErrorOr<Updated>();
+    }
+
+    public async Task<ErrorOr<Success>> ConfirmEmailAsync(string userId, string token)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+            return Error.NotFound("UserId.NotFound", "A user with the given ID was not found.");
+
+        var result = await _userManager.ConfirmEmailAsync(user, token);
+
+        return !result.Succeeded
+            ? Error.Failure("General.Failure", "Failed to confirm email.")
+            : new ErrorOr<Success>();
+    }
+
+    public async Task<ErrorOr<Success>> SendConfirmationEmailAsync(string username)
+    {
+        var user = await _userManager.FindByNameAsync(username);
+        if (user == null)
+            return Error.NotFound("Username.NotFound", "A user with the given username was not found.");
+
+        return await SendConfirmationEmailAsync(user);
+    }
+
+    public async Task<ErrorOr<Success>> SendConfirmationEmailAsync(User user)
+    {
+        var confirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+        var emailBody = new TextPart(TextFormat.Text)
+        {
+            Text = $"""
+            Someone signed up to Planera using your email. If it was you, please confirm your email by pressing the link below:
+            {_configuration["FrontendUrl"]}/confirm-email?user={user.Id}&token={HttpUtility.UrlEncode(confirmationToken)}
+
+            - Planera
+            """,
+        };
+        await _emailService.SendAsync("Email Confirmation", emailBody, user.Email!);
+
+        return new ErrorOr<Success>();
     }
 }

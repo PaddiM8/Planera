@@ -6,7 +6,7 @@ import {toProblemDetails} from "$lib/problemDetails";
 export const actions = {
     default: async ({ request, cookies }: RequestEvent) => {
         const formData = await request.formData();
-        let response: AuthenticationResult;
+        let response: AuthenticationResult | null;
         try {
             response = await getAuthenticationClient(cookies).register({
                 username: formData.get("username") as string,
@@ -20,6 +20,12 @@ export const actions = {
             return fail(problem?.status ?? 400, {
                 errors: problem?.errors,
             });
+        }
+
+        if (!response) {
+            return {
+                mailSent: true,
+            };
         }
 
         const cookieOptions: any = {

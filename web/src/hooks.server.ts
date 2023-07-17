@@ -6,6 +6,8 @@ const allowedPaths = [
     "/register",
     "/forgot-password",
     "/reset-password",
+    "/confirm-email",
+    "/send-confirmation-email",
 ]
 
 export const handle: Handle = ({ event, resolve }) => {
