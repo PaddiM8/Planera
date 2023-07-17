@@ -3,7 +3,7 @@
     import ErrorText from "$lib/components/form/ErrorText.svelte";
     import UserIcon from "$lib/components/UserIcon.svelte";
     import Label from "$lib/components/GroupLabel.svelte";
-    import {ListBullet, Icon, SquaresPlus} from "svelte-hero-icons";
+    import {ListBullet, Icon, SquaresPlus, PlusSmall} from "svelte-hero-icons";
     import {onMount} from "svelte";
     import {startUserHub} from "$lib/hubs";
     import {invitations} from "./store";
@@ -50,6 +50,10 @@
                           value="Invitations"
                           unreadCount={$invitations?.length}>
                 <Icon src={SquaresPlus} />
+            </SidebarEntry>
+            <SidebarEntry src="/projects/new"
+                          value="Create Project">
+                <Icon src={PlusSmall} />
             </SidebarEntry>
         </SidebarGroup>
 

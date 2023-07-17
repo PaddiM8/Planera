@@ -7,7 +7,8 @@
 
 <style lang="sass">
     label
-        margin-bottom: -0.4em
+        display: block
         font-size: 1em
         font-weight: 450
+        margin-bottom: 0.4em
 </style>

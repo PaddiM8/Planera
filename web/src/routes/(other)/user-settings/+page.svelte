@@ -39,11 +39,13 @@
           errors={form?.update?.errors}
           afterSubmit={afterSubmitUpdate}
           reset={false}>
-        <FormLabel value="Profile Picture" />
-        <AvatarPicker name="avatar"
-                      entityName={data.account.username}
-                      src={getAvatarUrl(data.account.avatarPath, "big")}
-                      type="user" />
+        <div class="avatar-area">
+            <FormLabel value="Profile Picture" />
+            <AvatarPicker name="avatar"
+                          entityName={data.account.username}
+                          src={getAvatarUrl(data.account.avatarPath, "big")}
+                          type="user" />
+        </div>
         <Input type="text"
                value={data.account.username}
                label="Username"

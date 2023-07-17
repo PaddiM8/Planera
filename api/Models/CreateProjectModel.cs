@@ -15,4 +15,6 @@ public class CreateProjectModel
 
     [StringLength(150, ErrorMessage = ErrorStrings.StringLength)]
     public required string Description { get; init; }
+
+    public string? Icon { get; init; }
 }

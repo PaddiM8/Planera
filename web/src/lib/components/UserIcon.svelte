@@ -8,7 +8,7 @@
     {#if image}
         <img class="image" src={image} alt={name} />
     {:else}
-        <span class="letter">{ name[0] }</span>
+        <span class="letter">{ name?.at(0) ?? "?" }</span>
     {/if}
 </span>
 

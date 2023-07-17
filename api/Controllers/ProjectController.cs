@@ -61,20 +61,15 @@ public class ProjectController : ControllerBase
         return result.ToActionResult();
     }
 
-    [HttpPost("{username}")]
+    [HttpPost]
     [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
-    public async Task<IActionResult> Create(
-        string username,
-        [FromBody] CreateProjectModel model)
-    {
-        if (username != User.Identity?.Name)
-            return Unauthorized();
-
+    public async Task<IActionResult> Create([FromBody] CreateProjectModel model) {
         var result = await _projectService.AddAsync(
             User.FindFirst("Id")!.Value,
             model.Slug,
             model.Name,
-            model.Description
+            model.Description,
+            model.Icon
         );
 
         return result.ToActionResult();

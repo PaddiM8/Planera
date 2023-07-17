@@ -5,7 +5,7 @@
 
     export let name: string;
     export let entityName: string;
-    export let src: string | undefined;
+    export let src: string | undefined = undefined;
     export let type: "user" | "project";
 
     let avatarInput: HTMLInputElement;
@@ -50,6 +50,11 @@
         display: flex
         align-items: center
         gap: 0.4em
+        width: fit-content
+        padding: var(--vertical-padding) var(--horizontal-padding)
+        border: var(--border)
+        border-radius: var(--radius)
+        background-color: var(--component-background)
 
         .icon
             width: 1.2em

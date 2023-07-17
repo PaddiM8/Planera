@@ -24,38 +24,45 @@
     }
 </script>
 
-{#if label}
-    <FormLabel forId="input-{name}" value={label} />
-{/if}
+<div class="wrapper">
+    {#if label}
+        <FormLabel forId="input-{name}" value={label} />
+    {/if}
 
-{#if type === "text"}
-    <input type="text"
-           id="input-{name}"
-           bind:value={value}
-           placeholder={placeholder}
-           {name}
-           on:input={handleInput}
-           on:keydown={handleKeyDown} />
-{:else if type === "password"}
-    <input type="password"
-           id="input-{name}"
-           bind:value={value}
-           {placeholder}
-           {name}
-           on:input={handleInput}
-           on:keydown={handleKeyDown} />
-{:else if type === "email"}
-    <input type="email"
-           id="input-{name}"
-           bind:value={value}
-           placeholder={placeholder}
-           {name}
-           on:input={handleInput}
-           on:keydown={handleKeyDown} />
-{/if}
+    {#if type === "text"}
+        <input type="text"
+               id="input-{name}"
+               bind:value={value}
+               placeholder={placeholder}
+               {name}
+               on:input={handleInput}
+               on:keydown={handleKeyDown} />
+    {:else if type === "password"}
+        <input type="password"
+               id="input-{name}"
+               bind:value={value}
+               {placeholder}
+               {name}
+               on:input={handleInput}
+               on:keydown={handleKeyDown} />
+    {:else if type === "email"}
+        <input type="email"
+               id="input-{name}"
+               bind:value={value}
+               placeholder={placeholder}
+               {name}
+               on:input={handleInput}
+               on:keydown={handleKeyDown} />
+    {/if}
+</div>
 
 <style lang="sass">
+    .wrapper
+        width: 100%
+
     input
+        display: block
+        width: 100%
         font-size: 1rem
         padding: var(--vertical-padding) var(--horizontal-padding)
         border-radius: var(--radius)
