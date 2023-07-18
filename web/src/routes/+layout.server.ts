@@ -1,11 +1,11 @@
 import type {LayoutServerLoad} from "../../.svelte-kit/types/src/routes/$types";
-import {toProblemDetails} from "$lib/problemDetails";
+import {handleProblem} from "$lib/problemDetails";
 import type {UserDto, SwaggerException} from "../gen/planeraClient";
-import {error} from "@sveltejs/kit";
 import {getUserClient} from "$lib/clients";
+import {pathRequiresAuthentication} from "$lib/paths";
 
-export const load = (async ({ cookies }) => {
-    if (!cookies.get("token")) {
+export const load = (async ({ cookies, url }) => {
+    if (!cookies.get("token") || !pathRequiresAuthentication(url)) {
         return {};
     }
 
@@ -13,8 +13,7 @@ export const load = (async ({ cookies }) => {
     try {
         response = await getUserClient(cookies).get();
     } catch (ex) {
-        const problem = toProblemDetails(ex as SwaggerException);
-        throw error(problem.status ?? 400, problem.summary);
+        return handleProblem(ex as SwaggerException);
     }
 
     return {

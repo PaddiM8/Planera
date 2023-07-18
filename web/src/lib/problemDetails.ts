@@ -1,4 +1,5 @@
 import type {SwaggerException} from "../gen/planeraClient";
+import {error, fail, redirect} from "@sveltejs/kit";
 
 interface ProblemDetails {
     title?: string;
@@ -15,8 +16,25 @@ export function toProblemDetails(exception: SwaggerException) {
         return problem;
     } catch {
         return {
-            title: "Internal server error.",
-            status: 500,
+            title: "Error.",
+            status: exception.status,
         } as ProblemDetails;
     }
+}
+
+export function handleProblem(exception: SwaggerException) {
+    const problem = toProblemDetails(exception);
+    if (problem.status === 401) {
+        throw redirect(302, "/login");
+    }
+
+    throw error(problem.status ?? 400, problem.summary);
+}
+
+export function handleProblemForForm(exception: SwaggerException) {
+    const problem = toProblemDetails(exception);
+
+    return fail(problem.status ?? 400, {
+        errors: problem?.errors,
+    });
 }

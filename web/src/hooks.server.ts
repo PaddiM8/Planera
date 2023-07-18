@@ -1,19 +1,10 @@
 import type {Handle} from "@sveltejs/kit";
 import {redirect} from "@sveltejs/kit";
-
-const allowedPaths = [
-    "/login",
-    "/register",
-    "/forgot-password",
-    "/reset-password",
-    "/confirm-email",
-    "/send-confirmation-email",
-]
+import {pathRequiresAuthentication} from "$lib/paths";
 
 export const handle: Handle = ({ event, resolve }) => {
     const token = event.cookies.get("token");
-    const path = event.url.pathname;
-    if (!token && !allowedPaths.some(x => path.startsWith(x))) {
+    if (!token && pathRequiresAuthentication(event.url)) {
         throw redirect(302, "/login");
     }
 

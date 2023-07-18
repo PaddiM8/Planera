@@ -1,21 +1,18 @@
 import type {ServerLoadEvent} from "@sveltejs/kit";
-import type {ProjectDto, TicketDto} from "../../../../../gen/planeraClient";
+import type {TicketDto} from "../../../../../gen/planeraClient";
 import {getProjectClient, getTicketClient} from "$lib/clients";
 import type {RequestEvent} from "@sveltejs/kit";
-import {error, fail} from "@sveltejs/kit";
 import {parsePriority} from "$lib/priority";
-import {toProblemDetails} from "$lib/problemDetails";
+import {handleProblem, handleProblemForForm} from "$lib/problemDetails";
 import type {SwaggerException} from "../../../../../gen/planeraClient";
 import type {CreateTicketModel} from "../../../../../gen/planeraClient";
-import type {TicketStatus} from "../../../../../gen/planeraClient";
 
 export async function load({ cookies, params }: ServerLoadEvent) {
     let response: TicketDto[];
     try {
         response = await getProjectClient(cookies).getTickets(params.user!, params.slug!);
     } catch (ex) {
-        const problem = toProblemDetails(ex as SwaggerException);
-        throw error(problem.status ?? 400, problem.summary);
+        return handleProblem(ex as SwaggerException);
     }
 
     return {
@@ -35,11 +32,7 @@ export const actions = {
                     assigneeIds: formData.getAll("assignee").map(x => x as string),
                 } as CreateTicketModel);
         } catch (ex) {
-            const problem = toProblemDetails(ex as SwaggerException);
-
-            return fail(400, {
-                errors: problem?.errors,
-            });
+            return handleProblemForForm(ex as SwaggerException);
         }
     },
 };

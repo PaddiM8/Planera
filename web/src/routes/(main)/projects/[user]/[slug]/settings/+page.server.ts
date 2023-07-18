@@ -1,8 +1,7 @@
 import type {SwaggerException, EditProjectModel} from "../../../../../../gen/planeraClient";
 import {getProjectClient} from "$lib/clients";
 import type {RequestEvent} from "@sveltejs/kit";
-import {fail, redirect} from "@sveltejs/kit";
-import {toProblemDetails} from "$lib/problemDetails";
+import {handleProblemForForm} from "$lib/problemDetails";
 
 export const actions = {
     update: async ({ request, cookies, params }: RequestEvent) => {
@@ -18,11 +17,7 @@ export const actions = {
                 } as EditProjectModel
             );
         } catch (ex) {
-            const problem = toProblemDetails(ex as SwaggerException);
-
-            return fail(400, {
-                errors: problem?.errors,
-            });
+            return handleProblemForForm(ex as SwaggerException);
         }
     },
 };

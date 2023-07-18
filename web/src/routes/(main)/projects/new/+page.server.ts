@@ -1,7 +1,7 @@
-import {fail, redirect, type RequestEvent} from "@sveltejs/kit";
+import {redirect, type RequestEvent} from "@sveltejs/kit";
 import {getProjectClient} from "$lib/clients";
 import type {CreateProjectModel, SwaggerException} from "../../../../gen/planeraClient";
-import {toProblemDetails} from "$lib/problemDetails";
+import {handleProblemForForm} from "$lib/problemDetails";
 
 export const actions = {
     default: async ({ request, cookies }: RequestEvent) => {
@@ -14,12 +14,7 @@ export const actions = {
                 icon: formData.get("icon") as string,
             } as CreateProjectModel);
         } catch (ex) {
-            const problem = toProblemDetails(ex as SwaggerException);
-            console.log(problem)
-
-            return fail(400, {
-                errors: problem?.errors,
-            });
+            return handleProblemForForm(ex as SwaggerException);
         }
 
         throw redirect(

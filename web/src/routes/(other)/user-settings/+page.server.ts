@@ -1,7 +1,6 @@
 import type {RequestEvent, ServerLoadEvent} from "@sveltejs/kit";
 import {getUserClient} from "$lib/clients";
-import {error, fail} from "@sveltejs/kit";
-import {toProblemDetails} from "$lib/problemDetails";
+import {handleProblem, handleProblemForForm} from "$lib/problemDetails";
 import type {EditUserModel, ChangePasswordModel, AccountDto, SwaggerException} from "../../../gen/planeraClient";
 
 export async function load({ cookies }: ServerLoadEvent) {
@@ -9,8 +8,7 @@ export async function load({ cookies }: ServerLoadEvent) {
     try {
         response = await getUserClient(cookies).getAccount();
     } catch (ex) {
-        const problem = toProblemDetails(ex as SwaggerException);
-        throw error(problem.status ?? 400, problem.summary);
+        return handleProblem(ex as SwaggerException);
     }
 
     return {
@@ -31,13 +29,7 @@ export const actions = {
                 } as EditUserModel,
             );
         } catch (ex) {
-            const problem = toProblemDetails(ex as SwaggerException);
-
-            return fail(400, {
-                update: {
-                    errors: problem?.errors,
-                },
-            });
+            return handleProblemForForm(ex as SwaggerException);
         }
     },
     changePassword: async ({ request, cookies, params }: RequestEvent) => {
@@ -51,13 +43,7 @@ export const actions = {
                 } as ChangePasswordModel,
             );
         } catch (ex) {
-            const problem = toProblemDetails(ex as SwaggerException);
-
-            return fail(400, {
-                changePassword: {
-                    errors: problem?.errors,
-                },
-            });
+            return handleProblemForForm(ex as SwaggerException);
         }
     },
 };
