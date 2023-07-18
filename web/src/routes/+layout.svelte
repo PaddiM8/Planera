@@ -37,16 +37,18 @@
 
 <div id="content">
     <header>
-        <span class="logo">Planera</span>
-        {#if data?.user}
-            <div class="user" on:click={handleUserClick}>
-                <UserIcon type="user"
-                          name={ data.user.username }
-                          image={getAvatarUrl(data.user.avatarPath, "big")} />
-            </div>
-        {:else}
-            <a href="/register" class="item">Register</a>
-        {/if}
+        <a href="/" class="logo">Planera</a>
+        <div class="items">
+            {#if data?.user}
+                <div class="user" on:click={handleUserClick}>
+                    <UserIcon type="user"
+                              name={ data.user.username }
+                              image={getAvatarUrl(data.user.avatarPath, "big")} />
+                </div>
+            {:else}
+                <a href="/register" class="item">Register</a>
+            {/if}
+        </div>
     </header>
 
     <section class="page">
@@ -134,11 +136,12 @@
         .logo
             font-size: 1.5em
             font-weight: 600
+            color: var(--on-background)
+            text-decoration: none
             margin: 0 0 0 0.4em
 
         .user
             position: relative
-            margin-left: auto
             border-radius: 100%
             width: 1.35em
             height: 1.35em
@@ -155,6 +158,9 @@
                 border-radius: 100%
                 background-color: rgba(0, 0, 0, 0.1)
 
+        .items
+            margin-left: auto
+
         .item
             font-size: 1em
             font-weight: 500
@@ -166,9 +172,6 @@
 
             &:hover
                 background-color: var(--background-hover)
-
-            &:first-of-type
-                margin-left: auto
 
     .page
         display: flex
