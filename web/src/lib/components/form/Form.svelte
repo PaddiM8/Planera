@@ -1,9 +1,10 @@
 <script lang="ts">
     import { enhance } from "$app/forms";
     import ErrorText from "$lib/components/form/ErrorText.svelte";
+    import type {ProblemDetails} from "$lib/problemDetails";
 
     export let action: string | undefined = undefined;
-    export let errors: { string: string[] } = [] as { string: string[] };
+    export let problem: ProblemDetails;
     export let beforeSubmit = undefined;
     export let afterSubmit = undefined;
     export let reset = true;
@@ -27,7 +28,10 @@
       enctype="multipart/form-data"
       use:enhance={enhanceHandler}>
     <div class="errors">
-        {#each Object.values(errors ?? {}) as error}
+        {#if problem && (!problem?.errors || Object.keys(problem.errors).length === 0)}
+            <ErrorText value={problem?.summary} />
+        {/if}
+        {#each Object.values(problem?.errors ?? {}) as error}
             <ErrorText value={error} />
         {/each}
     </div>

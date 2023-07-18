@@ -64,7 +64,7 @@
 <h2>About</h2>
 <section class="about">
     <Form action="?/update"
-          errors={form?.errors}
+          problem={form?.problem}
           afterSubmit={handleSubmit}
           reset={false}>
         <AvatarPicker name="icon"

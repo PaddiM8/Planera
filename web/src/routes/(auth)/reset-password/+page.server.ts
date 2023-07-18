@@ -2,7 +2,7 @@ import type {RequestEvent} from "@sveltejs/kit";
 import {fail, redirect} from "@sveltejs/kit";
 import {getAuthenticationClient} from "$lib/clients";
 import type {ResetPasswordModel, SwaggerException} from "../../../gen/planeraClient";
-import {toProblemDetails} from "$lib/problemDetails";
+import {handleProblemForForm, toProblemDetails} from "$lib/problemDetails";
 
 export const actions = {
     default: async ({ request, cookies, url }: RequestEvent) => {
@@ -15,11 +15,7 @@ export const actions = {
                 confirmedPassword: formData.get("confirmedPassword"),
             } as ResetPasswordModel);
         } catch (ex) {
-            const problem = toProblemDetails(ex as SwaggerException);
-
-            return fail(problem?.status ?? 400, {
-                errors: problem?.errors,
-            });
+            return handleProblemForForm(ex as SwaggerException);
         }
 
         throw redirect(302, "/login");

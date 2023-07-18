@@ -77,7 +77,7 @@
 
 <section class="new-ticket">
     <h2>New Ticket</h2>
-    <Form action="?/create" {beforeSubmit} {afterSubmit} errors={form?.errors}>
+    <Form action="?/create" {beforeSubmit} {afterSubmit} problem={form?.problem}>
         <input type="hidden" name="projectId" value={data.project.id} />
 
         <Input type="text" name="title" placeholder="Title..." />

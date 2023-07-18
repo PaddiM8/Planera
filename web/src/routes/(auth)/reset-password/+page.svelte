@@ -14,7 +14,7 @@
 <CenteredLayout>
     <h1>Reset Password</h1>
 
-    <Form errors={form?.errors}>
+    <Form problem={form?.problem}>
         <Input type="password" name="newPassword" placeholder="New Password..." />
         <Input type="password" name="confirmedPassword" placeholder="Repeat Password..." />
         <Button value="Reset" primary submit />

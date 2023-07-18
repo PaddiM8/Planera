@@ -36,7 +36,7 @@
 <h2>Edit Account</h2>
 <section class="update">
     <Form action="?/update"
-          errors={form?.update?.errors}
+          problem={form?.problem}
           afterSubmit={afterSubmitUpdate}
           reset={false}>
         <div class="avatar-area">
@@ -64,7 +64,7 @@
 <h2>Change Password</h2>
 <section class="password-change">
     <Form action="?/changePassword"
-          errors={form?.changePassword?.errors}
+          problem={form?.changePassword?.errors}
           afterSubmit={afterSubmitChangePassword}>
         <Input type="password"
                label="Current Password"

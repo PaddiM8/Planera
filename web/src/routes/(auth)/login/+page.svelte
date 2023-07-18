@@ -20,8 +20,8 @@
     });
 
     $: {
-        isEmailConfirmationFailure = form?.errors &&
-            Object.keys(form.errors).some(x => x === "email");
+        isEmailConfirmationFailure = form?.problem &&
+            Object.keys(form.problem).some(x => x === "email");
     }
 
     async function sendConfirmationMail() {
@@ -41,7 +41,7 @@
 <CenteredLayout>
     <h1>Sign In</h1>
 
-    <Form errors={form?.errors}>
+    <Form problem={form?.problem}>
         {#if isEmailConfirmationFailure}
             <a href="./"
                class="resend-confirmation-email"

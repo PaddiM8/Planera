@@ -1,7 +1,7 @@
 import {getUserClient} from "$lib/clients";
 import type {RequestEvent} from "@sveltejs/kit";
 import {fail} from "@sveltejs/kit";
-import {toProblemDetails} from "$lib/problemDetails";
+import {handleProblemForForm, toProblemDetails} from "$lib/problemDetails";
 import type {SwaggerException} from "../../../gen/planeraClient";
 
 export const actions = {
@@ -12,11 +12,7 @@ export const actions = {
                 Number(formData.get("projectId")),
             );
         } catch (ex) {
-            const problem = toProblemDetails(ex as SwaggerException);
-
-            return fail(400, {
-                errors: problem?.errors,
-            });
+            return handleProblemForForm(ex as SwaggerException);
         }
     },
     decline: async({ request, cookies }: RequestEvent) => {
@@ -26,11 +22,7 @@ export const actions = {
                 Number(formData.get("projectId")),
             );
         } catch (ex) {
-            const problem = toProblemDetails(ex as SwaggerException);
-
-            return fail(400, {
-                errors: problem?.errors,
-            });
+            return handleProblemForForm(ex as SwaggerException);
         }
     }
 };

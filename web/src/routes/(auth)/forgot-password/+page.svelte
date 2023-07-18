@@ -23,7 +23,7 @@
 <CenteredLayout>
     <h1>Forgot Password</h1>
 
-    <Form errors={form?.errors} afterSubmit={handleSubmit}>
+    <Form problem={form?.problem} afterSubmit={handleSubmit}>
         <Input name="username" placeholder="Username..." />
         <Button value="Reset" primary submit />
     </Form>

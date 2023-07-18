@@ -23,7 +23,7 @@
 <CenteredLayout>
     <h1>Register</h1>
 
-    <Form errors={form?.errors}>
+    <Form problem={form?.problem}>
         <Input name="username" placeholder="Username..." />
         <Input name="email" placeholder="Email Address..." />
         <Input type="password" name="password" placeholder="Password..." />

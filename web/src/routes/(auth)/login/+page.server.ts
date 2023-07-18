@@ -2,7 +2,7 @@ import type {RequestEvent} from "@sveltejs/kit";
 import {fail, redirect, type ServerLoadEvent} from "@sveltejs/kit";
 import {getAuthenticationClient} from "$lib/clients";
 import type {LoginModel, AuthenticationResult, SwaggerException} from "../../../gen/planeraClient";
-import {toProblemDetails} from "$lib/problemDetails";
+import {handleProblemForForm, toProblemDetails} from "$lib/problemDetails";
 
 export async function load({ url }: ServerLoadEvent) {
     if (url.searchParams.get("emailConfirmed") == "1") {
@@ -22,11 +22,7 @@ export const actions = {
                 password: formData.get("password") as string,
             } as LoginModel);
         } catch (ex) {
-            const problem = toProblemDetails(ex as SwaggerException);
-
-            return fail(problem?.status ?? 400, {
-                errors: problem?.errors,
-            });
+            return handleProblemForForm(ex as SwaggerException);
         }
 
         const cookieOptions: any = {
