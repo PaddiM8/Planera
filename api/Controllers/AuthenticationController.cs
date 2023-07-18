@@ -21,13 +21,21 @@ public class AuthenticationController : ControllerBase
     [HttpPost("login")]
     [ProducesResponseType(typeof(AuthenticationResult), StatusCodes.Status200OK)]
     public async Task<IActionResult> Login([FromBody] LoginModel model)
-        => (await _authenticationService.LoginAsync(model)).ToActionResult();
+    {
+        var result = await _authenticationService.LoginAsync(model.Username, model.Password);
+
+        return result.ToActionResult();
+    }
 
     [AllowAnonymous]
     [HttpPost("register")]
     [ProducesResponseType(typeof(AuthenticationResult), StatusCodes.Status200OK)]
     public async Task<IActionResult> Register([FromBody] RegisterModel model)
-        => (await _authenticationService.RegisterAsync(model)).ToActionResult();
+    {
+        var result = await _authenticationService.RegisterAsync(model.Username, model.Email, model.Password);
+
+        return result.ToActionResult();
+    }
 
     [HttpGet("logout")]
     public async Task Logout()

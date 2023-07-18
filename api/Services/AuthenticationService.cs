@@ -40,10 +40,9 @@ public class AuthenticationService
         _emailService = emailService;
     }
 
-    public async Task<ErrorOr<AuthenticationResult>> LoginAsync(LoginModel model)
+    public async Task<ErrorOr<AuthenticationResult>> LoginAsync(string username, string password)
     {
-        var user = await _userManager.FindByNameAsync(model.Username) ??
-                   await _userManager.FindByEmailAsync(model.Username);
+        var user = await _userManager.FindByNameAsync(username);
         if (user == null)
         {
             return Error.NotFound(
@@ -62,7 +61,7 @@ public class AuthenticationService
 
         var result = await _signInManager.PasswordSignInAsync(
             user,
-            model.Password,
+            password,
             isPersistent: true,
             lockoutOnFailure: true
         );
@@ -80,12 +79,15 @@ public class AuthenticationService
         return Error.Failure("NotAllowed", "Could not login.");
     }
 
-    public async Task<ErrorOr<AuthenticationResult?>> RegisterAsync(RegisterModel model)
+    public async Task<ErrorOr<AuthenticationResult?>> RegisterAsync(
+        string username,
+        string email,
+        string password)
     {
         var userResult = await CreateUserAsync(
-            model.Username,
-            model.Email,
-            model.Password
+            username,
+            email,
+            password
         );
         if (userResult.IsError)
             return userResult.Errors;
@@ -98,7 +100,7 @@ public class AuthenticationService
             return ErrorOrFactory.From<AuthenticationResult?>(null);
         }
 
-        var loginToken = GenerateToken(user.Id, model.Username, model.Email);
+        var loginToken = GenerateToken(user.Id, username, email);
 
         return new AuthenticationResult(loginToken, _mapper.Map<UserDto>(user));
     }
