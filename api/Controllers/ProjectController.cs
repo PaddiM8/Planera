@@ -4,6 +4,7 @@ using Planera.Data.Dto;
 using Planera.Extensions;
 using Planera.Hubs;
 using Planera.Models;
+using Planera.Models.Project;
 using Planera.Services;
 
 namespace Planera.Controllers;

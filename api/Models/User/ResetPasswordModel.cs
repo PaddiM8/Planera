@@ -1,17 +1,20 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Planera.Models;
+namespace Planera.Models.User;
 
-public class ChangePasswordModel
+public class ResetPasswordModel
 {
     [Required]
-    public required string CurrentPassword { get; init; }
+    public required string UserId { get; init; }
+
+    [Required]
+    public required string ResetToken { get; init; }
 
     [Required]
     [MinLength(8, ErrorMessage = ErrorStrings.MinLength)]
     [StringLength(512, ErrorMessage = ErrorStrings.StringLength)]
     public required string NewPassword { get; init; }
 
-    [Compare(nameof(NewPassword), ErrorMessage = "Passwords don't match.")]
+    [Compare(nameof(NewPassword))]
     public required string ConfirmedPassword { get; init; }
 }

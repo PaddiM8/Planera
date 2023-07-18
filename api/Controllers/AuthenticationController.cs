@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Planera.Extensions;
 using Planera.Models;
+using Planera.Models.Authentication;
+using Planera.Models.User;
 using Planera.Services;
 
 namespace Planera.Controllers;

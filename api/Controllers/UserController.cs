@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Planera.Data.Dto;
 using Planera.Extensions;
 using Planera.Models;
+using Planera.Models.User;
 using Planera.Services;
 
 namespace Planera.Controllers;

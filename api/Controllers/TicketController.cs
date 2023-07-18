@@ -3,6 +3,7 @@ using Planera.Data;
 using Planera.Data.Dto;
 using Planera.Extensions;
 using Planera.Models;
+using Planera.Models.Ticket;
 using Planera.Services;
 
 namespace Planera.Controllers;

@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Planera.Data;
 
-namespace Planera.Models;
+namespace Planera.Models.Ticket;
 
 public class CreateTicketModel
 {

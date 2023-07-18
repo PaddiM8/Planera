@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Planera.Models;
+namespace Planera.Models.Authentication;
 
 public class LoginModel
 {
