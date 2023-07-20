@@ -4,5 +4,6 @@ public enum TicketStatus
 {
     None,
     Done,
+    Inactive,
     Closed,
 }

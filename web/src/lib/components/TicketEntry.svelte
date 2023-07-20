@@ -2,7 +2,7 @@
     import type {TicketDto} from "../../gen/planeraClient";
     import {priorityToName} from "$lib/priority";
     import UserIcon from "$lib/components/UserIcon.svelte";
-    import {Check, Icon, XMark} from "svelte-hero-icons";
+    import {Check, Icon, Minus, XMark} from "svelte-hero-icons";
     import {TicketStatus} from "../../gen/planeraClient";
     import {projectHub} from "../../routes/(main)/projects/[user]/[slug]/store";
     import {getAvatarUrl} from "$lib/clients";
@@ -25,6 +25,10 @@
             <div class="status done" on:click={() => setStatus(TicketStatus.None)}>
                 <Icon src={Check} />
             </div>
+        {:else if ticket.status === TicketStatus.Inactive}
+            <div class="status inactive" on:click={() => setStatus(TicketStatus.None)}>
+                <Icon src={Minus} />
+            </div>
         {:else if ticket.status === TicketStatus.Closed}
             <div class="status closed" on:click={() => setStatus(TicketStatus.None)}>
                 <Icon src={XMark} />
@@ -33,14 +37,20 @@
         <a href="/projects/{ticket.author.username}/{ticket.projectSlug}/tickets/{ticket.id}">
             <h3 class="title">{ticket.title}</h3>
         </a>
-        <button class="status-button close" on:click={() => setStatus(TicketStatus.Closed)}>
-            <span class="icon"><Icon src={XMark} /></span>
-            <span class="text">Close</span>
-        </button>
-        <button class="status-button done" on:click={() => setStatus(TicketStatus.Done)}>
-            <span class="icon"><Icon src={Check} /></span>
-            <span class="text">Done</span>
-        </button>
+        <div class="status-buttons">
+            <button class="status-button close" on:click={() => setStatus(TicketStatus.Closed)}>
+                <span class="icon"><Icon src={XMark} /></span>
+                <span class="text">Close</span>
+            </button>
+            <button class="status-button inactive" on:click={() => setStatus(TicketStatus.Inactive)}>
+                <span class="icon"><Icon src={Minus} /></span>
+                <span class="text">Inactive</span>
+            </button>
+            <button class="status-button done" on:click={() => setStatus(TicketStatus.Done)}>
+                <span class="icon"><Icon src={Check} /></span>
+                <span class="text">Done</span>
+            </button>
+        </div>
         <h3 class="id">{ticket.id}</h3>
     </div>
     <span class="description">{@html ticket.description}</span>
@@ -90,6 +100,9 @@
         &.done
             color: green
 
+        &.inactive
+            color: cornflowerblue
+
         &.closed
             color: red
 
@@ -102,6 +115,12 @@
 
     .ticket:not(:hover) .status-button, .ticket.has-status .status-button
         visibility: hidden
+
+    .status-buttons
+        display: flex
+        gap: 0.4em
+        margin-left: auto
+        margin-right: 0.4em
 
     .status-button
         display: flex
@@ -117,15 +136,11 @@
         &:hover
             background-color: var(--background-hover)
 
-        &:first-of-type
-            margin-left: auto
-            margin-right: -0.4em
-
-        &:last-of-type
-            margin-right: 0.4em
-
         &.done .icon
             color: green
+
+        &.inactive .icon
+            color: cornflowerblue
 
         &.close .icon
             color: red
