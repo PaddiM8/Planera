@@ -112,7 +112,7 @@
                 height: 1.2em
 
             &.accept .icon
-                color: green
+                color: var(--gren)
 
             &.decline
                 margin-left: auto

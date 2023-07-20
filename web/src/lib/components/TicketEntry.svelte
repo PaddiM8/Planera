@@ -98,13 +98,13 @@
         cursor: pointer
 
         &.done
-            color: green
+            color: var(--green)
 
         &.inactive
-            color: cornflowerblue
+            color: var(--blue)
 
         &.closed
-            color: red
+            color: var(--red)
 
     .title
         margin-top: 0
@@ -137,13 +137,13 @@
             background-color: var(--background-hover)
 
         &.done .icon
-            color: green
+            color: var(--green)
 
         &.inactive .icon
-            color: cornflowerblue
+            color: var(--blue)
 
         &.close .icon
-            color: red
+            color: var(--red)
 
         .icon
             display: block

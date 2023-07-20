@@ -95,6 +95,9 @@
         --normal: #059669
         --high: #f97316
         --severe: #ef4444
+        --green: #16a34a
+        --blue: #2563eb
+        --red: #e11d48
 
     :global(h1)
         font-size: 2.1em

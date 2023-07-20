@@ -122,5 +122,5 @@
             cursor: pointer
 
             &:hover
-                color: red
+                color: var(--red)
 </style>

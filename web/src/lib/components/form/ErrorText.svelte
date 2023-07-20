@@ -6,6 +6,6 @@
 
 <style lang="sass">
     .error
-        color: red
+        color: var(--red)
         margin-top: 0.2em
 </style>
