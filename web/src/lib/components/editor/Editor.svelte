@@ -122,7 +122,6 @@
             {#if blockType === "code"}
                 <CodeLanguageDropDown />
             {:else}
-                <FontFamilyDropDown />
                 <FontSizeDropDown />
                 <Divider />
                 <BoldButton />
