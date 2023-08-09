@@ -34,6 +34,20 @@ public class ProjectHub : Hub<IProjectHubContext>
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, projectId.ToString());
     }
 
+    public async Task RemoveTicket(int projectId, int ticketId)
+    {
+        var result = await _ticketService.RemoveTicketAsync(
+            Context.User!.FindFirst("Id")!.Value,
+            projectId,
+            ticketId
+        );
+        result.Unwrap();
+
+        await Clients
+            .Group(projectId.ToString())
+            .OnRemoveTicket(projectId, ticketId);
+    }
+
     public async Task SetTicketStatus(int projectId, int ticketId, TicketStatus status)
     {
         var result = await _ticketService.SetStatus(
@@ -50,7 +64,48 @@ public class ProjectHub : Hub<IProjectHubContext>
         };
         await Clients
             .Group(projectId.ToString())
-            .OnTicketUpdate(projectId, ticketId, newFields);
+            .OnUpdateTicket(projectId, ticketId, newFields);
+    }
+
+    public async Task SetTicketPriority(int projectId, int ticketId, TicketPriority priority)
+    {
+        var result = await _ticketService.SetPriorityAsync(
+            Context.User!.FindFirst("Id")!.Value,
+            projectId,
+            ticketId,
+            priority
+        );
+        result.Unwrap();
+
+        var newFields = new Dictionary<string, object>
+        {
+            { nameof(TicketDto.Status), priority },
+        };
+        await Clients
+            .Group(projectId.ToString())
+            .OnUpdateTicket(projectId, ticketId, newFields);
+    }
+
+    public async Task AddTicketAssignee(int projectId, int ticketId, string assigneeId)
+    {
+        var result = await _ticketService.AddAssigneeAsync(
+            Context.User!.FindFirst("Id")!.Value,
+            projectId,
+            ticketId,
+            assigneeId
+        );
+        result.Unwrap();
+    }
+
+    public async Task RemoveTicketAssignee(int projectId, int ticketId, string assigneeId)
+    {
+        var result = await _ticketService.RemoveAssigneeAsync(
+            Context.User!.FindFirst("Id")!.Value,
+            projectId,
+            ticketId,
+            assigneeId
+        );
+        result.Unwrap();
     }
 
     public async Task Invite(int projectId, string username)

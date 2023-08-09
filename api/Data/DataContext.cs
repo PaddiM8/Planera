@@ -11,6 +11,8 @@ public class DataContext : IdentityDbContext<User>
 
     public DbSet<ProjectParticipant> ProjectParticipants { get; set; } = null!;
 
+    public DbSet<TicketAssignee> TicketAssignees { get; set; } = null!;
+
     public DbSet<Invitation> Invitations { get; set; } = null!;
 
     public DataContext(DbContextOptions<DataContext> context)
@@ -29,7 +31,8 @@ public class DataContext : IdentityDbContext<User>
             .IsRequired();
         modelBuilder.Entity<Ticket>()
             .HasMany(e => e.Assignees)
-            .WithMany(e => e.AssignedTickets);
+            .WithMany(e => e.AssignedTickets)
+            .UsingEntity<TicketAssignee>();
         modelBuilder.Entity<Project>()
             .HasMany(e => e.Participants)
             .WithMany(e => e.JoinedProjects)

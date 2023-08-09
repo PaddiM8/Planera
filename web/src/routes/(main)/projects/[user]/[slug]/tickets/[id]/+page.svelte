@@ -16,6 +16,7 @@
     import {toast} from "$lib/toast";
     import {TicketPriority, UserDto} from "../../../../../../../gen/planeraClient";
     import {projectHub} from "../../store";
+    import {goto} from "$app/navigation";
 
     export let form;
     export let data: {
@@ -49,6 +50,22 @@
     }
 
     async function handleRemove() {
+        if (!await dialog.yesNo("Remove ticket", "Are you sure you want to remove the ticket?")) {
+            return;
+        }
+
+        try {
+            await $projectHub!.invoke(
+                "removeTicket",
+                data.ticket.projectId,
+                data.ticket.id,
+            );
+
+            toast.info("Removed ticket successfully");
+            await goto("../")
+        } catch {
+            toast.error("Failed to remove ticket.");
+        }
     }
 
     async function handlePriorityChange(e: CustomEvent) {
@@ -123,8 +140,8 @@
     <div class="top">
         <h2>{data.ticket.title}</h2>
         <div class="icons">
-            <span class="icon">
-                <Icon src={Trash} on:click={handleRemove} />
+            <span class="icon" on:click={handleRemove}>
+                <Icon src={Trash} />
             </span>
             <span class="icon" on:click={handleEdit}>
                 <Icon src={PencilSquare} />

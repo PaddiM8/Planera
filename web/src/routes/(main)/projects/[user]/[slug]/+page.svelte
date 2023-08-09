@@ -29,11 +29,11 @@
                 return;
             }
 
-            hub.on("onTicketUpdate", onTicketUpdate);
+            hub.on("onUpdateTicket", onUpdateTicket);
         });
     });
 
-    function onTicketUpdate(projectId: number, ticketId: number, newFields: TicketDto) {
+    function onUpdateTicket(projectId: number, ticketId: number, newFields: TicketDto) {
         const index = data.tickets.findIndex(x => x.id === ticketId);
         if (index !== -1) {
             for (const [key, value] of Object.entries(newFields)) {
