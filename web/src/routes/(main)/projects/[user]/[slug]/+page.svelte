@@ -13,6 +13,7 @@
     import {projectHub} from "./store";
     import {getAvatarUrl} from "$lib/clients";
     import UserIcon from "$lib/components/UserIcon.svelte";
+    import {toast} from "$lib/toast";
 
     export let data: {
         project: ProjectDto,
@@ -55,6 +56,7 @@
             editor.reset();
             priority.reset();
             assignees.reset();
+            toast.info("Created ticket successfully.");
         }
     }
 </script>

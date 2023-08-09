@@ -9,6 +9,8 @@
     export let afterSubmit = undefined;
     export let reset = true;
 
+    let form: HTMLFormElement;
+
     async function enhanceHandler(e) {
         if (beforeSubmit) {
             await beforeSubmit(e);
@@ -22,10 +24,19 @@
             }
         };
     }
+
+    function handleKeyDown(e: KeyboardEvent) {
+        if (e.ctrlKey && e.key === "Enter") {
+            form.requestSubmit();
+        }
+    }
 </script>
 
-<form method="POST" {action}
+<form method="POST"
+      {action}
       enctype="multipart/form-data"
+      bind:this={form}
+      on:keydown={handleKeyDown}
       use:enhance={enhanceHandler}>
     <div class="errors">
         {#if problem && (!problem?.errors || Object.keys(problem.errors).length === 0)}
