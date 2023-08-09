@@ -33,13 +33,15 @@
 
 <span class="multi-button" bind:this={element}>
     {#each choices as choice}
-        <input type="radio"
-               id="choice-{choice}"
-               value={choice}
-               name={name}
-               bind:group={selectedValue}
-               on:change={e => handleChange(e, choice)} />
-        <label for="choice-{choice}">{choice}</label>
+        <span class="button">
+            <input type="radio"
+                   id="choice-{choice}"
+                   value={choice}
+                   name={name}
+                   bind:group={selectedValue}
+                   on:change={e => handleChange(e, choice)} />
+            <label for="choice-{choice}">{choice}</label>
+        </span>
     {/each}
 </span>
 
@@ -47,15 +49,39 @@
     .multi-button
         display: flex
 
+    .button
+        position: relative
+
+        &:first-of-type label
+            border-top-left-radius: var(--radius)
+            border-bottom-left-radius: var(--radius)
+
+        &:last-child label
+            border-top-right-radius: var(--radius)
+            border-bottom-right-radius: var(--radius)
+            border-right: 0
+
     input[type="radio"]
-        display: none
+        position: absolute
+        top: 0
+        left: 0
+        z-index: -1
+        width: 0
 
     input[type="radio"]:checked + label
         background-color: var(--button-background-selected)
 
+    input[type="radio"]:focus + label
+        position: relative
+        outline: 2px solid var(--blue)
+        z-index: 999
+
+    .button:not(:last-of-type) input[type="radio"]:focus + label
+        border-right: 1px solid var(--button-background-selected)
+
     input[type="radio"] + label
         display: block
-        content: 'hello'
+        content: ""
         padding: var(--vertical-padding) var(--horizontal-padding)
         border: 0
         border-right: 1px solid var(--button-background-hover)
@@ -67,13 +93,4 @@
 
         &:hover:not(input[type="radio"]:checked + label)
             background-color: var(--button-background-hover)
-
-        &:first-of-type
-            border-top-left-radius: var(--radius)
-            border-bottom-left-radius: var(--radius)
-
-        &:last-child
-            border-top-right-radius: var(--radius)
-            border-bottom-right-radius: var(--radius)
-            border-right: 0
 </style>
