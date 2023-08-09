@@ -1,3 +1,5 @@
+let timeoutId: number;
+
 export const toast = {
     info: (text: string, timeout = 2750) => {
         show("info", text, timeout);
@@ -20,7 +22,9 @@ function show(type: string, text: string, timeout: number) {
 
     element.classList.add(type);
     element.classList.add("shown");
-    setTimeout(() => {
+
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => {
         element.classList.remove("shown");
     }, timeout);
 }

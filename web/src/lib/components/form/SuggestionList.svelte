@@ -33,7 +33,7 @@
             });
 
             shownItems = indexedItems.filter(x =>
-                !ignored.includes(x) && getValue(x).includes(query)
+                !ignored.some(y => y[key] === x[key]) && getValue(x).includes(query)
             );
             selectedIndex = 0;
             previousIndex = selectedIndex;

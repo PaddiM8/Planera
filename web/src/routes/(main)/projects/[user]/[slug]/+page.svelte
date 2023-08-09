@@ -7,7 +7,7 @@
     import MultiButton from "$lib/components/form/MultiButton.svelte";
     import Label from "$lib/components/GroupLabel.svelte";
     import BlockInput from "$lib/components/form/BlockInput.svelte";
-    import TicketEntry from "$lib/components/TicketEntry.svelte";
+    import TicketEntry from "$lib/components/ticket/TicketEntry.svelte";
     import {onMount} from "svelte";
     import {participants} from "../../../store";
     import {projectHub} from "./store";
@@ -77,7 +77,7 @@
 
 <section class="new-ticket">
     <h2>New Ticket</h2>
-    <Form action="?/create" {beforeSubmit} {afterSubmit} problem={form?.problem}>
+    <Form {beforeSubmit} {afterSubmit} problem={form?.problem}>
         <input type="hidden" name="projectId" value={data.project.id} />
 
         <Input type="text" name="title" placeholder="Title..." />

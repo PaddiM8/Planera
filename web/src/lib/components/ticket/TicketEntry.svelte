@@ -1,11 +1,10 @@
 <script lang="ts">
-    import type {TicketDto} from "../../gen/planeraClient";
-    import {priorityToName} from "$lib/priority";
     import UserIcon from "$lib/components/UserIcon.svelte";
     import {Check, Icon, Minus, XMark} from "svelte-hero-icons";
-    import {TicketStatus} from "../../gen/planeraClient";
-    import {projectHub} from "../../routes/(main)/projects/[user]/[slug]/store";
+    import {TicketStatus, TicketDto} from "../../../gen/planeraClient";
+    import {projectHub} from "../../../routes/(main)/projects/[user]/[slug]/store";
     import {getAvatarUrl} from "$lib/clients";
+    import PriorityLabel from "$lib/components/ticket/PriorityLabel.svelte";
 
     export let ticket: TicketDto;
 
@@ -55,10 +54,8 @@
     </div>
     <span class="description">{@html ticket.description}</span>
     <div class="bottom">
-        <span class="priority priority-{priorityToName(ticket.priority)}">
-            {priorityToName(ticket.priority)}
-        </span>
-            <span class="assignees">
+        <PriorityLabel bind:priority={ticket.priority} />
+        <span class="assignees">
             {#each ticket.assignees as assignee}
                 <span class="assignee">
                     <UserIcon name={assignee.username}
@@ -75,7 +72,7 @@
         display: flex
         flex-direction: column
         padding: calc(var(--vertical-padding) * 1.5) calc(var(--horizontal-padding) * 1.5)
-        padding-top: calc(var(--vertical-padding) * 1.5 - 0.3em)
+        padding-top: calc(var(--vertical-padding) * 1.5 - 0.1em)
         margin-bottom: 0.4em
         border: var(--border)
         border-radius: var(--radius)
@@ -183,31 +180,6 @@
     .bottom
         display: flex
         gap: 0.4em
-
-    .priority
-        display: flex
-        align-items: center
-        padding: 0.2em 0.4em
-        border-radius: var(--radius)
-
-        font-size: 0.7em
-        font-weight: 500
-        color: white
-
-        &:global(.priority-None)
-            display: none
-
-        &:global(.priority-Low)
-            background-color: var(--low)
-
-        &:global(.priority-Normal)
-            background-color: var(--normal)
-
-        &:global(.priority-High)
-            background-color: var(--high)
-
-        &:global(.priority-Severe)
-            background-color: var(--severe)
 
     .assignees
         display: flex

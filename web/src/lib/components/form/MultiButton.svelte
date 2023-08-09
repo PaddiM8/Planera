@@ -1,31 +1,47 @@
 <script lang="ts">
-    import {onMount} from "svelte";
+    import {createEventDispatcher, onMount} from "svelte";
 
     export let name: string;
     export let choices: string[];
     export let defaultChoice: string | undefined = undefined;
+    export let selectedIndex: number | undefined;
 
     let defaultInput;
+    let element: HTMLElement;
+    const dispatcher = createEventDispatcher();
+
+    onMount(() => {
+        if (defaultChoice && !selectedIndex) {
+            selectedIndex = choices.indexOf(defaultChoice);
+        }
+    });
 
     export function reset() {
         defaultInput.checked = true;
     }
+
+    function handleChange(e, index: number) {
+        if (e.target.checked) {
+            selectedIndex = index;
+            dispatcher("change", index);
+        }
+    }
 </script>
 
-<span class="multi-button">
-    {#each choices as choice}
-        {#if choice === defaultChoice}
+<span class="multi-button" bind:this={element}>
+    {#each choices as choice, i}
+        {#if selectedIndex === i}
             <input type="radio"
                    id="choice-{choice}"
                    value={choice}
                    name={name}
-                   bind:this={defaultInput}
                    checked />
         {:else}
             <input type="radio"
                    id="choice-{choice}"
                    value={choice}
-                   name={name} />
+                   name={name}
+                   on:change={e => handleChange(e, i)} />
         {/if}
         <label for="choice-{choice}">{choice}</label>
     {/each}

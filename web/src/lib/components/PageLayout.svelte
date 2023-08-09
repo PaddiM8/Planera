@@ -5,7 +5,7 @@
 <style lang="sass">
     #wrapper
         display: grid
-        grid-template-columns: 20em auto
+        grid-template-columns: 16.5em auto
         width: 100%
         background-color: var(--background)
         border-left: var(--border)

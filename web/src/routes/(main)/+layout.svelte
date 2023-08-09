@@ -52,7 +52,7 @@
                 <Icon src={SquaresPlus} />
             </SidebarEntry>
             <SidebarEntry src="/projects/new"
-                          value="Create Project">
+                          value="New Project">
                 <Icon src={PlusSmall} />
             </SidebarEntry>
         </SidebarGroup>

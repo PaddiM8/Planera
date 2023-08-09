@@ -119,7 +119,7 @@
 
     :global(hr)
         border: 0
-        border-top: var(--border)
+        border-bottom: var(--border)
         margin-top: 1.2em
         margin-bottom: 1.2em
 
@@ -178,7 +178,7 @@
 
     .page
         display: flex
-        max-width: 75.2em
+        max-width: 70em
         width: 100%
         height: 100%
         margin: 0 auto

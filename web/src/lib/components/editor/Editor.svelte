@@ -35,7 +35,6 @@
         QuoteDropDrownItem,
         CodeDropDrownItem,
         CodeLanguageDropDown,
-        FontFamilyDropDown,
         FontSizeDropDown,
         BoldButton,
         ItalicButton,
@@ -53,7 +52,10 @@
     import "./editor.css";
     import TaskEditorTheme from "$lib/components/editor/ticketEditorTheme";
     import {onMount} from "svelte";
-    import {$generateHtmlFromNodes as generateHtmlFromNodes} from '@lexical/html';
+    import {
+        $generateHtmlFromNodes as generateHtmlFromNodes,
+        $generateNodesFromDOM as generateNodesFromDOM,
+    } from '@lexical/html';
 
     export let placeholder: string = "";
 
@@ -89,6 +91,19 @@
             editor.update(() => {
                 resolve(generateHtmlFromNodes(editor));
             });
+        });
+    }
+
+    export function setHtml(html: string) {
+        const parser = new DOMParser();
+        const dom = parser.parseFromString(html, "text/html");
+        editor.update(() => {
+            const nodes = generateNodesFromDOM(editor, dom);
+            const root = getRoot();
+            root.clear();
+            for (const node of nodes) {
+                root.append(node);
+            }
         });
     }
 

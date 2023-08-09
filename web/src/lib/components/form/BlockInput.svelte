@@ -2,6 +2,7 @@
     import SuggestionList from "$lib/components/form/SuggestionList.svelte";
     import UserIcon from "$lib/components/UserIcon.svelte";
     import {getAvatarUrl} from "$lib/clients";
+    import {createEventDispatcher} from "svelte";
 
     export let placeholder: string | undefined = undefined;
     export let options: any[];
@@ -21,6 +22,7 @@
     let value: string = "";
     let isFocused: boolean = false;
     let selectedSuggestion: any = undefined;
+    const dispatcher = createEventDispatcher();
 
     function getValue(obj) {
         return key
@@ -30,11 +32,13 @@
 
     function addBlock(value: any) {
         values = [...values, value];
+        dispatcher("add", value);
     }
 
     function popBlock() {
         const children = blockAreaElement.children;
         if (children.length > 0) {
+            dispatcher("remove", values[values.length - 1]);
             values = values.slice(0, values.length - 1);
         }
     }
@@ -65,7 +69,13 @@
     }
 
     function handleBlockClick(item: any) {
-        values = values.filter(x => x != item);
+        values = values.filter(x => {
+            if (x == item) {
+                dispatcher("remove", item);
+            }
+
+            return x != item;
+        });
     }
 
     function handleSelectedSuggestion(e: CustomEvent<{ index: number }>) {
@@ -112,10 +122,10 @@
                on:blur={handleBlur}
                on:keydown={handleKeyDown} />
     </span>
-    <SuggestionList query={value}
+    <SuggestionList bind:query={value}
                     items={options}
                     key={key}
-                    ignored={values}
+                    bind:ignored={values}
                     shown={isFocused}
                     {showUserIcons}
                     bind:selectedValue={selectedSuggestion}
