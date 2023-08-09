@@ -4,45 +4,41 @@
     export let name: string;
     export let choices: string[];
     export let defaultChoice: string | undefined = undefined;
-    export let selectedIndex: number | undefined;
+    export let selectedValue: string;
 
-    let defaultInput;
     let element: HTMLElement;
     const dispatcher = createEventDispatcher();
 
     onMount(() => {
-        if (defaultChoice && !selectedIndex) {
-            selectedIndex = choices.indexOf(defaultChoice);
+        if (!selectedValue) {
+            reset();
         }
     });
 
     export function reset() {
-        defaultInput.checked = true;
+        selectedValue = "";
+
+        if (defaultChoice) {
+            selectedValue = defaultChoice;
+        }
     }
 
-    function handleChange(e, index: number) {
+    function handleChange(e, value: string) {
         if (e.target.checked) {
-            selectedIndex = index;
-            dispatcher("change", index);
+            selectedValue = value;
+            dispatcher("change", value);
         }
     }
 </script>
 
 <span class="multi-button" bind:this={element}>
-    {#each choices as choice, i}
-        {#if selectedIndex === i}
-            <input type="radio"
-                   id="choice-{choice}"
-                   value={choice}
-                   name={name}
-                   checked />
-        {:else}
-            <input type="radio"
-                   id="choice-{choice}"
-                   value={choice}
-                   name={name}
-                   on:change={e => handleChange(e, i)} />
-        {/if}
+    {#each choices as choice}
+        <input type="radio"
+               id="choice-{choice}"
+               value={choice}
+               name={name}
+               bind:group={selectedValue}
+               on:change={e => handleChange(e, choice)} />
         <label for="choice-{choice}">{choice}</label>
     {/each}
 </span>
