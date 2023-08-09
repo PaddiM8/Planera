@@ -80,10 +80,14 @@
     };
 
     let editor;
+    let editorShell: HTMLElement;
     let composer: Composer;
 
     onMount(() => {
         editor = composer.getEditor();
+        for (const toolbarButton of editorShell.querySelectorAll(".toolbar button")) {
+            toolbarButton.setAttribute("tabIndex", "-1");
+        }
     });
 
     export function getHtml(): Promise<string> {
@@ -115,7 +119,7 @@
 </script>
 
 <Composer {initialConfig} bind:this={composer}>
-    <div class="editor-shell">
+    <div class="editor-shell" bind:this={editorShell}>
         <Toolbar let:editor let:activeEditor let:blockType>
             <UndoButton />
             <RedoButton />
