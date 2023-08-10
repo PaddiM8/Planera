@@ -66,12 +66,11 @@
         top: 0
         left: 0
         z-index: -1
-        width: 0
 
     input[type="radio"]:checked + label
         background-color: var(--button-background-selected)
 
-    input[type="radio"]:focus + label
+    input[type="radio"]:focus-visible + label
         position: relative
         outline: 2px solid var(--blue)
         z-index: 999
