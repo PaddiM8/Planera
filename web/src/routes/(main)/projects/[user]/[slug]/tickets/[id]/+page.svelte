@@ -25,7 +25,10 @@
 
     let isEditing = false;
     let editor;
+    let selectedPriorityName: string;
     let previousPriority = data?.ticket?.priority;
+
+    $: selectedPriorityName = TicketPriority[data?.ticket?.priority ?? 0];
 
     async function beforeSubmit({ formData }) {
         formData.append("description", await editor.getHtml());
@@ -170,7 +173,7 @@
         <MultiButton name="priority"
                      choices={["None", "Low", "Normal", "High", "Severe"]}
                      defaultChoice="Normal"
-                     bind:selectedIndex={data.ticket.priority}
+                     bind:selectedValue={selectedPriorityName}
                      on:change={handlePriorityChange}/>
     </span>
     <span class="group">

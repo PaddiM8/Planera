@@ -12,8 +12,10 @@ export const dialog = {
             element.querySelector("h1")!.textContent = title;
             element.querySelector(".message")!.textContent = message;
             element.classList.add("shown");
+            element.focus();
 
             const buttons = element.querySelector(".buttons")!.children;
+            buttons[0].classList.add("close");
             buttons[0].addEventListener("click", () => {
                 resolve(false);
                 backgroundElement?.classList.remove("shown");

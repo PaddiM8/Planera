@@ -1,10 +1,21 @@
 <script lang="ts">
     export let id: string;
     export let title: string;
+
+    function handleKeyDown(e: KeyboardEvent) {
+        const dialog = e.target as HTMLElement;
+        if (e.key === "Enter") {
+            const submitButton = dialog.querySelector("button.primary") as HTMLButtonElement;
+            submitButton.click();
+        } else if (e.key === "Escape") {
+            const closeButton = dialog.querySelector("button.close") as HTMLButtonElement;
+            closeButton.click();
+        }
+    }
 </script>
 
 <div id="dialog-background"></div>
-<div id={id} class="dialog">
+<div id={id} class="dialog" tabindex="0" on:keydown={handleKeyDown}>
     <h1>{title}</h1>
     <slot />
 </div>
@@ -43,6 +54,9 @@
        background-color: var(--background)
        color: var(--on-background)
        z-index: 99999
+
+       &:focus
+           outline: 0
 
    #dialog-background
        position: fixed
