@@ -8,12 +8,18 @@
     export let unreadCount = 0;
     export let settingsSrc: string | undefined = undefined;
 
-    $: path = $page.url.pathname
+    function withTrailingSlash(value: string) {
+        return value?.endsWith("/")
+            ? value
+            : `${value}/`;
+    }
+
+    $: path = withTrailingSlash($page.url.pathname)
 </script>
 
 <a class="entry"
    href={src}
-   class:selected={path === src}>
+   class:selected={(withTrailingSlash(src) !== "/" && path.startsWith(withTrailingSlash(src)) || (src === "/" && path === "/"))}>
     <span class="icon">
         <slot />
     </span>
