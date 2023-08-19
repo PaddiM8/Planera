@@ -19,6 +19,7 @@
     import {goto} from "$app/navigation";
     import NoteEntry from "$lib/components/ticket/NoteEntry.svelte";
     import IconButton from "$lib/components/IconButton.svelte";
+    import {onMount} from "svelte";
 
     export let form;
     export let data: {
@@ -30,7 +31,9 @@
     let selectedPriorityName: string;
     let previousPriority = data?.ticket?.priority;
 
-    $: selectedPriorityName = TicketPriority[data?.ticket?.priority ?? 0];
+    onMount(() => {
+        selectedPriorityName = TicketPriority[data?.ticket?.priority ?? 0];
+    });
 
     async function beforeSubmit({ formData }) {
         formData.append("description", await editor.getHtml());
@@ -74,7 +77,7 @@
     }
 
     async function handlePriorityChange(e: CustomEvent) {
-        const priority = e.detail as TicketPriority;
+        const priority = TicketPriority[e.detail];
         try {
             await $projectHub!.invoke(
                 "setTicketPriority",
@@ -84,6 +87,7 @@
             );
 
             toast.info("Changed priority successfully.", 1500);
+            data.ticket.priority = priority;
             previousPriority = priority;
         } catch {
             toast.error("Failed to change priority.");
