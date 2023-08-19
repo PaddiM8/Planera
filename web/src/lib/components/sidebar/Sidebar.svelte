@@ -8,4 +8,5 @@
         flex-direction: column
         border-right: var(--border)
         padding: 0.4em
+        overflow-y: auto
 </style>

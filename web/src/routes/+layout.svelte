@@ -126,7 +126,8 @@
     #content
         display: grid
         grid-template-rows: auto 1fr
-        min-height: 100vh
+        height: 100vh
+        max-height: 100vh
         background-color: var(--background-secondary)
 
     header
@@ -182,4 +183,5 @@
         width: 100%
         height: 100%
         margin: 0 auto
+        overflow: auto
 </style>

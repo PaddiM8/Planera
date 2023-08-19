@@ -8,6 +8,8 @@
     export let beforeSubmit = undefined;
     export let afterSubmit = undefined;
     export let reset = true;
+    export let horizontal = false;
+    export let smallMargins = false;
 
     let form: HTMLFormElement;
 
@@ -35,6 +37,8 @@
 <form method="POST"
       {action}
       enctype="multipart/form-data"
+      class:horizontal
+      class:small-margins={smallMargins}
       bind:this={form}
       on:keydown={handleKeyDown}
       use:enhance={enhanceHandler}>
@@ -46,7 +50,9 @@
             <ErrorText value={error} />
         {/each}
     </div>
-    <slot></slot>
+    <div class="fields">
+        <slot></slot>
+    </div>
 </form>
 
 <style lang="sass">
@@ -56,7 +62,18 @@
         gap: var(--spacing)
         margin-top: calc(-1 * var(--spacing))
 
+        &.horizontal .fields
+            flex-direction: row
+
+        &.small-margins .fields
+            gap: calc(var(--spacing) / 2)
+
     .errors
         display: flex
         flex-direction: column
+
+    .fields
+        display: flex
+        flex-direction: column
+        gap: var(--spacing)
 </style>

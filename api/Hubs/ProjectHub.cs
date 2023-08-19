@@ -12,15 +12,18 @@ public class ProjectHub : Hub<IProjectHubContext>
 {
     private readonly ProjectService _projectService;
     private readonly TicketService _ticketService;
+    private readonly NoteService _noteService;
     private readonly IHubContext<UserHub, IUserHubContext> _userHub;
 
     public ProjectHub(
         ProjectService projectService,
         TicketService ticketService,
+        NoteService noteService,
         IHubContext<UserHub, IUserHubContext> userHub)
     {
         _projectService = projectService;
         _ticketService = ticketService;
+        _noteService = noteService;
         _userHub = userHub;
     }
 
@@ -133,5 +136,25 @@ public class ProjectHub : Hub<IProjectHubContext>
         await Clients
             .Group(projectId.ToString())
             .OnRemoveParticipant(username);
+    }
+
+    public async Task RemoveNote(int noteId)
+    {
+        var result = await _noteService.RemoveAsync(
+            Context.User!.FindFirst("Id")!.Value,
+            noteId
+        );
+        result.Unwrap();
+    }
+
+    public async Task SetNoteStatus(int noteId, TicketStatus status)
+    {
+        var result = await _noteService.EditAsync(
+            Context.User!.FindFirst("Id")!.Value,
+            noteId,
+            null,
+            status
+        );
+        result.Unwrap();
     }
 }

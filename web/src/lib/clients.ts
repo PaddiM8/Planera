@@ -1,4 +1,4 @@
-import {AuthenticationClient, UserClient, ProjectClient, TicketClient, IConfig} from "../gen/planeraClient";
+import {AuthenticationClient, UserClient, ProjectClient, TicketClient, IConfig, NoteClient} from "../gen/planeraClient";
 
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
@@ -37,4 +37,8 @@ export function getProjectClient(cookies: any): ProjectClient {
 
 export function getTicketClient(cookies: any): TicketClient {
     return new TicketClient(extractToken(cookies), serverUrl, { fetch });
+}
+
+export function getNoteClient(cookies: any): NoteClient {
+    return new NoteClient(extractToken(cookies), serverUrl, { fetch });
 }

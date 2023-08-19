@@ -19,6 +19,8 @@ public class Ticket
 
     public ICollection<User> Assignees { get; set; } = new List<User>();
 
+    public ICollection<Note> Notes { get; set; } = new List<Note>();
+
     public required string AuthorId { get; set; }
 
     public User Author { get; set; } = null!;

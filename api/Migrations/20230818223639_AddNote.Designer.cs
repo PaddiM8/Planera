@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Planera.Data;
 
@@ -10,9 +11,11 @@ using Planera.Data;
 namespace Planera.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230818223639_AddNote")]
+    partial class AddNote
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.7");
@@ -177,20 +180,21 @@ namespace Planera.Migrations
                     b.Property<int>("ProjectId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int>("TicketId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int?>("TicketProjectId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<DateTime>("Timestamp")
+                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
                     b.HasIndex("AuthorId");
 
-                    b.HasIndex("TicketId", "ProjectId");
+                    b.HasIndex("TicketId", "TicketProjectId");
 
                     b.ToTable("Notes");
                 });
@@ -446,9 +450,7 @@ namespace Planera.Migrations
 
                     b.HasOne("Planera.Data.Ticket", "Ticket")
                         .WithMany("Notes")
-                        .HasForeignKey("TicketId", "ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("TicketId", "TicketProjectId");
 
                     b.Navigation("Author");
 

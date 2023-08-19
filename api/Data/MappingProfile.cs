@@ -20,5 +20,6 @@ public class MappingProfile : Profile
                 opt => opt.MapFrom(src => src.Project.Slug)
             );
         CreateMap<Invitation, InvitationDto>();
+        CreateMap<Note, NoteDto>();
     }
 }

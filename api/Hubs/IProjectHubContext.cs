@@ -11,4 +11,6 @@ public interface IProjectHubContext
     public Task OnAddParticipant(UserDto user);
 
     public Task OnRemoveParticipant(string name);
+
+    public Task OnRemoveNote(int noteId);
 }

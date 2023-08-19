@@ -117,6 +117,7 @@ builder.Services.AddTransient<TicketService>();
 builder.Services.AddTransient<IFileStorage, FileStorage>();
 builder.Services.AddTransient<ImagePreparer>();
 builder.Services.AddTransient<EmailService>();
+builder.Services.AddTransient<NoteService>();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 builder.Services.AddCors(options =>

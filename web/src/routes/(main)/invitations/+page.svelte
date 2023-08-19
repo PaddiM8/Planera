@@ -4,6 +4,7 @@
     import {toast} from "$lib/toast";
     import {invitations} from "../store";
     import {userHub} from "../store";
+    import IconButton from "$lib/components/IconButton.svelte";
 
     async function handleAccept(invitation: ProjectDto) {
         await $userHub!.invoke("acceptInvitation", invitation.id);
@@ -39,14 +40,14 @@
                 </span>
                 <span class="description">{invitation.description}</span>
             </div>
-            <span class="choice decline" on:click={() => handleDecline(invitation)}>
-                <span class="icon"><Icon src={XMark} /></span>
-                <span class="text">Decline</span>
-            </span>
-            <span class="choice accept" on:click={() => handleAccept(invitation)}>
-                <span class="icon"><Icon src={Check} /></span>
-                <span class="text">Accept</span>
-            </span>
+            <IconButton value="Decline"
+                        icon={XMark}
+                        color="red"
+                        on:click={() => handleDecline(invitation)} />
+            <IconButton value="Accept"
+                        icon={Check}
+                        color="green"
+                        on:click={() => handleAccept(invitation)} />
         </div>
     {/each}
 </section>
@@ -84,6 +85,7 @@
             display: flex
             white-space: nowrap
             max-width: calc(100% - 10.75em)
+            margin-right: auto
 
         .name
             font-weight: 450

@@ -7,7 +7,7 @@
     import BlockInput from "$lib/components/form/BlockInput.svelte";
     import MultiButton from "$lib/components/form/MultiButton.svelte";
     import PriorityLabel from "$lib/components/ticket/PriorityLabel.svelte";
-    import {Icon, PencilSquare, Trash} from "svelte-hero-icons";
+    import {PencilSquare, Trash} from "svelte-hero-icons";
     import Editor from "$lib/components/editor/Editor.svelte";
     import Form from "$lib/components/form/Form.svelte";
     import Input from "$lib/components/form/Input.svelte";
@@ -17,6 +17,8 @@
     import {TicketPriority, UserDto} from "../../../../../../../gen/planeraClient";
     import {projectHub} from "../../store";
     import {goto} from "$app/navigation";
+    import NoteEntry from "$lib/components/ticket/NoteEntry.svelte";
+    import IconButton from "$lib/components/IconButton.svelte";
 
     export let form;
     export let data: {
@@ -127,7 +129,7 @@
 </script>
 
 <div class="edit-area" class:hidden={!isEditing}>
-    <Form {beforeSubmit} {afterSubmit} problem={form?.problem} reset={false}>
+    <Form action="?/edit" {beforeSubmit} {afterSubmit} problem={form?.problem} reset={false}>
         <input type="hidden" name="projectId" value={data.ticket.projectId} />
         <input type="hidden" name="ticketId" value={data.ticket.id} />
 
@@ -143,12 +145,8 @@
     <div class="top">
         <h2>{data.ticket.title}</h2>
         <div class="icons">
-            <span class="icon" on:click={handleRemove}>
-                <Icon src={Trash} />
-            </span>
-            <span class="icon" on:click={handleEdit}>
-                <Icon src={PencilSquare} />
-            </span>
+            <IconButton icon={Trash} on:click={handleRemove} />
+            <IconButton icon={PencilSquare} on:click={handleEdit} />
         </div>
     </div>
     <div class="about">
@@ -194,13 +192,29 @@
 
 <hr>
 <h2>Notes</h2>
+<Form action="?/addNote" problem={form?.problem} horizontal>
+    <input type="hidden" name="projectId" value={data.ticket.projectId} />
+    <input type="hidden" name="ticketId" value={data.ticket.id} />
+
+    <Input name="content" placeholder="Write something..." />
+    <Button primary submit value="Add" />
+</Form>
+
+<section class="notes">
+    {#each data?.ticket.notes as note}
+        <NoteEntry bind:note
+                   editAction="?/editNote"
+                   on:remove={e => data.ticket.notes = data.ticket.notes.filter(x => x.id !== e.detail)} />
+    {/each}
+</section>
 
 <style lang="sass">
     :global(.hidden)
         display: none
 
     h2
-        margin-bottom: 0.2em
+        margin-top: 0.2em
+        margin-bottom: 0.6em
 
     .top
         display: flex
@@ -208,13 +222,12 @@
 
         .icons
             display: flex
-            gap: 0.6em
+            gap: 0.5em
             margin-left: auto
             color: var(--on-background-inactive)
 
-            .icon
-                width: 1.4em
-                height: 1.4em
+        :global(.icons > *)
+            font-size: 1em
 
     :global(.top .icons > *)
         cursor: pointer
@@ -274,4 +287,10 @@
         display: flex
         align-items: center
         gap: 0.8em
+
+    .notes
+        display: flex
+        flex-direction: column
+        gap: var(--spacing)
+        margin-top: var(--spacing)
 </style>

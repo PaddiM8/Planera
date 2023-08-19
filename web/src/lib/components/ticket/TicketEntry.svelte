@@ -5,6 +5,7 @@
     import {projectHub} from "../../../routes/(main)/projects/[user]/[slug]/store";
     import {getAvatarUrl} from "$lib/clients";
     import PriorityLabel from "$lib/components/ticket/PriorityLabel.svelte";
+    import IconButton from "$lib/components/IconButton.svelte";
 
     export let ticket: TicketDto;
 
@@ -37,18 +38,18 @@
             <h3 class="title">{ticket.title}</h3>
         </a>
         <div class="status-buttons">
-            <button class="status-button close" on:click={() => setStatus(TicketStatus.Closed)}>
-                <span class="icon"><Icon src={XMark} /></span>
-                <span class="text">Close</span>
-            </button>
-            <button class="status-button inactive" on:click={() => setStatus(TicketStatus.Inactive)}>
-                <span class="icon"><Icon src={Minus} /></span>
-                <span class="text">Inactive</span>
-            </button>
-            <button class="status-button done" on:click={() => setStatus(TicketStatus.Done)}>
-                <span class="icon"><Icon src={Check} /></span>
-                <span class="text">Done</span>
-            </button>
+            <IconButton value="Close"
+                        icon={XMark}
+                        color="red"
+                        on:click={() => setStatus(TicketStatus.Closed)} />
+            <IconButton value="Inactive"
+                        icon={Minus}
+                        color="blue"
+                        on:click={() => setStatus(TicketStatus.Inactive)} />
+            <IconButton value="Done"
+                        icon={Check}
+                        color="green"
+                        on:click={() => setStatus(TicketStatus.Done)} />
         </div>
         <h3 class="id">{ticket.id}</h3>
     </div>
@@ -110,7 +111,7 @@
         &:hover
             text-decoration: underline
 
-    .ticket:not(:hover) .status-button, .ticket.has-status .status-button
+    .ticket:not(:hover) .status-buttons, .ticket.has-status .status-buttons
         visibility: hidden
 
     .status-buttons
@@ -118,34 +119,6 @@
         gap: 0.4em
         margin-left: auto
         margin-right: 0.4em
-
-    .status-button
-        display: flex
-        align-items: center
-        background-color: transparent
-        border: 0
-        padding: 0.3em 0.4em
-        border-radius: var(--radius)
-        font-family: inherit
-        font-weight: 500
-        cursor: pointer
-
-        &:hover
-            background-color: var(--background-hover)
-
-        &.done .icon
-            color: var(--green)
-
-        &.inactive .icon
-            color: var(--blue)
-
-        &.close .icon
-            color: var(--red)
-
-        .icon
-            display: block
-            margin-right: 0.1em
-            height: 1.4em
 
     .id
         margin-top: 0

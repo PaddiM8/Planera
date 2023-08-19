@@ -7,6 +7,7 @@
         display: grid
         grid-template-columns: 16.5em auto
         width: 100%
+        max-height: 100%
         background-color: var(--background)
         border-left: var(--border)
         border-right: var(--border)

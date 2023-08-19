@@ -19,6 +19,9 @@ public class TicketService
         _projectService = projectService;
     }
 
+    public static ErrorOr<T> TicketNotFoundError<T>()
+        => Error.Conflict("Ticket.NotFound", "Ticket was not found.");
+
     private async Task<ErrorOr<Ticket>> FindAsync(string userId, int projectId, int ticketId)
     {
         var project = await _projectService
@@ -29,9 +32,7 @@ public class TicketService
 
         var ticket = await _dataContext.Tickets.FindAsync(ticketId, projectId);
 
-        return ticket == null
-            ? Error.NotFound("TicketId.NotFound", "A ticket with the given ID was not found.")
-            : ticket;
+        return ticket ?? TicketNotFoundError<Ticket>();
     }
 
     public async Task<ErrorOr<TicketDto>> GetAsync(
@@ -50,11 +51,12 @@ public class TicketService
         var ticket = await _dataContext.Tickets
             .Where(x => x.Id == ticketId && x.ProjectId == project.Id)
             .Include(x => x.Assignees)
+            .Include(x => x.Notes)
             .SingleOrDefaultAsync();
-        if (ticket == null)
-            return Error.NotFound("TicketId.NotFound", "A ticket with the given ID was not found.");
 
-        return _mapper.Map<TicketDto>(ticket);
+        return ticket == null
+            ? TicketNotFoundError<TicketDto>()
+            : _mapper.Map<TicketDto>(ticket);
     }
 
     public async Task<ErrorOr<TicketDto>> AddTicketAsync(

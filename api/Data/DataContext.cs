@@ -7,13 +7,16 @@ public class DataContext : IdentityDbContext<User>
 {
     public DbSet<Project> Projects { get; set; } = null!;
 
-    public DbSet<Ticket> Tickets { get; set; } = null!;
-
-    public DbSet<ProjectParticipant> ProjectParticipants { get; set; } = null!;
 
     public DbSet<TicketAssignee> TicketAssignees { get; set; } = null!;
 
+    public DbSet<ProjectParticipant> ProjectParticipants { get; set; } = null!;
+
     public DbSet<Invitation> Invitations { get; set; } = null!;
+
+    public DbSet<Ticket> Tickets { get; set; } = null!;
+
+    public DbSet<Note> Notes { get; set; } = null!;
 
     public DataContext(DbContextOptions<DataContext> context)
         : base(context)
@@ -33,6 +36,11 @@ public class DataContext : IdentityDbContext<User>
             .HasMany(e => e.Assignees)
             .WithMany(e => e.AssignedTickets)
             .UsingEntity<TicketAssignee>();
+        modelBuilder.Entity<Ticket>()
+            .HasMany(e => e.Notes)
+            .WithOne(e => e.Ticket)
+            .HasForeignKey(e => new { e.TicketId, e.ProjectId })
+            .IsRequired();
         modelBuilder.Entity<Project>()
             .HasMany(e => e.Participants)
             .WithMany(e => e.JoinedProjects)
