@@ -21,4 +21,6 @@ public class TicketDto
     public required UserDto Author { get; set; }
 
     public TicketStatus Status { get; set; }
+
+    public DateTime Timestamp { get; set; }
 }

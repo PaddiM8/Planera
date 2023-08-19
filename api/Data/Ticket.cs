@@ -26,4 +26,6 @@ public class Ticket
     public User Author { get; set; } = null!;
 
     public TicketStatus Status { get; set; }
+
+    public required DateTime Timestamp { get; set; }
 }

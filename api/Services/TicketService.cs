@@ -73,9 +73,11 @@ public class TicketService
         if (project == null)
             return ProjectService.ProjectNotFoundError<TicketDto>();
 
-        int id = await _dataContext.Tickets
+        var lastTicket = await _dataContext.Tickets
             .Where(x => x.ProjectId == project.Id)
-            .CountAsync() + 1;
+            .OrderByDescending(x => x.Id)
+            .FirstOrDefaultAsync();
+        int id = lastTicket?.Id + 1 ?? 1;
         var assignees = await _dataContext.Users
             .Where(x => assigneeIds.Contains(x.Id))
             .ToListAsync();
@@ -88,6 +90,7 @@ public class TicketService
             Priority = priority,
             Assignees = assignees,
             AuthorId = userId,
+            Timestamp = DateTime.Now,
         };
         await _dataContext.Tickets.AddAsync(ticket);
         await _dataContext.SaveChangesAsync();
