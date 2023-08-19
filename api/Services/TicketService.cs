@@ -50,6 +50,7 @@ public class TicketService
 
         var ticket = await _dataContext.Tickets
             .Where(x => x.Id == ticketId && x.ProjectId == project.Id)
+            .Include(x => x.Project)
             .Include(x => x.Assignees)
             .Include(x => x.Notes)
             .SingleOrDefaultAsync();

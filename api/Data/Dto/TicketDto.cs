@@ -8,6 +8,8 @@ public class TicketDto
 
     public required string ProjectSlug { get; set; }
 
+    public ProjectDto? Project { get; set; }
+
     public required string Title { get; set; }
 
     public required string Description { get; set; }
