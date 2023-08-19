@@ -59,13 +59,15 @@
 <style lang="sass">
     @use "@fontsource-variable/inter"
 
+    :global(*)
+        font-family: "Inter", sans-serif
+
     :global(body)
         width: 100%
         height: 100%
 
         padding: 0
         margin: 0
-        font-family: "Inter", sans-serif
 
     :global(:root)
         --background: #fafaf9

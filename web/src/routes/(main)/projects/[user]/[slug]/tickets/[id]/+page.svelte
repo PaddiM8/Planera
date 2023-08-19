@@ -20,6 +20,7 @@
     import NoteEntry from "$lib/components/ticket/NoteEntry.svelte";
     import IconButton from "$lib/components/IconButton.svelte";
     import {onMount} from "svelte";
+    import BackButton from "$lib/components/BackButton.svelte";
 
     export let form;
     export let data: {
@@ -131,7 +132,7 @@
         }
     }
 </script>
-
+<BackButton placeName="Project" href="../" />
 <div class="edit-area" class:hidden={!isEditing}>
     <Form action="?/edit" {beforeSubmit} {afterSubmit} problem={form?.problem} reset={false}>
         <input type="hidden" name="projectId" value={data.ticket.projectId} />
