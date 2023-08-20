@@ -28,7 +28,9 @@
     }
 
     function handleKeyDown(e: KeyboardEvent) {
-        if (e.ctrlKey && e.key === "Enter") {
+        const target = e.target as HTMLElement;
+        const isTextArea = target.getAttribute("type") === "textarea" || target.getAttribute("contenteditable");
+        if (isTextArea && e.ctrlKey && e.key === "Enter") {
             form.requestSubmit();
         }
     }
