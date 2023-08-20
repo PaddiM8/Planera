@@ -68,6 +68,8 @@ public class TicketService
         TicketPriority priority,
         IEnumerable<string> assigneeIds)
     {
+        await using var transaction = await _dataContext.Database.BeginTransactionAsync();
+
         var project = await _projectService
             .QueryById(userId, projectId)
             .SingleOrDefaultAsync();
@@ -95,6 +97,7 @@ public class TicketService
         };
         await _dataContext.Tickets.AddAsync(ticket);
         await _dataContext.SaveChangesAsync();
+        await transaction.CommitAsync();
 
         return _mapper.Map<TicketDto>(ticket);
     }
