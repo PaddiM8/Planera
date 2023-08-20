@@ -43,7 +43,7 @@ export const actions = {
                 } as CreateNoteModel,
             );
         } catch (ex) {
-            return handleProblemForForm(ex as SwaggerException);
+            return handleProblemForForm(ex as SwaggerException, "addNoteProblem");
         }
     },
     editNote: async ({ request, cookies }: RequestEvent) => {
@@ -56,7 +56,7 @@ export const actions = {
                 } as EditNoteModel,
             );
         } catch (ex) {
-            return handleProblemForForm(ex as SwaggerException);
+            return handleProblemForForm(ex as SwaggerException, "editNoteProblem");
         }
     }
 };

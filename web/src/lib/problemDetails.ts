@@ -32,8 +32,10 @@ export function handleProblem(exception: SwaggerException) {
     throw error(problem.status ?? 400, problem.summary);
 }
 
-export function handleProblemForForm(exception: SwaggerException) {
+export function handleProblemForForm(exception: SwaggerException, fieldName = "problem") {
     const problem = toProblemDetails(exception);
+    const data: any = {};
+    data[fieldName] = problem;
 
-    return fail(problem.status ?? 400, { problem });
+    return fail(problem.status ?? 400, data);
 }

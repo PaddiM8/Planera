@@ -21,8 +21,13 @@
     import IconButton from "$lib/components/IconButton.svelte";
     import {onMount} from "svelte";
     import BackButton from "$lib/components/BackButton.svelte";
+    import type {ProblemDetails} from "$lib/problemDetails";
 
-    export let form;
+    export let form: {
+        problem: ProblemDetails,
+        addNoteProblem: ProblemDetails,
+        editNoteProblem: ProblemDetails,
+    };
     export let data: {
         ticket: TicketDto,
     };
@@ -197,7 +202,7 @@
 
 <hr>
 <h2>Notes</h2>
-<Form action="?/addNote" problem={form?.problem} horizontal>
+<Form action="?/addNote" problem={form?.addNoteProblem} horizontal>
     <input type="hidden" name="projectId" value={data.ticket.projectId} />
     <input type="hidden" name="ticketId" value={data.ticket.id} />
 
@@ -209,6 +214,7 @@
     {#each data?.ticket.notes as note}
         <NoteEntry bind:note
                    editAction="?/editNote"
+                   problem={form?.editNoteProblem}
                    on:remove={e => data.ticket.notes = data.ticket.notes.filter(x => x.id !== e.detail)} />
     {/each}
 </section>

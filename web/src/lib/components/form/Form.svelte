@@ -67,8 +67,11 @@
         &.horizontal .fields
             flex-direction: row
 
-        &.small-margins .fields
-            gap: calc(var(--spacing) / 2)
+        &.small-margins
+            margin-top: calc(-0.5 * var(--spacing))
+
+            .fields
+                gap: calc(var(--spacing) / 2)
 
     .errors
         display: flex

@@ -10,13 +10,14 @@
     import Button from "$lib/components/form/Button.svelte";
     import Form from "$lib/components/form/Form.svelte";
     import {formatDate} from "$lib/formatting";
+    import type {ProblemDetails} from "$lib/problemDetails";
 
     export let note: NoteDto;
     export let editAction: string;
+    export let problem: ProblemDetails;
 
     let isEditing = false;
     let editedContent: string;
-    let form;
     const dispatcher = createEventDispatcher();
 
     async function setStatus(status: TicketStatus) {
@@ -97,7 +98,7 @@
     {#if isEditing}
         <Form action={editAction}
               {afterSubmit}
-              problem={form?.problem}
+              {problem}
               reset={false}
               horizontal
               smallMargins>
