@@ -1,10 +1,10 @@
 <script lang="ts">
     import {createEventDispatcher, onMount} from "svelte";
 
-    export let name: string;
     export let choices: string[];
-    export let defaultChoice: string | undefined = undefined;
     export let selectedValue: string;
+    export let defaultChoice: string | undefined = undefined;
+    export let name: string | undefined = undefined;
 
     let element: HTMLElement;
     const dispatcher = createEventDispatcher();
@@ -48,6 +48,8 @@
 <style lang="sass">
     .multi-button
         display: flex
+        border: var(--border)
+        border-radius: var(--radius)
 
     .button
         position: relative
@@ -68,7 +70,7 @@
         z-index: -1
 
     input[type="radio"]:checked + label
-        background-color: var(--button-background-selected)
+        background-color: var(--background-hover)
 
     input[type="radio"]:focus-visible + label
         position: relative
@@ -76,20 +78,20 @@
         z-index: 999
 
     .button:not(:last-of-type) input[type="radio"]:focus + label
-        border-right: 1px solid var(--button-background-selected)
+        border-right: var(--border)
 
     input[type="radio"] + label
         display: block
         content: ""
         padding: var(--vertical-padding) var(--horizontal-padding)
         border: 0
-        border-right: 1px solid var(--button-background-hover)
-        background-color: var(--button-background)
-        color: var(--on-button-background)
+        border-right: var(--border)
+        background-color: var(--component-background)
+        color: var(--on-background)
         font-weight: 450
         user-select: none
         cursor: pointer
 
         &:hover:not(input[type="radio"]:checked + label)
-            background-color: var(--button-background-hover)
+            background-color: var(--background-hover)
 </style>
