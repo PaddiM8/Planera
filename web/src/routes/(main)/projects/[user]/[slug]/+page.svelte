@@ -14,6 +14,8 @@
     import {getAvatarUrl} from "$lib/clients";
     import UserIcon from "$lib/components/UserIcon.svelte";
     import {toast} from "$lib/toast";
+    import Select from "$lib/components/form/Select.svelte";
+    import {TicketSorting, TicketStatus} from "../../../../../gen/planeraClient";
 
     export let data: {
         project: ProjectDto,
@@ -46,6 +48,23 @@
     let editor;
     let assignees;
     let priority;
+    let searchQuery: string;
+    let filterByStatus: string = "All";
+    let sorting: string = "Newest";
+    const filterMap = {
+        "All": null,
+        "Open": TicketStatus.None,
+        "Closed": TicketStatus.Closed,
+        "Inactive": TicketStatus.Inactive,
+        "Done": TicketStatus.Done,
+    };
+    const sortingMap = {
+        "Newest": TicketSorting.Newest,
+        "Oldest": TicketSorting.Oldest,
+        "Highest Priority": TicketSorting.HighestPriority,
+        "Lowest Priority": TicketSorting.LowestPriority,
+    };
+    let queryTimeout: number;
 
     async function beforeSubmit({ formData }) {
         formData.append("description", await editor.getHtml());
@@ -58,6 +77,26 @@
             assignees.reset();
             toast.info("Created ticket successfully.");
         }
+    }
+
+    function query() {
+        const newTimeout = setTimeout(async () => {
+            clearTimeout(queryTimeout);
+            queryTimeout = newTimeout;
+
+            try {
+                data.tickets = await $projectHub!.invoke(
+                    "queryTickets",
+                    data.project.author.username,
+                    data.project.slug,
+                    searchQuery,
+                    sortingMap[sorting],
+                    filterMap[filterByStatus],
+                );
+            } catch {
+                toast.error("Failed to fetch tickets.");
+            }
+        }, 500);
     }
 </script>
 
@@ -113,6 +152,17 @@
 
 <section class="tickets">
     <h2>Tickets</h2>
+    <div class="search-area" style="display:flex; gap: 0.8em; margin-bottom: 0.8em">
+        <Input placeholder="Search..."
+               bind:value={searchQuery}
+               on:input={query} />
+        <Select choices={Object.keys(filterMap)}
+                bind:selectedValue={filterByStatus}
+                on:change={query} />
+        <Select choices={Object.keys(sortingMap)}
+                bind:selectedValue={sorting}
+                on:change={query} />
+    </div>
     {#each data.tickets as ticket}
         <TicketEntry bind:ticket={ticket} />
     {/each}

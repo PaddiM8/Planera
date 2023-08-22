@@ -13,10 +13,6 @@
 
     const dispatch = createEventDispatcher();
 
-    function handleInput(e) {
-        dispatch("input", e.detail);
-    }
-
     function handleKeyDown(e) {
         if (e.key === "Enter" && submitButton) {
             submitButton.click();
@@ -35,7 +31,7 @@
                bind:value={value}
                placeholder={placeholder}
                {name}
-               on:input={handleInput}
+               on:input
                on:keydown={handleKeyDown} />
     {:else if type === "password"}
         <input type="password"
@@ -43,7 +39,7 @@
                bind:value={value}
                {placeholder}
                {name}
-               on:input={handleInput}
+               on:input
                on:keydown={handleKeyDown} />
     {:else if type === "email"}
         <input type="email"
@@ -51,7 +47,7 @@
                bind:value={value}
                placeholder={placeholder}
                {name}
-               on:input={handleInput}
+               on:input
                on:keydown={handleKeyDown} />
     {/if}
 </div>

@@ -1,16 +1,14 @@
-import type {ServerLoadEvent} from "@sveltejs/kit";
-import type {TicketDto} from "../../../../../gen/planeraClient";
-import {getProjectClient, getTicketClient} from "$lib/clients";
-import type {RequestEvent} from "@sveltejs/kit";
+import type {RequestEvent, ServerLoadEvent} from "@sveltejs/kit";
+import type {CreateTicketModel, SwaggerException, TicketDto} from "../../../../../gen/planeraClient";
+import {TicketSorting} from "../../../../../gen/planeraClient";
+import {getTicketClient} from "$lib/clients";
 import {parsePriority} from "$lib/priority";
 import {handleProblem, handleProblemForForm} from "$lib/problemDetails";
-import type {SwaggerException} from "../../../../../gen/planeraClient";
-import type {CreateTicketModel} from "../../../../../gen/planeraClient";
 
 export async function load({ cookies, params }: ServerLoadEvent) {
     let response: TicketDto[];
     try {
-        response = await getProjectClient(cookies).getTickets(params.user!, params.slug!);
+        response = await getTicketClient(cookies).getAll(params.user!, params.slug!);
     } catch (ex) {
         return handleProblem(ex as SwaggerException);
     }

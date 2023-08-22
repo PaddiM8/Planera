@@ -104,19 +104,6 @@ public class ProjectController : ControllerBase
         return result.ToActionResult();
     }
 
-    [HttpGet("{username}/{slug}/tickets")]
-    [ProducesResponseType(typeof(ICollection<TicketDto>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetTickets(string username, string slug)
-    {
-        var result = await _projectService.GetTicketsAsync(
-            User.FindFirst("Id")!.Value,
-            username,
-            slug
-        );
-
-        return result.ToActionResult();
-    }
-
     [HttpPut("{projectId}/inviteParticipant")]
     [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> InviteParticipant(int projectId, string participantName)

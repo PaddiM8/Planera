@@ -32,6 +32,38 @@ public class TicketController : ControllerBase
         return result.ToActionResult();
     }
 
+    [HttpGet("{username}/{slug}")]
+    [ProducesResponseType(typeof(IEnumerable<TicketDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAll(string username, string slug) {
+        var result = await _ticketService.GetAllAsync(
+            User.FindFirst("Id")!.Value,
+            username,
+            slug
+        );
+
+        return result.ToActionResult();
+    }
+
+    [HttpGet("{username}/{slug}/query")]
+    [ProducesResponseType(typeof(IEnumerable<TicketDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAll(
+        string username,
+        string slug,
+        TicketSorting sorting,
+        TicketStatus? filterByStatus)
+    {
+        var result = await _ticketService.GetAllAsync(
+            User.FindFirst("Id")!.Value,
+            username,
+            slug,
+            searchQuery: null,
+            sorting,
+            filterByStatus
+        );
+
+        return result.ToActionResult();
+    }
+
     [HttpPost("{projectId}")]
     [ProducesResponseType(typeof(TicketDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> Create(int projectId, [FromBody] CreateTicketModel model)

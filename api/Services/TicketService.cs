@@ -1,8 +1,10 @@
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Planera.Data;
 using ErrorOr;
 using Microsoft.EntityFrameworkCore;
 using Planera.Data.Dto;
+using Planera.Models.Ticket;
 
 namespace Planera.Services;
 
@@ -58,6 +60,45 @@ public class TicketService
         return ticket == null
             ? TicketNotFoundError<TicketDto>()
             : _mapper.Map<TicketDto>(ticket);
+    }
+
+    public async Task<ErrorOr<IEnumerable<TicketDto>>> GetAllAsync(
+        string userId,
+        string username,
+        string slug,
+        string? searchQuery = null,
+        TicketSorting sorting = TicketSorting.Newest,
+        TicketStatus? filterByStatus = null)
+    {
+        var project = await _projectService
+            .QueryBySlug(userId, username, slug)
+            .SingleOrDefaultAsync();
+        if (project == null)
+            return ProjectService.ProjectNotFoundError<IEnumerable<TicketDto>>();
+
+        var query = _dataContext.Tickets
+            .Where(x => x.ProjectId == project.Id);
+
+        if (searchQuery != null)
+            query = query.Where(x => x.Title.Contains(searchQuery));
+
+        if (filterByStatus != null)
+            query = query.Where(x => x.Status == filterByStatus);
+
+        query = sorting switch
+        {
+            TicketSorting.Newest => query.OrderByDescending(x => x.Timestamp),
+            TicketSorting.Oldest => query.OrderBy(x => x.Timestamp),
+            TicketSorting.HighestPriority => query.OrderByDescending(x => x.Priority),
+            TicketSorting.LowestPriority => query.OrderBy(x => x.Priority),
+            _ => throw new ArgumentException("sorting"),
+        };
+
+        return await query
+            .Include(x => x.Author)
+            .Include(x => x.Assignees)
+            .ProjectTo<TicketDto>(_mapper.ConfigurationProvider)
+            .ToListAsync();
     }
 
     public async Task<ErrorOr<TicketDto>> AddTicketAsync(

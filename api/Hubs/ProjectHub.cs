@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.SignalR;
 using Planera.Data;
 using Planera.Data.Dto;
 using Planera.Extensions;
+using Planera.Models.Ticket;
 using Planera.Services;
 
 namespace Planera.Hubs;
@@ -35,6 +36,25 @@ public class ProjectHub : Hub<IProjectHubContext>
     public async Task Leave(int projectId)
     {
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, projectId.ToString());
+    }
+
+    public async Task<IEnumerable<TicketDto>> QueryTickets(
+        string username,
+        string slug,
+        string? query = null,
+        TicketSorting sorting = TicketSorting.Newest,
+        TicketStatus? orderByStatus = null)
+    {
+        var result = await _ticketService.GetAllAsync(
+            Context.User!.FindFirst("Id")!.Value,
+            username,
+            slug,
+            query,
+            sorting,
+            orderByStatus
+        );
+
+        return result.Unwrap();
     }
 
     public async Task RemoveTicket(int projectId, int ticketId)

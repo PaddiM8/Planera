@@ -229,23 +229,6 @@ public class ProjectService
         return new ErrorOr<Deleted>();
     }
 
-    public async Task<ErrorOr<ICollection<TicketDto>>> GetTicketsAsync(
-        string userId,
-        string authorName,
-        string slug)
-    {
-        var project = await QueryBySlug(userId, authorName, slug)
-            .Include(x => x.Tickets)
-            .ThenInclude(x => x.Author)
-            .Include(x => x.Tickets)
-            .ThenInclude(x => x.Assignees)
-            .SingleOrDefaultAsync();
-
-        return project == null
-            ? ProjectNotFoundError<ICollection<TicketDto>>()
-            : ErrorOrFactory.From(_mapper.Map<ICollection<TicketDto>>(project.Tickets));
-    }
-
     public async Task<ErrorOr<(UserDto user, ProjectDto project)>> InviteParticipantAsync(
         string userId,
         int projectId,
