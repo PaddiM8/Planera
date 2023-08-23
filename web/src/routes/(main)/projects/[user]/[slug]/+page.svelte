@@ -16,6 +16,7 @@
     import {toast} from "$lib/toast";
     import Select from "$lib/components/form/Select.svelte";
     import {TicketSorting, TicketStatus} from "../../../../../gen/planeraClient";
+    import {beforeNavigate} from "$app/navigation";
 
     export let data: {
         project: ProjectDto,
@@ -25,8 +26,21 @@
         errors: { string: string[] } | undefined,
     };
 
+    let modified = false;
+
+    beforeNavigate(({ cancel }) => {
+        if (modified && !confirm("Are you sure you want to leave this page? You have unsaved changes that will be lost.")) {
+            cancel();
+        }
+    });
 
     onMount(async () => {
+        window.onbeforeunload = () => {
+            if (modified) {
+                return true;
+            }
+        }
+
         projectHub.subscribe(hub => {
             if (!hub) {
                 return;
@@ -72,6 +86,7 @@
 
     function afterSubmit(success: boolean) {
         if (success) {
+            modified = false;
             editor.reset();
             priority.reset();
             assignees.reset();
@@ -121,8 +136,8 @@
     <Form {beforeSubmit} {afterSubmit} problem={form?.problem}>
         <input type="hidden" name="projectId" value={data.project.id} />
 
-        <Input type="text" name="title" placeholder="Title..." />
-        <Editor placeholder="Describe the ticket..." bind:this={editor} />
+        <Input type="text" name="title" placeholder="Title..." on:input={() => modified = true} />
+        <Editor placeholder="Describe the ticket..." bind:this={editor} on:input={() => modified = true} />
         <div class="bottom-row">
             <span class="group">
                 <span class="label">

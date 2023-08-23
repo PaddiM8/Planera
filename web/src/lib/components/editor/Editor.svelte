@@ -51,7 +51,7 @@
 
     import "./editor.css";
     import TaskEditorTheme from "$lib/components/editor/ticketEditorTheme";
-    import {onMount} from "svelte";
+    import {createEventDispatcher, onMount} from "svelte";
     import {
         $generateHtmlFromNodes as generateHtmlFromNodes,
         $generateNodesFromDOM as generateNodesFromDOM,
@@ -82,12 +82,19 @@
     let editor;
     let editorShell: HTMLElement;
     let composer: Composer;
+    const dispatcher = createEventDispatcher();
 
     onMount(() => {
         editor = composer.getEditor();
         for (const toolbarButton of editorShell.querySelectorAll(".toolbar button")) {
             toolbarButton.setAttribute("tabIndex", "-1");
         }
+
+        const config = { attributes: false, childList: true, subtree: true };
+        const observer = new MutationObserver(() => {
+            dispatcher("input");
+        });
+        observer.observe(editorShell.querySelector("[contenteditable]"), config);
     });
 
     export function getHtml(): Promise<string> {

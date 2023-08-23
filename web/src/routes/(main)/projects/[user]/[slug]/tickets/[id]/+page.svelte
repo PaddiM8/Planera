@@ -16,7 +16,7 @@
     import {toast} from "$lib/toast";
     import {TicketPriority, UserDto} from "../../../../../../../gen/planeraClient";
     import {projectHub} from "../../store";
-    import {goto} from "$app/navigation";
+    import {beforeNavigate, goto} from "$app/navigation";
     import NoteEntry from "$lib/components/ticket/NoteEntry.svelte";
     import IconButton from "$lib/components/IconButton.svelte";
     import {onMount} from "svelte";
@@ -36,9 +36,22 @@
     let editor;
     let selectedPriorityName: string;
     let previousPriority = data?.ticket?.priority;
+    let noteInput: string;
+
+    beforeNavigate(({ cancel }) => {
+        if ((noteInput || isEditing) && !confirm("Are you sure you want to leave this page? You have unsaved changes that will be lost.")) {
+            cancel();
+        }
+    });
 
     onMount(() => {
         selectedPriorityName = TicketPriority[data?.ticket?.priority ?? 0];
+
+        window.onbeforeunload = () => {
+            if (noteInput || isEditing) {
+                return true;
+            }
+        }
     });
 
     async function beforeSubmit({ formData }) {
@@ -206,7 +219,7 @@
     <input type="hidden" name="projectId" value={data.ticket.projectId} />
     <input type="hidden" name="ticketId" value={data.ticket.id} />
 
-    <Input name="content" placeholder="Write something..." />
+    <Input name="content" placeholder="Write something..." bind:value={noteInput} />
     <Button primary submit value="Add" />
 </Form>
 
