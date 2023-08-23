@@ -41,6 +41,8 @@ public class ProjectHub : Hub<IProjectHubContext>
     public async Task<IEnumerable<TicketDto>> QueryTickets(
         string username,
         string slug,
+        int startIndex,
+        int amount,
         string? query = null,
         TicketSorting sorting = TicketSorting.Newest,
         TicketStatus? orderByStatus = null)
@@ -49,6 +51,8 @@ public class ProjectHub : Hub<IProjectHubContext>
             Context.User!.FindFirst("Id")!.Value,
             username,
             slug,
+            startIndex,
+            amount,
             query,
             sorting,
             orderByStatus

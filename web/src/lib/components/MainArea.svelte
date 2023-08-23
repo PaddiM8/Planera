@@ -1,4 +1,4 @@
-<main>
+<main id="main-area">
     <slot></slot>
 </main>
 

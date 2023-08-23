@@ -1,14 +1,19 @@
 import type {RequestEvent, ServerLoadEvent} from "@sveltejs/kit";
 import type {CreateTicketModel, SwaggerException, TicketDto} from "../../../../../gen/planeraClient";
-import {TicketSorting} from "../../../../../gen/planeraClient";
 import {getTicketClient} from "$lib/clients";
 import {parsePriority} from "$lib/priority";
 import {handleProblem, handleProblemForForm} from "$lib/problemDetails";
+import {ticketsPerPage} from "./store";
 
 export async function load({ cookies, params }: ServerLoadEvent) {
     let response: TicketDto[];
     try {
-        response = await getTicketClient(cookies).getAll(params.user!, params.slug!);
+        response = await getTicketClient(cookies).getAll(
+            params.user!,
+            params.slug!,
+            0,
+            ticketsPerPage,
+        );
     } catch (ex) {
         return handleProblem(ex as SwaggerException);
     }

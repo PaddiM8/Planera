@@ -10,7 +10,7 @@
     import TicketEntry from "$lib/components/ticket/TicketEntry.svelte";
     import {onMount} from "svelte";
     import {participants} from "../../../store";
-    import {projectHub} from "./store";
+    import {projectHub, ticketsPerPage} from "./store";
     import {getAvatarUrl} from "$lib/clients";
     import UserIcon from "$lib/components/UserIcon.svelte";
     import {toast} from "$lib/toast";
@@ -27,6 +27,7 @@
     };
 
     let modified = false;
+    let reachedEndOfTickets = false;
 
     beforeNavigate(({ cancel }) => {
         if (modified && !confirm("Are you sure you want to leave this page? You have unsaved changes that will be lost.")) {
@@ -41,6 +42,13 @@
             }
         }
 
+        document.getElementById("main-area").onscroll = e => {
+            const target = e.target as HTMLElement;
+            if (target.scrollTop + target.clientHeight >= target.scrollHeight - 100) {
+                loadMore();
+            }
+        }
+
         projectHub.subscribe(hub => {
             if (!hub) {
                 return;
@@ -49,6 +57,27 @@
             hub.on("onUpdateTicket", onUpdateTicket);
         });
     });
+
+    async function loadMore() {
+        if (reachedEndOfTickets) {
+            return;
+        }
+
+        const newTickets = await $projectHub!.invoke(
+            "queryTickets",
+            data.project.author.username,
+            data.project.slug,
+            data.tickets.length,
+            ticketsPerPage,
+            searchQuery,
+            sortingMap[sorting],
+            filterMap[filterByStatus],
+        );
+        data.tickets = [...data.tickets, ...newTickets];
+        if (newTickets.length === 0) {
+            reachedEndOfTickets = true;
+        }
+    }
 
     function onUpdateTicket(projectId: number, ticketId: number, newFields: TicketDto) {
         const index = data.tickets.findIndex(x => x.id === ticketId);
@@ -95,6 +124,7 @@
     }
 
     function query() {
+        reachedEndOfTickets = false;
         const newTimeout = setTimeout(async () => {
             clearTimeout(queryTimeout);
             queryTimeout = newTimeout;
@@ -104,6 +134,8 @@
                     "queryTickets",
                     data.project.author.username,
                     data.project.slug,
+                    0,
+                    ticketsPerPage,
                     searchQuery,
                     sortingMap[sorting],
                     filterMap[filterByStatus],

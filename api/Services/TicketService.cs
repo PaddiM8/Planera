@@ -66,6 +66,8 @@ public class TicketService
         string userId,
         string username,
         string slug,
+        int startIndex,
+        int amount,
         string? searchQuery = null,
         TicketSorting sorting = TicketSorting.Newest,
         TicketStatus? filterByStatus = null)
@@ -97,6 +99,8 @@ public class TicketService
         return await query
             .Include(x => x.Author)
             .Include(x => x.Assignees)
+            .Skip(startIndex)
+            .Take(amount)
             .ProjectTo<TicketDto>(_mapper.ConfigurationProvider)
             .ToListAsync();
     }

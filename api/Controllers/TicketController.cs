@@ -34,11 +34,13 @@ public class TicketController : ControllerBase
 
     [HttpGet("{username}/{slug}")]
     [ProducesResponseType(typeof(IEnumerable<TicketDto>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAll(string username, string slug) {
+    public async Task<IActionResult> GetAll(string username, string slug, int startIndex, int amount) {
         var result = await _ticketService.GetAllAsync(
             User.FindFirst("Id")!.Value,
             username,
-            slug
+            slug,
+            startIndex,
+            amount
         );
 
         return result.ToActionResult();
@@ -49,6 +51,8 @@ public class TicketController : ControllerBase
     public async Task<IActionResult> GetAll(
         string username,
         string slug,
+        int startIndex,
+        int amount,
         TicketSorting sorting,
         TicketStatus? filterByStatus)
     {
@@ -56,6 +60,8 @@ public class TicketController : ControllerBase
             User.FindFirst("Id")!.Value,
             username,
             slug,
+            startIndex,
+            amount,
             searchQuery: null,
             sorting,
             filterByStatus
