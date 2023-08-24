@@ -150,7 +150,7 @@
         }
     }
 </script>
-<BackButton placeName={data?.ticket.project.name} href="../" />
+<BackButton placeName={data?.ticket.project.name} />
 <div class="edit-area" class:hidden={!isEditing}>
     <Form action="?/edit" {beforeSubmit} {afterSubmit} problem={form?.problem} reset={false}>
         <input type="hidden" name="projectId" value={data.ticket.projectId} />

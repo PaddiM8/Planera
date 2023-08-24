@@ -2,23 +2,18 @@
     import {ArrowLongLeft, Icon} from "svelte-hero-icons";
 
     export let placeName: string;
-    export let href: string | undefined;
+    export let href: string | undefined = "../";
 </script>
 
-<a {href}>
-    <button on:click>
+<a href={href}>
     <span class="icon">
         <Icon src={ArrowLongLeft} />
     </span>
-        <span class="text">Back to {placeName}</span>
-    </button>
+    <span class="text">Back to {placeName}</span>
 </a>
 
 <style lang="sass">
     a
-        text-decoration: none
-
-    button
         display: flex
         align-items: center
         gap: 0.4em
@@ -29,6 +24,7 @@
         background-color: transparent
         font-size: 1em
         font-weight: 500
+        text-decoration: none
         cursor: pointer
 
         &:hover

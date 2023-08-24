@@ -21,6 +21,8 @@ public class Project
 
     public string? IconPath { get; set; }
 
+    public required DateTime Timestamp { get; set; }
+
     public ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
 
     public ICollection<User> Participants { get; set; } = new List<User>();

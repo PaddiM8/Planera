@@ -106,9 +106,11 @@ public class ProjectService
             Slug = slug.ToLower(),
             Name = name,
             Description = description,
+            Timestamp = DateTime.Now,
             Participants = new List<User> { author },
         };
 
+        Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(project));
 
         await using var transaction = await _dataContext.Database.BeginTransactionAsync();
         await _dataContext.Projects.AddAsync(project);
@@ -116,7 +118,11 @@ public class ProjectService
         _fileStorage.CreateDirectory(project.Id.ToString());
 
         if (icon?.StartsWith("data:") is not true)
+        {
+            await transaction.CommitAsync();
+
             return project.Id;
+        }
 
         // Expected format of icon: `data:image/png;base64,BASE64STRING==`
         var bytes = Convert.FromBase64String(icon.Split(",")[1]);

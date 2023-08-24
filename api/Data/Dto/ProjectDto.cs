@@ -17,5 +17,7 @@ public class ProjectDto
 
     public string? IconPath { get; set; }
 
+    public required DateTime Timestamp { get; set; }
+
     public ICollection<UserDto> Participants { get; set; } = new List<UserDto>();
 }
