@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Planera.Data;
 
@@ -10,9 +11,11 @@ using Planera.Data;
 namespace Planera.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230824200736_GuidProjectId")]
+    partial class GuidProjectId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.7");
@@ -199,6 +202,7 @@ namespace Planera.Migrations
             modelBuilder.Entity("Planera.Data.Project", b =>
                 {
                     b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("AuthorId")
@@ -293,6 +297,10 @@ namespace Planera.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("TicketProjectId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ProjectId")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("UserId", "TicketId", "TicketProjectId");

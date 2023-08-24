@@ -19,11 +19,12 @@ public class NoteController : ControllerBase
 
     [HttpGet("{projectId}/{ticketId}")]
     [ProducesResponseType(typeof(ICollection<TicketDto>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAll(int projectId, int ticketId)
+    public async Task<IActionResult> GetAll(string projectId, int ticketId)
     {
         var result = await _noteService.GetAllAsync(
             User.FindFirst("Id")!.Value,
-            ticketId, projectId
+            projectId,
+            ticketId
         );
 
         return result.ToActionResult();
@@ -35,7 +36,8 @@ public class NoteController : ControllerBase
         var result = await _noteService.AddAsync(
             User.FindFirst("Id")!.Value,
             model.ProjectId,
-            model.TicketId, model.Content
+            model.TicketId,
+            model.Content
         );
 
         return result.ToActionResult();

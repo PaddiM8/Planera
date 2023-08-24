@@ -5,7 +5,7 @@ namespace Planera.Data.Dto;
 
 public class ProjectDto
 {
-    public int Id { get; init; }
+    public required string Id { get; init; }
 
     public required string Slug { get; init; }
 

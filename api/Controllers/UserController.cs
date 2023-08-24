@@ -73,7 +73,7 @@ public class UserController : ControllerBase
 
     [HttpPost("invitations/{projectId}/accept")]
     [ProducesResponseType(typeof(InvitationDto), StatusCodes.Status200OK)]
-    public async Task<IActionResult> AcceptInvitation(int projectId)
+    public async Task<IActionResult> AcceptInvitation(string projectId)
     {
         var result = await _userService.AcceptInvitation(
             User.FindFirst("Id")!.Value, projectId
@@ -83,7 +83,7 @@ public class UserController : ControllerBase
     }
 
     [HttpPost("invitations/{projectId}/decline")]
-    public async Task<IActionResult> DeclineInvitation(int projectId)
+    public async Task<IActionResult> DeclineInvitation(string projectId)
     {
         var result = await _userService.DeclineInvitation(
             User.FindFirst("Id")!.Value, projectId

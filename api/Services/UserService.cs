@@ -122,7 +122,7 @@ public class UserService
             .ToListAsync();
     }
 
-    public async Task<ErrorOr<InvitationDto>> AcceptInvitation(string userId, int projectId)
+    public async Task<ErrorOr<InvitationDto>> AcceptInvitation(string userId, string projectId)
     {
         var invitation = await _dataContext.Invitations
             .Where(x => x.UserId == userId)
@@ -145,7 +145,7 @@ public class UserService
         return _mapper.Map<InvitationDto>(invitation);
     }
 
-    public async Task<ErrorOr<Updated>> DeclineInvitation(string userId, int projectId)
+    public async Task<ErrorOr<Updated>> DeclineInvitation(string userId, string projectId)
     {
         var invitation = await _dataContext.Invitations
             .Where(x => x.UserId == userId)

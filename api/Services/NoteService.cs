@@ -23,7 +23,7 @@ public class NoteService
     public static ErrorOr<T> NoteNotFoundError<T>()
         => Error.Conflict("Note.NotFound", "Note was not found.");
 
-    public async Task<ErrorOr<List<NoteDto>>> GetAllAsync(string userId, int projectId, int ticketId)
+    public async Task<ErrorOr<List<NoteDto>>> GetAllAsync(string userId, string projectId, int ticketId)
     {
         var project = await _projectService
             .QueryById(userId, projectId)
@@ -37,7 +37,7 @@ public class NoteService
             .ToListAsync();
     }
 
-    public async Task<ErrorOr<NoteDto>> AddAsync(string userId, int projectId, int ticketId, string content)
+    public async Task<ErrorOr<NoteDto>> AddAsync(string userId, string projectId, int ticketId, string content)
     {
         var project = await _projectService
             .QueryById(userId, projectId)

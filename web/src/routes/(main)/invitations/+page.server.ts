@@ -9,7 +9,7 @@ export const actions = {
         const formData = await request.formData();
         try {
             await getUserClient(cookies).acceptInvitation(
-                Number(formData.get("projectId")),
+                formData.get("projectId") as string,
             );
         } catch (ex) {
             return handleProblemForForm(ex as SwaggerException);
@@ -19,7 +19,7 @@ export const actions = {
         const formData = await request.formData();
         try {
             await getUserClient(cookies).declineInvitation(
-                Number(formData.get("projectId")),
+                formData.get("projectId") as string,
             );
         } catch (ex) {
             return handleProblemForForm(ex as SwaggerException);

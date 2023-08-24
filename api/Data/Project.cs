@@ -6,8 +6,7 @@ namespace Planera.Data;
 [Index(nameof(AuthorId), nameof(Slug), IsUnique = true)]
 public class Project
 {
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public int Id { get; set; }
+    public required string Id { get; set; }
 
     public required string Slug { get; set; }
 

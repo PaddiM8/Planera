@@ -12,5 +12,5 @@ public class CreateNoteModel
     public required int TicketId { get; init; }
 
     [Required]
-    public required int ProjectId { get; init; }
+    public required string ProjectId { get; init; }
 }

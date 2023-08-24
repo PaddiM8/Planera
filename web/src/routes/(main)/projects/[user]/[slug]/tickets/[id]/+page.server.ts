@@ -22,7 +22,7 @@ export const actions = {
         const formData = await request.formData();
         try {
             await getTicketClient(cookies).edit(
-                Number(formData.get("projectId")),
+                formData.get("projectId") as string,
                 Number(formData.get("ticketId")),
                 {
                     title: formData.get("title") as string,
@@ -37,8 +37,8 @@ export const actions = {
         const formData = await request.formData();
         try {
             await getNoteClient(cookies).create({
+                    projectId: formData.get("projectId") as string,
                     ticketId: Number(formData.get("ticketId")),
-                    projectId: Number(formData.get("projectId")),
                     content: formData.get("content") as string,
                 } as CreateNoteModel,
             );

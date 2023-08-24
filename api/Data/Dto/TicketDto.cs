@@ -4,7 +4,7 @@ public class TicketDto
 {
     public required int Id { get; set; }
 
-    public required int ProjectId { get; set; }
+    public required string ProjectId { get; set; }
 
     public required string ProjectSlug { get; set; }
 

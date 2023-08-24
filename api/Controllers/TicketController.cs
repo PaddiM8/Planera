@@ -72,7 +72,7 @@ public class TicketController : ControllerBase
 
     [HttpPost("{projectId}")]
     [ProducesResponseType(typeof(TicketDto), StatusCodes.Status200OK)]
-    public async Task<IActionResult> Create(int projectId, [FromBody] CreateTicketModel model)
+    public async Task<IActionResult> Create(string projectId, [FromBody] CreateTicketModel model)
     {
         var result = await _ticketService.AddTicketAsync(
             User.FindFirst("Id")!.Value,
@@ -87,7 +87,7 @@ public class TicketController : ControllerBase
     }
 
     [HttpPost("{projectId}/{ticketId}")]
-    public async Task<IActionResult> Edit(int projectId, int ticketId, [FromBody] EditTicketModel model)
+    public async Task<IActionResult> Edit(string projectId, int ticketId, [FromBody] EditTicketModel model)
     {
         var result = await _ticketService.EditTicketAsync(
             User.FindFirst("Id")!.Value,
@@ -101,7 +101,7 @@ public class TicketController : ControllerBase
     }
 
     [HttpDelete("{projectId}/{ticketId}")]
-    public async Task<IActionResult> Delete(int projectId, int ticketId)
+    public async Task<IActionResult> Delete(string projectId, int ticketId)
     {
         var result = await _ticketService.RemoveTicketAsync(
             User.FindFirst("Id")!.Value,
@@ -113,7 +113,7 @@ public class TicketController : ControllerBase
     }
 
     [HttpPatch("{projectId}/{ticketId}/status")]
-    public async Task<IActionResult> SetStatus(int projectId, int ticketId, TicketStatus status)
+    public async Task<IActionResult> SetStatus(string projectId, int ticketId, TicketStatus status)
     {
         var result = await _ticketService.SetStatus(
             User.FindFirst("Id")!.Value,

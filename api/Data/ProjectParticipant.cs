@@ -2,7 +2,7 @@ namespace Planera.Data;
 
 public class ProjectParticipant
 {
-    public int ProjectId { get; set; }
+    public string ProjectId { get; set; } = null!;
 
     public Project Project { get; set; } = null!;
 

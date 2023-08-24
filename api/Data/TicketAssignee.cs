@@ -2,8 +2,6 @@ namespace Planera.Data;
 
 public class TicketAssignee
 {
-    public int ProjectId { get; set; }
-
     public int TicketId { get; set; }
 
     public Ticket Ticket { get; set; } = null!;

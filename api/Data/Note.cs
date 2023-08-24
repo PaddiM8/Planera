@@ -13,7 +13,7 @@ public class Note
 
     public TicketStatus Status { get; set; }
 
-    public required int ProjectId { get; set; }
+    public required string ProjectId { get; set; }
 
     public required int TicketId { get; set; }
 

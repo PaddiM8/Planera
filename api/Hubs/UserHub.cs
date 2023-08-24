@@ -17,7 +17,7 @@ public class UserHub : Hub<IUserHubContext>
         _projectHub = projectHub;
     }
 
-    public async Task AcceptInvitation(int projectId)
+    public async Task AcceptInvitation(string projectId)
     {
         string userId = Context.User!.FindFirst("Id")!.Value;
         var result = await _userService.AcceptInvitation(userId, projectId);
@@ -27,11 +27,11 @@ public class UserHub : Hub<IUserHubContext>
             .User(Context.User!.Identity!.Name!)
             .OnAddProject(invitation.Project);
         await _projectHub.Clients
-            .Group(projectId.ToString())
+            .Group(projectId)
             .OnAddParticipant(invitation.User);
     }
 
-    public async Task DeclineInvitation(int projectId)
+    public async Task DeclineInvitation(string projectId)
     {
         string userId = Context.User!.FindFirst("Id")!.Value;
         var result = await _userService.DeclineInvitation(userId, projectId);

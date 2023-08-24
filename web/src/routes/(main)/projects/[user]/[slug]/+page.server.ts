@@ -27,7 +27,7 @@ export const actions = {
         const formData = await request.formData();
         try {
             await getTicketClient(cookies).create(
-                Number(formData.get("projectId")),
+                formData.get("projectId") as string,
                 {
                     title: formData.get("title") as string,
                     description: formData.get("description") as string,

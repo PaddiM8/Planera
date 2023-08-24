@@ -34,7 +34,7 @@ public class ProjectService
     public static ErrorOr<T> ProjectNotFoundError<T>()
         => Error.Conflict("Project.NotFound", "Project was not found.");
 
-    public IQueryable<Project> QueryById(string userId, int projectId)
+    public IQueryable<Project> QueryById(string userId, string projectId)
     {
         return _dataContext.Projects
             .Where(x => x.Id == projectId)
@@ -81,7 +81,7 @@ public class ProjectService
         return project;
     }
 
-    public async Task<ErrorOr<int>> AddAsync(
+    public async Task<ErrorOr<string>> AddAsync(
         string authorId,
         string slug,
         string name,
@@ -102,6 +102,7 @@ public class ProjectService
 
         var project = new Project
         {
+            Id = Guid.NewGuid().ToString(),
             AuthorId = authorId,
             Slug = slug.ToLower(),
             Name = name,
@@ -110,12 +111,10 @@ public class ProjectService
             Participants = new List<User> { author },
         };
 
-        Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(project));
-
         await using var transaction = await _dataContext.Database.BeginTransactionAsync();
         await _dataContext.Projects.AddAsync(project);
         await _dataContext.SaveChangesAsync();
-        _fileStorage.CreateDirectory(project.Id.ToString());
+        _fileStorage.CreateDirectory(project.Id);
 
         if (icon?.StartsWith("data:") is not true)
         {
@@ -129,7 +128,7 @@ public class ProjectService
         var avatar256 = ImagePreparer.Resize(bytes, 256, 256);
         var avatar32 = ImagePreparer.Resize(bytes, 32, 32);
         project.IconPath = await _fileStorage.WriteManyAsync(
-            project.Id.ToString(),
+            project.Id,
             (avatar256, "256"),
             (avatar32, "32")
         );
@@ -180,7 +179,7 @@ public class ProjectService
             var avatar256 = ImagePreparer.Resize(bytes, 256, 256);
             var avatar32 = ImagePreparer.Resize(bytes, 32, 32);
             project.IconPath = await _fileStorage.WriteManyAsync(
-                project.Id.ToString(),
+                project.Id,
                 (avatar256, "256"),
                 (avatar32, "32")
             );
@@ -220,7 +219,7 @@ public class ProjectService
         return new ErrorOr<Updated>();
     }
 
-    public async Task<ErrorOr<Deleted>> RemoveAsync(string userId, int projectId)
+    public async Task<ErrorOr<Deleted>> RemoveAsync(string userId, string projectId)
     {
         var project = await QueryById(userId, projectId)
             .SingleOrDefaultAsync();
@@ -230,14 +229,14 @@ public class ProjectService
         _dataContext.Projects.Remove(project);
         await _dataContext.SaveChangesAsync();
 
-        _fileStorage.DeleteDirectory(projectId.ToString());
+        _fileStorage.DeleteDirectory(projectId);
 
         return new ErrorOr<Deleted>();
     }
 
     public async Task<ErrorOr<(UserDto user, ProjectDto project)>> InviteParticipantAsync(
         string userId,
-        int projectId,
+        string projectId,
         string participantName)
     {
         var project = await QueryById(userId, projectId)
@@ -262,7 +261,7 @@ public class ProjectService
 
     public async Task<ErrorOr<Deleted>> RemoveParticipantAsync(
         string userId,
-        int projectId,
+        string projectId,
         string participantName)
     {
         var project = await QueryById(userId, projectId)
@@ -288,7 +287,7 @@ public class ProjectService
         return new ErrorOr<Deleted>();
     }
 
-    private async Task<ErrorOr<Deleted>> RemoveInvitation(int projectId, string inviteeName)
+    private async Task<ErrorOr<Deleted>> RemoveInvitation(string projectId, string inviteeName)
     {
         var invitation = await _dataContext.Invitations
             .Where(x => x.User.NormalizedUserName == _normalizer.NormalizeName(inviteeName))

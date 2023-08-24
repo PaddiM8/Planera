@@ -24,7 +24,7 @@ public class TicketService
     public static ErrorOr<T> TicketNotFoundError<T>()
         => Error.Conflict("Ticket.NotFound", "Ticket was not found.");
 
-    private async Task<ErrorOr<Ticket>> FindAsync(string userId, int projectId, int ticketId)
+    private async Task<ErrorOr<Ticket>> FindAsync(string userId, string projectId, int ticketId)
     {
         var project = await _projectService
             .QueryById(userId, projectId)
@@ -107,7 +107,7 @@ public class TicketService
 
     public async Task<ErrorOr<TicketDto>> AddTicketAsync(
         string userId,
-        int projectId,
+        string projectId,
         string title,
         string description,
         TicketPriority priority,
@@ -149,7 +149,7 @@ public class TicketService
 
     public async Task<ErrorOr<Updated>> EditTicketAsync(
         string userId,
-        int projectId,
+        string projectId,
         int ticketId,
         string title,
         string description)
@@ -169,7 +169,7 @@ public class TicketService
 
     public async Task<ErrorOr<Deleted>> RemoveTicketAsync(
         string userId,
-        int projectId,
+        string projectId,
         int ticketId)
     {
         var ticketResult = await FindAsync(userId, projectId, ticketId);
@@ -185,7 +185,7 @@ public class TicketService
 
     public async Task<ErrorOr<Updated>> SetStatus(
         string userId,
-        int projectId,
+        string projectId,
         int ticketId,
         TicketStatus status)
     {
@@ -203,7 +203,7 @@ public class TicketService
 
     public async Task<ErrorOr<Updated>> SetPriorityAsync(
         string userId,
-        int projectId,
+        string projectId,
         int ticketId,
         TicketPriority priority)
     {
@@ -221,7 +221,7 @@ public class TicketService
 
     public async Task<ErrorOr<Updated>> AddAssigneeAsync(
         string userId,
-        int projectId,
+        string projectId,
         int ticketId,
         string assigneeId)
     {
@@ -247,7 +247,7 @@ public class TicketService
 
     public async Task<ErrorOr<Deleted>> RemoveAssigneeAsync(
         string userId,
-        int projectId,
+        string projectId,
         int ticketId,
         string assigneeId)
     {

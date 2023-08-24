@@ -28,12 +28,12 @@ public class ProjectHub : Hub<IProjectHubContext>
         _userHub = userHub;
     }
 
-    public async Task Join(int projectId)
+    public async Task Join(string projectId)
     {
         await Groups.AddToGroupAsync(Context.ConnectionId, projectId.ToString());
     }
 
-    public async Task Leave(int projectId)
+    public async Task Leave(string projectId)
     {
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, projectId.ToString());
     }
@@ -61,7 +61,7 @@ public class ProjectHub : Hub<IProjectHubContext>
         return result.Unwrap();
     }
 
-    public async Task RemoveTicket(int projectId, int ticketId)
+    public async Task RemoveTicket(string projectId, int ticketId)
     {
         var result = await _ticketService.RemoveTicketAsync(
             Context.User!.FindFirst("Id")!.Value,
@@ -75,7 +75,7 @@ public class ProjectHub : Hub<IProjectHubContext>
             .OnRemoveTicket(projectId, ticketId);
     }
 
-    public async Task SetTicketStatus(int projectId, int ticketId, TicketStatus status)
+    public async Task SetTicketStatus(string projectId, int ticketId, TicketStatus status)
     {
         var result = await _ticketService.SetStatus(
             Context.User!.FindFirst("Id")!.Value,
@@ -94,7 +94,7 @@ public class ProjectHub : Hub<IProjectHubContext>
             .OnUpdateTicket(projectId, ticketId, newFields);
     }
 
-    public async Task SetTicketPriority(int projectId, int ticketId, TicketPriority priority)
+    public async Task SetTicketPriority(string projectId, int ticketId, TicketPriority priority)
     {
         var result = await _ticketService.SetPriorityAsync(
             Context.User!.FindFirst("Id")!.Value,
@@ -113,7 +113,7 @@ public class ProjectHub : Hub<IProjectHubContext>
             .OnUpdateTicket(projectId, ticketId, newFields);
     }
 
-    public async Task AddTicketAssignee(int projectId, int ticketId, string assigneeId)
+    public async Task AddTicketAssignee(string projectId, int ticketId, string assigneeId)
     {
         var result = await _ticketService.AddAssigneeAsync(
             Context.User!.FindFirst("Id")!.Value,
@@ -124,7 +124,7 @@ public class ProjectHub : Hub<IProjectHubContext>
         result.Unwrap();
     }
 
-    public async Task RemoveTicketAssignee(int projectId, int ticketId, string assigneeId)
+    public async Task RemoveTicketAssignee(string projectId, int ticketId, string assigneeId)
     {
         var result = await _ticketService.RemoveAssigneeAsync(
             Context.User!.FindFirst("Id")!.Value,
@@ -135,7 +135,7 @@ public class ProjectHub : Hub<IProjectHubContext>
         result.Unwrap();
     }
 
-    public async Task Invite(int projectId, string username)
+    public async Task Invite(string projectId, string username)
     {
         var result = await _projectService.InviteParticipantAsync(
             Context.User!.FindFirst("Id")!.Value,
@@ -148,7 +148,7 @@ public class ProjectHub : Hub<IProjectHubContext>
             .OnAddInvitation(result.Unwrap().project);
     }
 
-    public async Task RemoveParticipant(int projectId, string username)
+    public async Task RemoveParticipant(string projectId, string username)
     {
         var result = await _projectService.RemoveParticipantAsync(
             Context.User!.FindFirst("Id")!.Value,
@@ -158,7 +158,7 @@ public class ProjectHub : Hub<IProjectHubContext>
         result.Unwrap();
 
         await Clients
-            .Group(projectId.ToString())
+            .Group(projectId)
             .OnRemoveParticipant(username);
     }
 

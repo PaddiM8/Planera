@@ -94,7 +94,7 @@ public class ProjectController : ControllerBase
     }
 
     [HttpDelete("{projectId}")]
-    public async Task<IActionResult> Remove(int projectId)
+    public async Task<IActionResult> Remove(string projectId)
     {
         var result = await _projectService.RemoveAsync(
             User.FindFirst("Id")!.Value,
@@ -106,7 +106,7 @@ public class ProjectController : ControllerBase
 
     [HttpPut("{projectId}/inviteParticipant")]
     [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
-    public async Task<IActionResult> InviteParticipant(int projectId, string participantName)
+    public async Task<IActionResult> InviteParticipant(string projectId, string participantName)
     {
         var result = await _projectService.InviteParticipantAsync(
             User.FindFirst("Id")!.Value,
@@ -121,7 +121,7 @@ public class ProjectController : ControllerBase
     }
 
     [HttpDelete("{projectId}/removeParticipant")]
-    public async Task<IActionResult> RemoveParticipant(int projectId, string participantName)
+    public async Task<IActionResult> RemoveParticipant(string projectId, string participantName)
     {
         var result = await _projectService.RemoveParticipantAsync(
             User.FindFirst("Id")!.Value,

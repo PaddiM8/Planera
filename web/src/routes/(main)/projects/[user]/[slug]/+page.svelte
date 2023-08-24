@@ -79,7 +79,7 @@
         }
     }
 
-    function onUpdateTicket(projectId: number, ticketId: number, newFields: TicketDto) {
+    function onUpdateTicket(projectId: string, ticketId: number, newFields: TicketDto) {
         const index = data.tickets.findIndex(x => x.id === ticketId);
         if (index !== -1) {
             for (const [key, value] of Object.entries(newFields)) {
