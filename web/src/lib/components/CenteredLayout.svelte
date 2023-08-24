@@ -7,7 +7,12 @@
         width: 100%
         max-width: 25rem
         margin-left: 50%
-        margin-top: 50%
+        margin-top: 50vh
         transform: translate(-50%, -50%)
-        padding-bottom: 20em
+
+    @media screen and (max-width: 580px)
+        #content
+            max-width: none
+            margin: 2em
+            transform: none
 </style>
