@@ -89,6 +89,7 @@
     }
 
     let editor;
+    let titleInput: HTMLInputElement;
     let assignees;
     let priority;
     let searchQuery: string;
@@ -115,10 +116,13 @@
 
     function afterSubmit(success: boolean) {
         if (success) {
-            modified = false;
             editor.reset();
             priority.reset();
             assignees.reset();
+            setTimeout(() => {
+                modified = false;
+                titleInput.focus();
+            }, 100);
             toast.info("Created ticket successfully.");
         }
     }
@@ -168,7 +172,12 @@
     <Form {beforeSubmit} {afterSubmit} problem={form?.problem}>
         <input type="hidden" name="projectId" value={data.project.id} />
 
-        <Input type="text" name="title" placeholder="Title..." on:input={() => modified = true} />
+        <Input type="text"
+               name="title"
+               placeholder="Title..."
+               autofocus
+               bind:this={titleInput}
+               on:input={() => modified = true} />
         <Editor placeholder="Describe the ticket..." bind:this={editor} on:input={() => modified = true} />
         <div class="bottom-row">
             <span class="group">

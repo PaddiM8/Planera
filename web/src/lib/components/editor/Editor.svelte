@@ -35,7 +35,6 @@
         QuoteDropDrownItem,
         CodeDropDrownItem,
         CodeLanguageDropDown,
-        FontSizeDropDown,
         BoldButton,
         ItalicButton,
         UnderlineButton,
@@ -46,7 +45,7 @@
         InsertHRDropDownItem,
         DropDownAlign,
         HistoryPlugin,
-        $getRoot as getRoot,
+        $getRoot as getRoot, FloatingLinkEditorPlugin, CodeHighlightPlugin, CodeActionMenuPlugin, CAN_USE_DOM,
     } from "svelte-lexical";
 
     import "./editor.css";
@@ -56,6 +55,7 @@
         $generateHtmlFromNodes as generateHtmlFromNodes,
         $generateNodesFromDOM as generateNodesFromDOM,
     } from '@lexical/html';
+    import {browser} from "$app/environment";
 
     export let placeholder: string = "";
 
@@ -80,13 +80,23 @@
     };
 
     let editor;
-    let editorShell: HTMLElement;
+    let editorShellElement: HTMLElement;
+    let editorElement: HTMLElement;
     let composer: Composer;
+    let isSmallWidthViewport = false;
     const dispatcher = createEventDispatcher();
+
+    function updateViewPortWidth() {
+        const isNextSmallWidthViewport = CAN_USE_DOM && window.matchMedia("(max-width: 1025px)").matches;
+
+        if (isNextSmallWidthViewport !== isSmallWidthViewport) {
+            isSmallWidthViewport = isNextSmallWidthViewport;
+        }
+    }
 
     onMount(() => {
         editor = composer.getEditor();
-        for (const toolbarButton of editorShell.querySelectorAll(".toolbar button")) {
+        for (const toolbarButton of editorShellElement.querySelectorAll(".toolbar button")) {
             toolbarButton.setAttribute("tabIndex", "-1");
         }
 
@@ -94,7 +104,14 @@
         const observer = new MutationObserver(() => {
             dispatcher("input");
         });
-        observer.observe(editorShell.querySelector("[contenteditable]"), config);
+        observer.observe(editorShellElement.querySelector("[contenteditable]"), config);
+
+        // Keep track of viewport size
+        window.addEventListener("resize", updateViewPortWidth);
+
+        return () => {
+            window.removeEventListener("resize", updateViewPortWidth);
+        };
     });
 
     export function getHtml(): Promise<string> {
@@ -126,7 +143,7 @@
 </script>
 
 <Composer {initialConfig} bind:this={composer}>
-    <div class="editor-shell" bind:this={editorShell}>
+    <div class="editor-shell" bind:this={editorShellElement}>
         <Toolbar let:editor let:activeEditor let:blockType>
             <UndoButton />
             <RedoButton />
@@ -148,8 +165,6 @@
             {#if blockType === "code"}
                 <CodeLanguageDropDown />
             {:else}
-                <FontSizeDropDown />
-                <Divider />
                 <BoldButton />
                 <ItalicButton />
                 <UnderlineButton />
@@ -163,10 +178,11 @@
                 <Divider />
             {/if}
             <DropDownAlign />
+            <Divider />
         </Toolbar>
         <div class="editor-container tree-view">
             <div class="editor-scroller">
-                <div class="editor">
+                <div class="editor" bind:this={editorElement}>
                     <ContentEditable />
                     <PlaceHolder>{placeholder}</PlaceHolder>
                 </div>
@@ -182,6 +198,11 @@
                 <CaptionEditorHistoryPlugin />
             </ImagePlugin>
             <LinkPlugin {validateUrl} />
+            {#if !isSmallWidthViewport && browser}
+                <FloatingLinkEditorPlugin anchorElem={editorElement} />
+                <CodeHighlightPlugin />
+                <CodeActionMenuPlugin anchorElem={editorElement} />
+            {/if}
         </div>
     </div>
 </Composer>

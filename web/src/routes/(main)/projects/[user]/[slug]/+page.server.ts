@@ -29,8 +29,8 @@ export const actions = {
             await getTicketClient(cookies).create(
                 formData.get("projectId") as string,
                 {
-                    title: formData.get("title") as string,
-                    description: formData.get("description") as string,
+                    title: (formData.get("title") as string).trim(),
+                    description: (formData.get("description") as string).trim(),
                     priority: parsePriority(formData.get("priority") as string),
                     assigneeIds: formData.getAll("assignee").map(x => x as string),
                 } as CreateTicketModel);

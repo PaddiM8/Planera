@@ -10,8 +10,13 @@
     export let placeholder: string;
     export let label: string | undefined = undefined;
     export let submitButton: Button | undefined = undefined;
+    export let autofocus = false;
 
-    const dispatch = createEventDispatcher();
+    let wrapperElement: HTMLElement;
+
+    export function focus() {
+        (wrapperElement.firstElementChild as HTMLInputElement).focus();
+    }
 
     function handleKeyDown(e) {
         if (e.key === "Enter" && submitButton) {
@@ -20,7 +25,7 @@
     }
 </script>
 
-<div class="wrapper">
+<div class="wrapper" bind:this={wrapperElement}>
     {#if label}
         <FormLabel forId="input-{name}" value={label} />
     {/if}
@@ -31,6 +36,7 @@
                bind:value={value}
                placeholder={placeholder}
                {name}
+               {autofocus}
                on:input
                on:keydown={handleKeyDown} />
     {:else if type === "password"}
@@ -39,6 +45,7 @@
                bind:value={value}
                {placeholder}
                {name}
+               {autofocus}
                on:input
                on:keydown={handleKeyDown} />
     {:else if type === "email"}
@@ -47,6 +54,7 @@
                bind:value={value}
                placeholder={placeholder}
                {name}
+               {autofocus}
                on:input
                on:keydown={handleKeyDown} />
     {/if}
