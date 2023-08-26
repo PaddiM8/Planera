@@ -1,0 +1,62 @@
+:root {
+    font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+    font-weight: 400;
+    font-size: 18px;
+
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+input {
+    flex-grow: 1;
+    padding: 0.55em 0.7em;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    font-size: 1em;
+}
+
+button {
+    padding: 0.55em 0.7em;
+    background-color: #1d4ed8;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    color: white;
+    font-weight: 500;
+    font-size: 1em;
+}
+
+#setup {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 22em;
+    visibility: collapse;
+}
+
+#setup .inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4em;
+    flex-grow: 1;
+}
+
+#setup button {
+    align-self: flex-end;
+}
+
+#setup.show {
+    visibility: visible;
+}
