@@ -1,7 +1,15 @@
+function navigate(serverUrl: string) {
+    if (!serverUrl.endsWith("/")) {
+        serverUrl += "/";
+    }
+
+    window.location.href = serverUrl + "last-visited";
+}
+
 window.addEventListener("DOMContentLoaded", () => {
     const serverUrl = localStorage.getItem("server-url");
     if (serverUrl) {
-        window.location.href = serverUrl;
+        navigate(serverUrl);
     } else {
         document.getElementById("setup")!.classList.add("show");
     }
@@ -10,6 +18,6 @@ window.addEventListener("DOMContentLoaded", () => {
         const urlInput = document.getElementById("server-url") as HTMLInputElement;
         const url = urlInput!.value;
         localStorage.setItem("server-url", url);
-        window.location.href = url;
+        navigate(url);
     });
 });

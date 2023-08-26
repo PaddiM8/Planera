@@ -8,7 +8,7 @@
     import Label from "$lib/components/GroupLabel.svelte";
     import BlockInput from "$lib/components/form/BlockInput.svelte";
     import TicketEntry from "$lib/components/ticket/TicketEntry.svelte";
-    import {createEventDispatcher, onMount} from "svelte";
+    import {onMount} from "svelte";
     import {participants} from "../../../store";
     import {projectHub, ticketsPerPage} from "./store";
     import {getAvatarUrl} from "$lib/clients";
@@ -16,7 +16,6 @@
     import {toast} from "$lib/toast";
     import Select from "$lib/components/form/Select.svelte";
     import {TicketSorting, TicketStatus} from "../../../../../gen/planeraClient";
-    import {beforeNavigate} from "$app/navigation";
 
     export let data: {
         project: ProjectDto,
@@ -29,6 +28,7 @@
     let reachedEndOfTickets = false;
 
     onMount(async () => {
+        localStorage.setItem("lastVisited", window.location.pathname);
         document.getElementById("main-area").onscroll = e => {
             const target = e.target as HTMLElement;
             if (target.scrollTop + target.clientHeight >= target.scrollHeight - 100) {
