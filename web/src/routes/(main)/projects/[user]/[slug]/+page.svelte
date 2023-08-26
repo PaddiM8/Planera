@@ -200,15 +200,17 @@
 <section class="tickets">
     <h2>Tickets</h2>
     <div class="search-area" style="display:flex; gap: 0.8em; margin-bottom: 0.8em">
-        <Input placeholder="Search..."
-               bind:value={searchQuery}
-               on:input={query} />
-        <Select choices={Object.keys(filterMap)}
-                bind:selectedValue={filterByStatus}
-                on:change={query} />
-        <Select choices={Object.keys(sortingMap)}
-                bind:selectedValue={sorting}
-                on:change={query} />
+            <Input placeholder="Search..."
+                   bind:value={searchQuery}
+                   on:input={query} />
+        <div class="sorting">
+            <Select choices={Object.keys(filterMap)}
+                    bind:selectedValue={filterByStatus}
+                    on:change={query} />
+            <Select choices={Object.keys(sortingMap)}
+                    bind:selectedValue={sorting}
+                    on:change={query} />
+        </div>
     </div>
     {#each data.tickets as ticket}
         <TicketEntry bind:ticket={ticket} />
@@ -255,4 +257,17 @@
         display: flex
         align-items: center
         gap: 0.8em
+
+    .search-area .sorting
+        display: flex
+        gap: var(--spacing)
+
+    @media screen and (max-width: 980px)
+        .bottom-row
+            align-items: normal
+            flex-direction: column
+
+    @media screen and (max-width: 790px)
+        .search-area
+            flex-direction: column
 </style>

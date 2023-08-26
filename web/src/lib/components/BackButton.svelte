@@ -17,10 +17,13 @@
         display: flex
         align-items: center
         gap: 0.4em
+        width: fit-content
         padding: calc(var(--vertical-padding) / 1.5) calc(var(--horizontal-padding) / 1.5)
         margin-bottom: 0.4em
         border: 0
         border-radius: var(--radius)
+
+        color: var(--on-background)
         background-color: transparent
         font-size: 1em
         font-weight: 500

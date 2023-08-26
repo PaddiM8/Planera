@@ -215,7 +215,10 @@
 
 <hr>
 <h2>Notes</h2>
-<Form action="?/addNote" problem={form?.addNoteProblem} horizontal>
+<Form action="?/addNote"
+      problem={form?.addNoteProblem}
+      horizontal
+      afterSubmit={success => { if (success) noteInput = "" }}>
     <input type="hidden" name="projectId" value={data.ticket.projectId} />
     <input type="hidden" name="ticketId" value={data.ticket.id} />
 
@@ -317,4 +320,9 @@
         flex-direction: column
         gap: var(--spacing)
         margin-top: var(--spacing)
+
+    @media screen and (max-width: 980px)
+        .bottom-row
+            flex-direction: column
+            align-items: normal
 </style>

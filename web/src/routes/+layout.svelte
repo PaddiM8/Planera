@@ -2,7 +2,7 @@
     import UserIcon from "$lib/components/UserIcon.svelte";
     import ContextMenu from "$lib/components/ContextMenu.svelte";
     import ContextMenuEntry from "$lib/components/ContextMenuEntry.svelte";
-    import { Icon, Cog, ArrowRightOnRectangle } from "svelte-hero-icons";
+    import {Icon, Cog, ArrowRightOnRectangle, Bars3} from "svelte-hero-icons";
     import Label from "$lib/components/GroupLabel.svelte";
     import Toast from "$lib/components/Toast.svelte";
     import YesNoDialog from "$lib/components/dialogs/YesNoDialog.svelte";
@@ -14,6 +14,11 @@
     };
 
     let contextMenuTarget: HTMLElement | undefined;
+
+    function openSidebar() {
+        const sidebar = document.getElementById("sidebar");
+        sidebar.classList.add("open");
+    }
 
     function handleUserClick(e) {
         contextMenuTarget = contextMenuTarget
@@ -37,6 +42,9 @@
 
 <div id="content">
     <header>
+        <button class="sidebar-button" on:click={openSidebar}>
+            <Icon src={Bars3} />
+        </button>
         <a href="/" class="logo">Planera</a>
         <div class="items">
             {#if data?.user}
@@ -58,6 +66,7 @@
 
 <style lang="sass">
     @use "@fontsource-variable/inter"
+    @use "../values"
 
     :global(*)
         font-family: "Inter", sans-serif
@@ -139,6 +148,15 @@
         background-color: var(--background)
         border-bottom: var(--border)
 
+        .sidebar-button
+            display: none
+            width: 1.5em
+            height: 1.5em
+            background-color: transparent
+            border: 0
+            padding: 0
+            cursor: pointer
+
         .logo
             font-size: 1.5em
             font-weight: 600
@@ -186,4 +204,8 @@
         height: 100%
         margin: 0 auto
         overflow: auto
+
+    @media screen and (max-width: values.$max-width-for-hidden-sidebar)
+        header .sidebar-button
+            display: block
 </style>

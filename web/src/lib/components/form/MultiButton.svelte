@@ -48,6 +48,7 @@
 <style lang="sass">
     .multi-button
         display: flex
+        width: fit-content
         border: var(--border)
         border-radius: var(--radius)
 

@@ -18,10 +18,11 @@
         align-items: center
         justify-content: center
 
-        height: 100%
+        padding: 0.5em
         aspect-ratio: 1 / 1
         border-radius: 100%
         cursor: default
+        user-select: none
         overflow: hidden
 
         &.user

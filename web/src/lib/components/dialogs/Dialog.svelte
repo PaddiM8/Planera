@@ -48,11 +48,13 @@
        top: 50%
        left: 50%
        transform: translate(-50%, -50%)
-       width: 25em
+       width: 100%
+       max-width: 25em
        padding: calc(var(--horizontal-padding) * 2) calc(var(--horizontal-padding) * 2)
        border-radius: var(--radius)
        background-color: var(--background)
        color: var(--on-background)
+       box-sizing: border-box
        z-index: 99999
 
        &:focus
