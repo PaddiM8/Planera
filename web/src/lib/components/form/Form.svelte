@@ -2,6 +2,8 @@
     import { enhance } from "$app/forms";
     import ErrorText from "$lib/components/form/ErrorText.svelte";
     import type {ProblemDetails} from "$lib/problemDetails";
+    import {onMount} from "svelte";
+    import {beforeNavigate} from "$app/navigation";
 
     export let action: string | undefined = undefined;
     export let problem: ProblemDetails;
@@ -12,6 +14,29 @@
     export let smallMargins = false;
 
     let form: HTMLFormElement;
+    let modified = false;
+
+    beforeNavigate(({ cancel }) => {
+        if (modified && !confirm("Are you sure you want to leave this page? You have unsaved changes that will be lost.")) {
+            cancel();
+        }
+    });
+
+    function handleBeforeUnload() {
+        if (modified) {
+            return true;
+        }
+    }
+
+    onMount(() => {
+        window.addEventListener("beforeunload", handleBeforeUnload);
+
+        // Svelte events for the Editor component don't seem to bubble,
+        // so we also need to listen to regular JavaScript events.
+        form.addEventListener("input", () => modified = true);
+
+        return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+    });
 
     async function enhanceHandler(e) {
         if (beforeSubmit) {
@@ -23,6 +48,9 @@
 
             if (afterSubmit) {
                 await afterSubmit(result.type === "success");
+                setTimeout(() => {
+                    modified = false;
+                }, 100);
             }
         };
     }
@@ -42,6 +70,8 @@
       class:horizontal
       class:small-margins={smallMargins}
       bind:this={form}
+      on:change={() => modified = true}
+      on:input={() => modified = true}
       on:keydown={handleKeyDown}
       use:enhance={enhanceHandler}>
     <div class="errors">

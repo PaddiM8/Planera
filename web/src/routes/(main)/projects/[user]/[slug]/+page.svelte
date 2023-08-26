@@ -8,7 +8,7 @@
     import Label from "$lib/components/GroupLabel.svelte";
     import BlockInput from "$lib/components/form/BlockInput.svelte";
     import TicketEntry from "$lib/components/ticket/TicketEntry.svelte";
-    import {onMount} from "svelte";
+    import {createEventDispatcher, onMount} from "svelte";
     import {participants} from "../../../store";
     import {projectHub, ticketsPerPage} from "./store";
     import {getAvatarUrl} from "$lib/clients";
@@ -26,22 +26,9 @@
         errors: { string: string[] } | undefined,
     };
 
-    let modified = false;
     let reachedEndOfTickets = false;
 
-    beforeNavigate(({ cancel }) => {
-        if (modified && !confirm("Are you sure you want to leave this page? You have unsaved changes that will be lost.")) {
-            cancel();
-        }
-    });
-
     onMount(async () => {
-        window.onbeforeunload = () => {
-            if (modified) {
-                return true;
-            }
-        }
-
         document.getElementById("main-area").onscroll = e => {
             const target = e.target as HTMLElement;
             if (target.scrollTop + target.clientHeight >= target.scrollHeight - 100) {
@@ -120,7 +107,6 @@
             priority.reset();
             assignees.reset();
             setTimeout(() => {
-                modified = false;
                 titleInput.focus();
             }, 100);
             toast.info("Created ticket successfully.");
@@ -176,9 +162,8 @@
                name="title"
                placeholder="Title..."
                autofocus
-               bind:this={titleInput}
-               on:input={() => modified = true} />
-        <Editor placeholder="Describe the ticket..." bind:this={editor} on:input={() => modified = true} />
+               bind:this={titleInput} />
+        <Editor placeholder="Describe the ticket..." bind:this={editor} />
         <div class="bottom-row">
             <span class="group">
                 <span class="label">

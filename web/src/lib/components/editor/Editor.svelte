@@ -103,15 +103,19 @@
         const config = { attributes: false, childList: true, subtree: true };
         const observer = new MutationObserver(() => {
             dispatcher("input");
+
+            // Using regular JavaScript events for proper bubbling
+            const event = new CustomEvent("input", {
+                bubbles: true
+            })
+            editorShellElement.dispatchEvent(event);
         });
         observer.observe(editorShellElement.querySelector("[contenteditable]"), config);
 
         // Keep track of viewport size
         window.addEventListener("resize", updateViewPortWidth);
 
-        return () => {
-            window.removeEventListener("resize", updateViewPortWidth);
-        };
+        return () => window.removeEventListener("resize", updateViewPortWidth);
     });
 
     export function getHtml(): Promise<string> {

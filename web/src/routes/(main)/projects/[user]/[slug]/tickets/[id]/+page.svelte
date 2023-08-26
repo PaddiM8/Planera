@@ -36,22 +36,9 @@
     let editor;
     let selectedPriorityName: string;
     let previousPriority = data?.ticket?.priority;
-    let noteInput: string;
-
-    beforeNavigate(({ cancel }) => {
-        if ((noteInput || isEditing) && !confirm("Are you sure you want to leave this page? You have unsaved changes that will be lost.")) {
-            cancel();
-        }
-    });
 
     onMount(() => {
         selectedPriorityName = TicketPriority[data?.ticket?.priority ?? 0];
-
-        window.onbeforeunload = () => {
-            if (noteInput || isEditing) {
-                return true;
-            }
-        }
     });
 
     async function beforeSubmit({ formData }) {
@@ -217,12 +204,11 @@
 <h2>Notes</h2>
 <Form action="?/addNote"
       problem={form?.addNoteProblem}
-      horizontal
-      afterSubmit={success => { if (success) noteInput = "" }}>
+      horizontal>
     <input type="hidden" name="projectId" value={data.ticket.projectId} />
     <input type="hidden" name="ticketId" value={data.ticket.id} />
 
-    <Input name="content" placeholder="Write something..." bind:value={noteInput} />
+    <Input name="content" placeholder="Write something..." />
     <Button primary submit value="Add" />
 </Form>
 
