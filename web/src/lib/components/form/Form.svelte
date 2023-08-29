@@ -14,16 +14,17 @@
     export let smallMargins = false;
 
     let form: HTMLFormElement;
-    let modified = false;
+    let isModified = false;
+    let isSubmitting = false;
 
     beforeNavigate(({ cancel }) => {
-        if (modified && !confirm("Are you sure you want to leave this page? You have unsaved changes that will be lost.")) {
+        if (!isSubmitting && isModified && !confirm("Are you sure you want to leave this page? You have unsaved changes that will be lost.")) {
             cancel();
         }
     });
 
     function handleBeforeUnload() {
-        if (modified) {
+        if (!isSubmitting && isModified) {
             return true;
         }
     }
@@ -33,12 +34,13 @@
 
         // Svelte events for the Editor component don't seem to bubble,
         // so we also need to listen to regular JavaScript events.
-        form.addEventListener("input", () => modified = true);
+        form.addEventListener("input", () => isModified = true);
 
         return () => window.removeEventListener("beforeunload", handleBeforeUnload);
     });
 
     async function enhanceHandler(e) {
+        isSubmitting = true;
         if (beforeSubmit) {
             await beforeSubmit(e);
         }
@@ -49,9 +51,11 @@
             if (afterSubmit) {
                 await afterSubmit(result.type === "success");
                 setTimeout(() => {
-                    modified = false;
+                    isModified = false;
                 }, 100);
             }
+
+            isSubmitting = false;
         };
     }
 
@@ -70,8 +74,8 @@
       class:horizontal
       class:small-margins={smallMargins}
       bind:this={form}
-      on:change={() => modified = true}
-      on:input={() => modified = true}
+      on:change={() => isModified = true}
+      on:input={() => isModified = true}
       on:keydown={handleKeyDown}
       use:enhance={enhanceHandler}>
     <div class="errors">
