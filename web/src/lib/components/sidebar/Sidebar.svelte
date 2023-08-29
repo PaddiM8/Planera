@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { beforeNavigate } from '$app/navigation';
+	import { onMount } from "svelte";
+	import { beforeNavigate } from "$app/navigation";
 
 	const draggerWidth = 10;
 	let sidebarElement: HTMLElement;
@@ -19,11 +19,11 @@
 
 			const offset = Math.min(touchX, sidebarElement.clientWidth);
 			sidebarElement.style.transform = `translateX(calc(-100% + ${offset}px))`;
-			sidebarElement.classList.add('open');
+			sidebarElement.classList.add("open");
 		};
 		document.ontouchend = endDrag;
 		document.ontouchstart = () => {
-			if (sidebarElement.classList.contains('open')) {
+			if (sidebarElement.classList.contains("open")) {
 				startDrag();
 			}
 		};
@@ -33,8 +33,8 @@
 
 	function startDrag() {
 		dragging = true;
-		document.body.style.userSelect = 'none';
-		sidebarElement.style.transition = 'none';
+		document.body.style.userSelect = "none";
+		sidebarElement.style.transition = "none";
 	}
 
 	function endDrag() {
@@ -43,22 +43,22 @@
 		}
 
 		dragging = false;
-		sidebarElement.style.transition = '';
-		document.body.style.userSelect = '';
+		sidebarElement.style.transition = "";
+		document.body.style.userSelect = "";
 
 		const rect = sidebarElement.getBoundingClientRect();
 		if (rect.left < -rect.width / 2) {
 			close();
 		}
 
-		sidebarElement.style.transform = '';
+		sidebarElement.style.transform = "";
 	}
 
 	function close() {
-		sidebarElement.classList.add('closing');
+		sidebarElement?.classList.add("closing");
 		setTimeout(() => {
-			sidebarElement.classList.remove('open');
-			sidebarElement.classList.remove('closing');
+			sidebarElement?.classList.remove("open");
+			sidebarElement?.classList.remove("closing");
 		}, 350);
 	}
 </script>
@@ -67,8 +67,8 @@
 	<slot />
 </aside>
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class="outside" on:click={close} />
-<div class="dragger" style="width: {draggerWidth}px" on:touchstart={startDrag} />
+<div class="outside" on:click={close}></div>
+<div class="dragger" style="width: {draggerWidth}px" on:touchstart={startDrag}></div>
 
 <style lang="sass">
     @use "../../../values"
