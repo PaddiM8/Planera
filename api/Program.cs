@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using Planera.Data;
 using Planera.Data.Files;
@@ -145,9 +144,16 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller}/{action}/{id?}");
 
-app.MapHub<ProjectHub>("/hubs/project");
-app.MapHub<UserHub>("/hubs/user");
+app.MapHub<ProjectHub>("hubs/project");
+app.MapHub<UserHub>("hubs/user");
 
 app.Services.GetService<IFileStorage>()?.CreateDirectory("avatars");
+
+using var scope = app.Services.CreateScope();
+var services = scope.ServiceProvider;
+
+var context = services.GetRequiredService<DataContext>();
+if (context.Database.GetPendingMigrations().Any())
+    context.Database.Migrate();
 
 app.Run();

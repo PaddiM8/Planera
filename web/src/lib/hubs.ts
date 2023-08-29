@@ -1,22 +1,8 @@
 import {type HubConnection, HubConnectionBuilder} from "@microsoft/signalr";
 
-/*export enum TicketFilter {
-    All = "All",
-    Open = "Open",
-    Closed = "Closed",
-    Inactive = "Inactive",
-    Done = "Done",
-}
-export enum TicketSorting {
-    Newest = "Newest",
-    Oldest = "Oldest",
-    HighestPriority = "Highest Priority",
-    LowestPriority = "Lowest Priority",
-}*/
-
 async function buildHub(name: string): Promise<HubConnection> {
     return new HubConnectionBuilder()
-        .withUrl(`${import.meta.env.VITE_SERVER_URL}/hubs/${name}`)
+        .withUrl(`${import.meta.env.VITE_PUBLIC_API_URL}/hubs/${name}`)
         .withAutomaticReconnect()
         .build();
 }

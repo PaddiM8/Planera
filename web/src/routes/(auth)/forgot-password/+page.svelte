@@ -3,11 +3,7 @@
     import Button from "$lib/components/form/Button.svelte";
     import Form from "$lib/components/form/Form.svelte";
     import CenteredLayout from "$lib/components/CenteredLayout.svelte";
-    import {onMount} from "svelte";
     import {toast} from "$lib/toast";
-
-    export let form;
-    export let data;
 
     function handleSubmit(success: boolean) {
         if (success) {

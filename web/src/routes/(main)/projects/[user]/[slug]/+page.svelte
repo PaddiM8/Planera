@@ -161,7 +161,6 @@
         <Input type="text"
                name="title"
                placeholder="Title..."
-               autofocus
                bind:this={titleInput} />
         <Editor placeholder="Describe the ticket..." bind:this={editor} />
         <div class="bottom-row">

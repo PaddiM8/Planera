@@ -10,7 +10,6 @@
     export let placeholder: string;
     export let label: string | undefined = undefined;
     export let submitButton: Button | undefined = undefined;
-    export let autofocus = false;
 
     let wrapperElement: HTMLElement;
 
@@ -36,7 +35,6 @@
                bind:value={value}
                placeholder={placeholder}
                {name}
-               {autofocus}
                on:input
                on:keydown={handleKeyDown} />
     {:else if type === "password"}
@@ -45,7 +43,6 @@
                bind:value={value}
                {placeholder}
                {name}
-               {autofocus}
                on:input
                on:keydown={handleKeyDown} />
     {:else if type === "email"}
@@ -54,7 +51,6 @@
                bind:value={value}
                placeholder={placeholder}
                {name}
-               {autofocus}
                on:input
                on:keydown={handleKeyDown} />
     {/if}

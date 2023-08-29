@@ -1,0 +1,7 @@
+http://localhost {
+    handle_path /api/* {
+        reverse_proxy http://planera-api:5065
+    }
+
+    reverse_proxy http://planera-web:3000
+}

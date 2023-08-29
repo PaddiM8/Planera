@@ -48,6 +48,7 @@
         <a href="/" class="logo">Planera</a>
         <div class="items">
             {#if data?.user}
+                <!-- svelte-ignore a11y-click-events-have-key-events -->
                 <div class="user" on:click={handleUserClick}>
                     <UserIcon type="user"
                               name={ data.user.username }

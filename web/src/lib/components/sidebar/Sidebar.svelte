@@ -1,75 +1,74 @@
 <script lang="ts">
-    import {onMount} from "svelte";
-    import {beforeNavigate} from "$app/navigation";
+	import { onMount } from 'svelte';
+	import { beforeNavigate } from '$app/navigation';
 
-    const draggerWidth = 10;
-    let sidebarElement: HTMLElement;
-    let dragging = false;
+	const draggerWidth = 10;
+	let sidebarElement: HTMLElement;
+	let dragging = false;
 
-    onMount(() => {
-        document.ontouchmove = e => {
-            if (e.touches.length !== 1) {
-                return;
-            }
+	onMount(() => {
+		document.ontouchmove = (e) => {
+			if (e.touches.length !== 1) {
+				return;
+			}
 
-            const touchX = e.touches[0].clientX;
-            if (!dragging || touchX <= draggerWidth) {
-                return;
-            }
+			const touchX = e.touches[0].clientX;
+			if (!dragging || touchX <= draggerWidth) {
+				return;
+			}
 
-            const offset = Math.min(touchX, sidebarElement.clientWidth);
-            sidebarElement.style.transform = `translateX(calc(-100% + ${offset}px))`;
-            sidebarElement.classList.add("open");
-        };
-        document.ontouchend = endDrag;
-        document.ontouchstart = () => {
-            if (sidebarElement.classList.contains("open")) {
-                startDrag();
-            }
-        };
-    });
+			const offset = Math.min(touchX, sidebarElement.clientWidth);
+			sidebarElement.style.transform = `translateX(calc(-100% + ${offset}px))`;
+			sidebarElement.classList.add('open');
+		};
+		document.ontouchend = endDrag;
+		document.ontouchstart = () => {
+			if (sidebarElement.classList.contains('open')) {
+				startDrag();
+			}
+		};
+	});
 
-    beforeNavigate(close);
+	beforeNavigate(close);
 
-    function startDrag() {
-        dragging = true;
-        document.body.style.userSelect = "none";
-        sidebarElement.style.transition = "none";
-    }
+	function startDrag() {
+		dragging = true;
+		document.body.style.userSelect = 'none';
+		sidebarElement.style.transition = 'none';
+	}
 
-    function endDrag() {
-        if (!dragging) {
-            return;
-        }
+	function endDrag() {
+		if (!dragging) {
+			return;
+		}
 
-        dragging = false;
-        sidebarElement.style.transition = "";
-        document.body.style.userSelect = "";
+		dragging = false;
+		sidebarElement.style.transition = '';
+		document.body.style.userSelect = '';
 
-        const rect = sidebarElement.getBoundingClientRect();
-        if (rect.left < -rect.width / 2) {
-            close();
-        }
+		const rect = sidebarElement.getBoundingClientRect();
+		if (rect.left < -rect.width / 2) {
+			close();
+		}
 
-        sidebarElement.style.transform = "";
-    }
+		sidebarElement.style.transform = '';
+	}
 
-    function close() {
-        sidebarElement.classList.add("closing");
-        setTimeout(() => {
-            sidebarElement.classList.remove("open");
-            sidebarElement.classList.remove("closing");
-        }, 350);
-    }
+	function close() {
+		sidebarElement.classList.add('closing');
+		setTimeout(() => {
+			sidebarElement.classList.remove('open');
+			sidebarElement.classList.remove('closing');
+		}, 350);
+	}
 </script>
 
 <aside id="sidebar" bind:this={sidebarElement}>
-    <slot />
+	<slot />
 </aside>
-<div class="outside" on:click={close}></div>
-<div class="dragger"
-     style="width: {draggerWidth}px"
-     on:touchstart={startDrag}></div>
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<div class="outside" on:click={close} />
+<div class="dragger" style="width: {draggerWidth}px" on:touchstart={startDrag} />
 
 <style lang="sass">
     @use "../../../values"

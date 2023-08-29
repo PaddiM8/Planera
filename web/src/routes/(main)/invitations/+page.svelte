@@ -98,27 +98,4 @@
             white-space: nowrap
             overflow: hidden
             text-overflow: ellipsis
-
-        .choice
-            display: flex
-            align-items: center
-            padding: 0.2em 0.3em
-            border-radius: var(--radius)
-            cursor: pointer
-
-            &:hover
-                background-color: var(--background-hover)
-
-            .icon
-                width: 1.2em
-                height: 1.2em
-
-            &.accept .icon
-                color: var(--gren)
-
-            &.decline
-                margin-left: auto
-
-                .icon
-                    color: crimson
 </style>

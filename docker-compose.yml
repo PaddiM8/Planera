@@ -1,0 +1,23 @@
+﻿services:
+  caddy:
+    image: caddy:2.7
+    ports:
+      - 2000:80
+      - 443:443
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+  planera-api:
+    image: planera-api
+    environment:
+      ASPNETCORE_FRONTEND_URL: http://localhost:2000
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    volumes:
+      - ./data:/app/data
+  planera-web:
+    image: planera-web
+    environment:
+      ORIGIN: http://localhost:2000
+    build:
+      context: ./web

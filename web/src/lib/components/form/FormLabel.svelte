@@ -3,6 +3,7 @@
     export let forId: string | undefined = undefined;
 </script>
 
+<!-- svelte-ignore a11y-label-has-associated-control -->
 <label class="label" {forId}>{value}</label>
 
 <style lang="sass">

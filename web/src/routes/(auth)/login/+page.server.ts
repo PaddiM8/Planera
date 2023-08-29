@@ -1,8 +1,8 @@
 import type {RequestEvent} from "@sveltejs/kit";
-import {fail, redirect, type ServerLoadEvent} from "@sveltejs/kit";
+import {redirect, type ServerLoadEvent} from "@sveltejs/kit";
 import {getAuthenticationClient} from "$lib/clients";
 import type {LoginModel, AuthenticationResult, SwaggerException} from "../../../gen/planeraClient";
-import {handleProblemForForm, toProblemDetails} from "$lib/problemDetails";
+import {handleProblemForForm} from "$lib/problemDetails";
 
 export async function load({ url }: ServerLoadEvent) {
     if (url.searchParams.get("emailConfirmed") == "1") {

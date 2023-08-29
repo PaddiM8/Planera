@@ -13,6 +13,7 @@ export const load = (async ({ cookies, url }) => {
     try {
         response = await getUserClient(cookies).get();
     } catch (ex) {
+        console.log(ex)
         return handleProblem(ex as SwaggerException);
     }
 

@@ -7,7 +7,6 @@
     import {browser} from "$app/environment";
 
     export let form;
-    export let data;
 
     $: {
         if (browser && form?.mailSent) {
