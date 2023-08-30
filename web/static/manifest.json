@@ -1,0 +1,17 @@
+{
+  "lang": "en-us",
+  "name": "Planera",
+  "short_name": "Planera",
+  "description": "A simple ticket-based project management web application.",
+  "start_url": "/",
+  "background_color": "#fafaf9",
+  "theme_color": "#1d4ed8",
+  "orientation": "any",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "512x512"
+    }
+  ]
+}

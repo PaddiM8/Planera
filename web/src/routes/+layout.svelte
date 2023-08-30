@@ -45,7 +45,10 @@
         <button class="sidebar-button" on:click={openSidebar}>
             <Icon src={Bars3} />
         </button>
-        <a href="/" class="logo">Planera</a>
+        <a href="/" class="logo">
+            <img src="/icon.svg" alt="logo" />
+            <span>Planera</span>
+        </a>
         <div class="items">
             {#if data?.user}
                 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -159,11 +162,18 @@
             cursor: pointer
 
         .logo
+            display: flex
+            align-items: center
             font-size: 1.5em
             font-weight: 600
             color: var(--on-background)
             text-decoration: none
             margin: 0 0 0 0.4em
+
+            img
+                width: auto
+                height: 1.1em
+                margin-right: 0.4em
 
         .user
             position: relative
