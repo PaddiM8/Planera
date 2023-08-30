@@ -7,12 +7,18 @@
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
   planera-api:
-    image: ghcr.io/paddim8/planera-api:latest
+    image: planera-api
     environment:
       ASPNETCORE_FRONTEND_URL: http://localhost:2000
+    build:
+      context: .
+      dockerfile: api/Dockerfile
     volumes:
       - ./data:/app/data
   planera-web:
-    image: ghcr.io/paddim8/planera-web:latest
+    image: planera-web
     environment:
       ORIGIN: http://localhost:2000
+    build:
+      context: .
+      dockerfile: web/Dockerfile
