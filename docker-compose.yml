@@ -20,4 +20,5 @@
     environment:
       ORIGIN: http://localhost:2000
     build:
-      context: ./web
+      context: .
+      dockerfile: web/Dockerfile

@@ -7,7 +7,7 @@ WORKDIR /src
 COPY ["api/Planera.csproj", "api/"]
 RUN dotnet restore "api/Planera.csproj"
 COPY . .
-WORKDIR "/src/api"
+WORKDIR /src/api
 RUN dotnet build "Planera.csproj" -c Release -o /app/build
 
 FROM build AS publish
