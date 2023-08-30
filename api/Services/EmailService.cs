@@ -16,7 +16,7 @@ public class EmailService
 
     public async Task<ErrorOr<Success>> SendAsync(string subject, TextPart body, string receiver)
     {
-        if (_configuration["Smtp:Host"] == null)
+        if (string.IsNullOrEmpty(_configuration["Smtp:Host"]))
             return Error.Conflict("NotSupported", "The server is not equipped to send emails.");
 
         var email = new MimeMessage();

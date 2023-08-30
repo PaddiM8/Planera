@@ -9,7 +9,13 @@
   planera-api:
     image: planera-api
     environment:
-      ASPNETCORE_FRONTEND_URL: http://localhost:2000
+      PLANERA_FRONTENDURL: http://localhost:2000
+      PLANERA_EMAILCONFIRMATION: false
+      PLANERA_SMTP__HOST: mx.example.org
+      PLANERA_SMTP__PORT: 587
+      PLANERA_SMTP__USER: user
+      PLANERA_SMTP__PASSWORD: password
+      PLANERA_SMTP__SENDER: noreply@example.org
     build:
       context: .
       dockerfile: api/Dockerfile

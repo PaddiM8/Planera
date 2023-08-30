@@ -13,7 +13,8 @@ A simple ticket-based project management web application.
     ```
 
 2. Modify `/docker-compose.yml` and replace both instances of
-   `http://localhost:2000` with your domain.
+   `http://localhost:2000` with your domain. Additionally,
+   it is also possible configure email sending here.
 
 3. Start docker compose:
     ```shell

@@ -9,7 +9,13 @@
   planera-api:
     image: ghcr.io/paddim8/planera-api:latest
     environment:
-      ASPNETCORE_FRONTEND_URL: http://localhost:2000
+      PLANERA_FRONTENDURL: http://localhost:2000
+      PLANERA_EMAILCONFIRMATION: false
+      PLANERA_SMTP__HOST: ""
+      PLANERA_SMTP__PORT: ""
+      PLANERA_SMTP__USER: ""
+      PLANERA_SMTP__PASSWORD: ""
+      PLANERA_SMTP__SENDER: ""
     volumes:
       - ./data:/app/data
   planera-web:

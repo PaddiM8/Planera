@@ -15,6 +15,7 @@ Directory.CreateDirectory("./store");
 Directory.CreateDirectory("./wwwroot");
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Configuration.AddEnvironmentVariables(prefix: "PLANERA_");
 
 // Read/generate the JWT key
 if (string.IsNullOrEmpty(builder.Configuration["Jwt:Key"]))
