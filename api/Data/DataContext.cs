@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
 namespace Planera.Data;
@@ -55,4 +56,11 @@ public class DataContext : IdentityDbContext<User>
             .UsingEntity<Invitation>();
     }
 
+    public void CreateOfflineBackup()
+    {
+        if (Database.GetDbConnection() is not SqliteConnection connection)
+            throw new NotSupportedException("Can not create a backup of this database type.");
+
+        File.Copy(connection.DataSource, connection.DataSource + ".bak");
+    }
 }
