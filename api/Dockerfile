@@ -17,4 +17,5 @@ FROM base AS final
 WORKDIR /app/data
 COPY --from=publish /app/publish /app
 COPY --from=publish /app/publish/appsettings.json /app/data
-ENTRYPOINT ["dotnet", "../Planera.dll"]
+RUN echo "cp -n ../appsettings.json .; dotnet ../Planera.dll" >> ../start.sh
+ENTRYPOINT ["sh", "../start.sh"]
