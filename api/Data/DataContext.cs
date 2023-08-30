@@ -61,6 +61,9 @@ public class DataContext : IdentityDbContext<User>
         if (Database.GetDbConnection() is not SqliteConnection connection)
             throw new NotSupportedException("Can not create a backup of this database type.");
 
-        File.Copy(connection.DataSource, connection.DataSource + ".bak");
+        if (File.Exists(connection.DataSource))
+        {
+            File.Copy(connection.DataSource, connection.DataSource + ".bak");
+        }
     }
 }

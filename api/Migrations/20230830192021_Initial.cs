@@ -30,6 +30,7 @@ namespace Planera.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "TEXT", nullable: false),
+                    AvatarPath = table.Column<string>(type: "TEXT", nullable: true),
                     UserName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
@@ -160,12 +161,13 @@ namespace Planera.Migrations
                 name: "Projects",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                    Id = table.Column<string>(type: "TEXT", nullable: false),
                     Slug = table.Column<string>(type: "TEXT", nullable: false),
                     Name = table.Column<string>(type: "TEXT", nullable: false),
                     Description = table.Column<string>(type: "TEXT", nullable: false),
-                    AuthorId = table.Column<string>(type: "TEXT", nullable: false)
+                    AuthorId = table.Column<string>(type: "TEXT", nullable: false),
+                    IconPath = table.Column<string>(type: "TEXT", nullable: true),
+                    Timestamp = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -182,7 +184,7 @@ namespace Planera.Migrations
                 name: "Invitations",
                 columns: table => new
                 {
-                    ProjectId = table.Column<int>(type: "INTEGER", nullable: false),
+                    ProjectId = table.Column<string>(type: "TEXT", nullable: false),
                     UserId = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
@@ -206,7 +208,7 @@ namespace Planera.Migrations
                 name: "ProjectParticipants",
                 columns: table => new
                 {
-                    ProjectId = table.Column<int>(type: "INTEGER", nullable: false),
+                    ProjectId = table.Column<string>(type: "TEXT", nullable: false),
                     UserId = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
@@ -231,12 +233,13 @@ namespace Planera.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false),
-                    ProjectId = table.Column<int>(type: "INTEGER", nullable: false),
+                    ProjectId = table.Column<string>(type: "TEXT", nullable: false),
                     Title = table.Column<string>(type: "TEXT", nullable: false),
                     Description = table.Column<string>(type: "TEXT", nullable: false),
                     Priority = table.Column<int>(type: "INTEGER", nullable: false),
                     AuthorId = table.Column<string>(type: "TEXT", nullable: false),
-                    Status = table.Column<int>(type: "INTEGER", nullable: false)
+                    Status = table.Column<int>(type: "INTEGER", nullable: false),
+                    Timestamp = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -256,25 +259,55 @@ namespace Planera.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "TicketUser",
+                name: "Notes",
                 columns: table => new
                 {
-                    AssigneesId = table.Column<string>(type: "TEXT", nullable: false),
-                    AssignedTicketsId = table.Column<int>(type: "INTEGER", nullable: false),
-                    AssignedTicketsProjectId = table.Column<int>(type: "INTEGER", nullable: false)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Content = table.Column<string>(type: "TEXT", nullable: false),
+                    Timestamp = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Status = table.Column<int>(type: "INTEGER", nullable: false),
+                    ProjectId = table.Column<string>(type: "TEXT", nullable: false),
+                    TicketId = table.Column<int>(type: "INTEGER", nullable: false),
+                    AuthorId = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TicketUser", x => new { x.AssigneesId, x.AssignedTicketsId, x.AssignedTicketsProjectId });
+                    table.PrimaryKey("PK_Notes", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_TicketUser_AspNetUsers_AssigneesId",
-                        column: x => x.AssigneesId,
+                        name: "FK_Notes_AspNetUsers_AuthorId",
+                        column: x => x.AuthorId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_TicketUser_Tickets_AssignedTicketsId_AssignedTicketsProjectId",
-                        columns: x => new { x.AssignedTicketsId, x.AssignedTicketsProjectId },
+                        name: "FK_Notes_Tickets_TicketId_ProjectId",
+                        columns: x => new { x.TicketId, x.ProjectId },
+                        principalTable: "Tickets",
+                        principalColumns: new[] { "Id", "ProjectId" },
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TicketAssignees",
+                columns: table => new
+                {
+                    TicketId = table.Column<int>(type: "INTEGER", nullable: false),
+                    UserId = table.Column<string>(type: "TEXT", nullable: false),
+                    TicketProjectId = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TicketAssignees", x => new { x.UserId, x.TicketId, x.TicketProjectId });
+                    table.ForeignKey(
+                        name: "FK_TicketAssignees_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TicketAssignees_Tickets_TicketId_TicketProjectId",
+                        columns: x => new { x.TicketId, x.TicketProjectId },
                         principalTable: "Tickets",
                         principalColumns: new[] { "Id", "ProjectId" },
                         onDelete: ReferentialAction.Cascade);
@@ -323,6 +356,16 @@ namespace Planera.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Notes_AuthorId",
+                table: "Notes",
+                column: "AuthorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Notes_TicketId_ProjectId",
+                table: "Notes",
+                columns: new[] { "TicketId", "ProjectId" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ProjectParticipants_UserId",
                 table: "ProjectParticipants",
                 column: "UserId");
@@ -334,6 +377,11 @@ namespace Planera.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_TicketAssignees_TicketId_TicketProjectId",
+                table: "TicketAssignees",
+                columns: new[] { "TicketId", "TicketProjectId" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Tickets_AuthorId",
                 table: "Tickets",
                 column: "AuthorId");
@@ -342,11 +390,6 @@ namespace Planera.Migrations
                 name: "IX_Tickets_ProjectId",
                 table: "Tickets",
                 column: "ProjectId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_TicketUser_AssignedTicketsId_AssignedTicketsProjectId",
-                table: "TicketUser",
-                columns: new[] { "AssignedTicketsId", "AssignedTicketsProjectId" });
         }
 
         /// <inheritdoc />
@@ -371,10 +414,13 @@ namespace Planera.Migrations
                 name: "Invitations");
 
             migrationBuilder.DropTable(
+                name: "Notes");
+
+            migrationBuilder.DropTable(
                 name: "ProjectParticipants");
 
             migrationBuilder.DropTable(
-                name: "TicketUser");
+                name: "TicketAssignees");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

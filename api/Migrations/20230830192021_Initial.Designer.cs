@@ -11,8 +11,8 @@ using Planera.Data;
 namespace Planera.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230824191824_AddProjectTimestamp")]
-    partial class AddProjectTimestamp
+    [Migration("20230830192021_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -150,8 +150,8 @@ namespace Planera.Migrations
 
             modelBuilder.Entity("Planera.Data.Invitation", b =>
                 {
-                    b.Property<int>("ProjectId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("ProjectId")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("UserId")
                         .HasColumnType("TEXT");
@@ -177,8 +177,9 @@ namespace Planera.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("ProjectId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("ProjectId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("Status")
                         .HasColumnType("INTEGER");
@@ -200,9 +201,8 @@ namespace Planera.Migrations
 
             modelBuilder.Entity("Planera.Data.Project", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("AuthorId")
                         .IsRequired()
@@ -236,8 +236,8 @@ namespace Planera.Migrations
 
             modelBuilder.Entity("Planera.Data.ProjectParticipant", b =>
                 {
-                    b.Property<int>("ProjectId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("ProjectId")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("UserId")
                         .HasColumnType("TEXT");
@@ -254,8 +254,8 @@ namespace Planera.Migrations
                     b.Property<int>("Id")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("ProjectId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("ProjectId")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("AuthorId")
                         .IsRequired()
@@ -295,11 +295,8 @@ namespace Planera.Migrations
                     b.Property<int>("TicketId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("TicketProjectId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("ProjectId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("TicketProjectId")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("UserId", "TicketId", "TicketProjectId");
 
