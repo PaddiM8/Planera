@@ -62,6 +62,14 @@
 
         a
             margin-right: auto
+            text-decoration: none
+            color: var(--primary)
+
+            &:hover
+                text-decoration: underline
+
+            &:visited
+                color: var(--primary)
 
     .resend-confirmation-email
         margin-top: -0.6em

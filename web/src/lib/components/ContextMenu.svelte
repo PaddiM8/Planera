@@ -54,6 +54,7 @@
         border-radius: var(--radius)
         background-color: var(--background)
         visibility: hidden
+        z-index: 999999
 
         &.visible
             visibility: visible

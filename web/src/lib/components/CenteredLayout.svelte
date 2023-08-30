@@ -6,13 +6,20 @@
     #content
         width: 100%
         max-width: 25rem
-        margin-left: 50%
-        margin-top: 50vh
-        transform: translate(-50%, -50%)
+        padding: 1.5em 2em
+        margin: auto
+        transform: translateY(-5em)
+        border: var(--border)
+        border-radius: var(--radius)
+        background-color: var(--component-background)
 
     @media screen and (max-width: 580px)
+        :global(.page)
+            background-color: var(--component-background)
+
         #content
             max-width: none
-            margin: 2em
+            border: 0
+            border-radius: 0
             transform: none
 </style>
