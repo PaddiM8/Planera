@@ -33,6 +33,7 @@
 		"express": "^4.18.2",
 		"express-http-proxy": "^1.6.3",
 		"http-proxy-middleware": "^2.0.6",
+		"lexical": "^0.11.3",
 		"svelte-lexical": "^0.3.4"
 	}
 }

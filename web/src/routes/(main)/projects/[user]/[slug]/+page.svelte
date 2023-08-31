@@ -46,7 +46,7 @@
     });
 
     async function loadMore() {
-        if (reachedEndOfTickets) {
+        if (reachedEndOfTickets || !$projectHub) {
             return;
         }
 

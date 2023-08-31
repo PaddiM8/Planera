@@ -7,5 +7,5 @@ export default defineConfig({
 		alias: {
 			yjs: ("./node_modules/yjs/src/index.js"),
 		},
-	},
+	}
 });

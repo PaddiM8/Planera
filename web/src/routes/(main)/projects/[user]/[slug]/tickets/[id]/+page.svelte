@@ -235,6 +235,8 @@
 
         .icons
             display: flex
+            align-self: flex-start
+            margin-top: 0.4em
             gap: 0.5em
             margin-left: auto
             color: var(--on-background-inactive)

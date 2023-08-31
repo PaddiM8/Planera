@@ -49,6 +49,7 @@
             display: block
             margin-right: 0.1em
             height: 1.4em
+            min-width: 1.4em
 
             &.green
                 color: var(--green)

@@ -45,7 +45,11 @@
         InsertHRDropDownItem,
         DropDownAlign,
         HistoryPlugin,
-        $getRoot as getRoot, FloatingLinkEditorPlugin, CodeHighlightPlugin, CodeActionMenuPlugin, CAN_USE_DOM,
+        $getRoot as getRoot,
+        FloatingLinkEditorPlugin,
+        CodeHighlightPlugin,
+        CodeActionMenuPlugin,
+        CAN_USE_DOM,
     } from "svelte-lexical";
 
     import "./editor.css";
@@ -99,6 +103,18 @@
         for (const toolbarButton of editorShellElement.querySelectorAll(".toolbar button")) {
             toolbarButton.setAttribute("tabIndex", "-1");
         }
+
+        /*editor.registerCommand<ClipboardEvent>(PASTE_COMMAND, (event: ClipboardEvent) => {
+            const image = event.clipboardData?.files.item(0);
+            if (!image) {
+                return true;
+            }
+
+            return editor.dispatchCommand(INSERT_IMAGE_COMMAND, {
+                altText: "",
+                src: "",
+            });
+        }, COMMAND_PRIORITY_EDITOR);*/
 
         const config = { attributes: false, childList: true, subtree: true };
         const observer = new MutationObserver(() => {

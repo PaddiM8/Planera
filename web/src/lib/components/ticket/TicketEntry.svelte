@@ -6,10 +6,21 @@
     import {getAvatarUrl} from "$lib/clients";
     import PriorityLabel from "$lib/components/ticket/PriorityLabel.svelte";
     import IconButton from "$lib/components/IconButton.svelte";
+    import {goto} from "$app/navigation";
 
     export let ticket: TicketDto;
 
+    let showTouchOverlay = false;
+    let preventTouch = false;
+
+    $: ticketUrl = `/projects/${ticket?.author.username}/${ticket?.projectSlug}/tickets/${ticket?.id}`;
+
     async function setStatus(status: TicketStatus) {
+        if (preventTouch) {
+            return;
+        }
+
+        closeTouchOverlay();
         await $projectHub?.invoke(
             "setTicketStatus",
             ticket.projectId,
@@ -17,9 +28,76 @@
             status
         );
     }
+
+    function openTouchOverlay() {
+        if (preventTouch) {
+            return;
+        }
+
+        if (window["closeTouchOverlay"]) {
+            window["closeTouchOverlay"]();
+        }
+
+        window["closeTouchOverlay"] = closeTouchOverlay;
+        showTouchOverlay = true;
+        preventTouch = true;
+        setTimeout(() => {
+            preventTouch = false;
+        }, 175);
+    }
+
+    export function closeTouchOverlay() {
+        if (preventTouch) {
+            return;
+        }
+
+        showTouchOverlay = false;
+        preventTouch = true;
+        setTimeout(() => {
+            preventTouch = false;
+        }, 175);
+    }
 </script>
 
 <div class="ticket" class:has-status={ticket.status}>
+    <div class="touch-overlay" on:touchstart={openTouchOverlay}>
+        <div class="menu" class:shown={showTouchOverlay}>
+            <span class="row">
+                {#if ticket.status === TicketStatus.None}
+                    <button class="item" on:touchstart={() => setStatus(TicketStatus.Done)}>
+                        <span class="icon done">
+                            <Icon src={Check} />
+                        </span>
+                        <span class="name">Done</span>
+                    </button>
+                    <button class="item" on:touchstart={() => setStatus(TicketStatus.Inactive)}>
+                        <span class="icon inactive">
+                            <Icon src={Minus} />
+                        </span>
+                        <span class="name">Inactive</span>
+                    </button>
+                    <button class="item" on:touchstart={() => setStatus(TicketStatus.Closed)}>
+                        <span class="icon close">
+                            <Icon src={XMark} />
+                        </span>
+                        <span class="name">Close</span>
+                    </button>
+                {:else}
+                    <button class="item" on:touchstart={() => setStatus(TicketStatus.None)}>
+                        <span class="name">Clear Status</span>
+                    </button>
+                {/if}
+            </span>
+            <span class="row">
+                <button class="item" on:touchstart={() => !preventTouch && goto(ticketUrl)}>
+                    <span class="name">Open</span>
+                </button>
+                <button class="item" on:touchstart={closeTouchOverlay}>
+                    <span class="name">Back</span>
+                </button>
+            </span>
+        </div>
+    </div>
     <div class="top">
         {#if ticket.status === TicketStatus.Done}
             <div class="status done" on:click={() => setStatus(TicketStatus.None)}>
@@ -34,7 +112,7 @@
                 <Icon src={XMark} />
             </div>
         {/if}
-        <a href="/projects/{ticket.author.username}/{ticket.projectSlug}/tickets/{ticket.id}">
+        <a href={ticketUrl}>
             <h3 class="title">{ticket.title}</h3>
         </a>
         <div class="status-buttons">
@@ -70,6 +148,7 @@
 
 <style lang="sass">
     .ticket
+        position: relative
         display: flex
         flex-direction: column
         padding: calc(var(--vertical-padding) * 1.5) calc(var(--horizontal-padding) * 1.5)
@@ -78,6 +157,67 @@
         border: var(--border)
         border-radius: var(--radius)
         background-color: var(--component-background)
+
+    .touch-overlay
+        position: absolute
+        display: none
+        top: 0
+        left: 0
+        width: 100%
+        height: 100%
+        box-sizing: border-box
+        border-radius: var(--radius)
+        overflow: hidden
+        z-index: 999
+
+        & .menu
+            display: flex
+            flex-direction: column
+            width: 100%
+            height: 100%
+            background-color: var(--component-background)
+
+            .row
+                display: flex
+                flex-grow: 1
+                flex-basis: 50%
+                border-bottom: var(--border)
+
+                &:last-child
+                    border-bottom: 0
+
+            .item
+                display: flex
+                flex-direction: column
+                align-items: center
+                justify-content: center
+                flex-grow: 1
+                flex-basis: 50%
+                background-color: var(--component-background)
+                border: 0
+                border-right: var(--border)
+                font-weight: 500
+
+                &:last-child
+                    border-right: 0
+
+                .icon
+                    width: 1.5em
+
+                    &.done
+                        color: var(--green)
+
+                    &.inactive
+                        color: var(--blue)
+
+                    &.close
+                        color: var(--red)
+
+                .name
+                    font-size: 1.1em
+
+            &:not(.shown)
+                display: none
 
     .top
         display: flex
@@ -92,6 +232,7 @@
     .status
         display: block
         height: 1.2em
+        min-width: 1.2em
         margin-right: -0.2em
         cursor: pointer
 
@@ -145,7 +286,7 @@
             $step1: rgba(var(--component-background-rgb), 0.85) 30%
             $step2: rgba(var(--component-background-rgb), 0.6) 75%
             background: linear-gradient(0deg, var(--component-background), $step1, $step2, transparent)
-            z-index: 999999
+            z-index: 500
 
         :global(br)
             display: none
@@ -160,4 +301,14 @@
 
         .assignee
             height: 1.125em
+
+    @media (hover: none)
+        .status-buttons
+            display: none
+
+        .id
+            margin-left: auto
+
+        .touch-overlay
+            display: block
 </style>
