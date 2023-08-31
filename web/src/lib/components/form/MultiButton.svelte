@@ -92,6 +92,7 @@
         font-weight: 450
         user-select: none
         cursor: pointer
+        -webkit-tap-highlight-color: transparent
 
         &:hover:not(input[type="radio"]:checked + label)
             background-color: var(--background-hover)

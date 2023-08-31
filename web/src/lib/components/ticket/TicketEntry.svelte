@@ -201,6 +201,9 @@
                 &:last-child
                     border-right: 0
 
+                &:hover
+                    background-color: var(--background-hover)
+
                 .icon
                     width: 1.5em
 

@@ -27,6 +27,7 @@
         font-weight: 500
         white-space: nowrap
         cursor: pointer
+        -webkit-tap-highlight-color: transparent
 
         .icon
             width: 1.5em

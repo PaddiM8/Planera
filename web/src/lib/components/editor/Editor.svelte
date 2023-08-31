@@ -49,17 +49,14 @@
         FloatingLinkEditorPlugin,
         CodeHighlightPlugin,
         CodeActionMenuPlugin,
-        CAN_USE_DOM,
     } from "svelte-lexical";
-
     import "./editor.css";
     import TaskEditorTheme from "$lib/components/editor/ticketEditorTheme";
     import {createEventDispatcher, onMount} from "svelte";
-    import {
-        $generateHtmlFromNodes as generateHtmlFromNodes,
-        $generateNodesFromDOM as generateNodesFromDOM,
-    } from '@lexical/html';
     import {browser} from "$app/environment";
+    import lexicalHtml from "@lexical/html";
+    const generateHtmlFromNodes = lexicalHtml.$generateHtmlFromNodes;
+    const generateNodesFromDOM = lexicalHtml.$generateNodesFromDOM;
 
     export let placeholder: string = "";
 
@@ -87,34 +84,13 @@
     let editorShellElement: HTMLElement;
     let editorElement: HTMLElement;
     let composer: Composer;
-    let isSmallWidthViewport = false;
     const dispatcher = createEventDispatcher();
-
-    function updateViewPortWidth() {
-        const isNextSmallWidthViewport = CAN_USE_DOM && window.matchMedia("(max-width: 1025px)").matches;
-
-        if (isNextSmallWidthViewport !== isSmallWidthViewport) {
-            isSmallWidthViewport = isNextSmallWidthViewport;
-        }
-    }
 
     onMount(() => {
         editor = composer.getEditor();
         for (const toolbarButton of editorShellElement.querySelectorAll(".toolbar button")) {
             toolbarButton.setAttribute("tabIndex", "-1");
         }
-
-        /*editor.registerCommand<ClipboardEvent>(PASTE_COMMAND, (event: ClipboardEvent) => {
-            const image = event.clipboardData?.files.item(0);
-            if (!image) {
-                return true;
-            }
-
-            return editor.dispatchCommand(INSERT_IMAGE_COMMAND, {
-                altText: "",
-                src: "",
-            });
-        }, COMMAND_PRIORITY_EDITOR);*/
 
         const config = { attributes: false, childList: true, subtree: true };
         const observer = new MutationObserver(() => {
@@ -127,11 +103,6 @@
             editorShellElement.dispatchEvent(event);
         });
         observer.observe(editorShellElement.querySelector("[contenteditable]"), config);
-
-        // Keep track of viewport size
-        window.addEventListener("resize", updateViewPortWidth);
-
-        return () => window.removeEventListener("resize", updateViewPortWidth);
     });
 
     export function getHtml(): Promise<string> {
@@ -218,7 +189,7 @@
                 <CaptionEditorHistoryPlugin />
             </ImagePlugin>
             <LinkPlugin {validateUrl} />
-            {#if !isSmallWidthViewport && browser}
+            {#if browser}
                 <FloatingLinkEditorPlugin anchorElem={editorElement} />
                 <CodeHighlightPlugin />
                 <CodeActionMenuPlugin anchorElem={editorElement} />

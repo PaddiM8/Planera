@@ -7,5 +7,9 @@ export default defineConfig({
 		alias: {
 			yjs: ("./node_modules/yjs/src/index.js"),
 		},
-	}
+	},
+	ssr: {
+		// Without this, there would be SSR errors in production builds
+		noExternal: process.env.NODE_ENV === "development" ? [] : ["lexical"],
+	},
 });

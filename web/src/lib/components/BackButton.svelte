@@ -29,6 +29,7 @@
         font-weight: 500
         text-decoration: none
         cursor: pointer
+        -webkit-tap-highlight-color: transparent
 
         &:hover
             background-color: var(--background-hover)

@@ -5,6 +5,7 @@ const anonymousPaths = [
     "/reset-password",
     "/confirm-email",
     "/send-confirmation-email",
+    "/last-visited",
 ];
 
 export function pathRequiresAuthentication(url: URL) {

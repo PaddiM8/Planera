@@ -8,5 +8,9 @@ export const handle: Handle = ({ event, resolve }) => {
         throw redirect(302, "/login");
     }
 
+    if (token && (event.url.pathname === "/login" || event.url.pathname === "/register")) {
+        throw redirect(302, "/");
+    }
+
     return resolve(event);
 }

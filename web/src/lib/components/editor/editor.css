@@ -287,6 +287,7 @@ i.success {
     border-radius: var(--radius);
     border: var(--border);
     box-shadow: none;
+    box-sizing: border-box;
 }
 
 .link-editor:empty {

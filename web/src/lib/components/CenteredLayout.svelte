@@ -15,11 +15,12 @@
 
     @media screen and (max-width: 580px)
         :global(.page)
-            background-color: var(--component-background)
+            background-color: var(--background)
 
         #content
             max-width: none
             border: 0
             border-radius: 0
             transform: none
+            background-color: var(--background)
 </style>

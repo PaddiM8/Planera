@@ -160,6 +160,7 @@
             border: 0
             padding: 0
             cursor: pointer
+            -webkit-tap-highlight-color: transparent
 
         .logo
             display: flex
