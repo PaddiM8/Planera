@@ -84,6 +84,7 @@
     let editorShellElement: HTMLElement;
     let editorElement: HTMLElement;
     let composer: Composer;
+    let hasFocus = false;
     const dispatcher = createEventDispatcher();
 
     onMount(() => {
@@ -103,6 +104,10 @@
             editorShellElement.dispatchEvent(event);
         });
         observer.observe(editorShellElement.querySelector("[contenteditable]"), config);
+
+        const contentEditable = editorElement.querySelector("[contenteditable]") as HTMLElement;
+        contentEditable.onfocus = () => hasFocus = true;
+        contentEditable.onblur = () => hasFocus = false;
     });
 
     export function getHtml(): Promise<string> {
@@ -134,7 +139,7 @@
 </script>
 
 <Composer {initialConfig} bind:this={composer}>
-    <div class="editor-shell" bind:this={editorShellElement}>
+    <div class="editor-shell" class:has-focus={hasFocus} bind:this={editorShellElement}>
         <Toolbar let:editor let:activeEditor let:blockType>
             <UndoButton />
             <RedoButton />
