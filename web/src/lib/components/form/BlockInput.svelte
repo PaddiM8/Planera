@@ -52,10 +52,6 @@
             return;
         }
 
-        if (!options.some(x => getValue(x) === inputElement.value)) {
-            return;
-        }
-
         addBlock(selectedSuggestion);
         e.preventDefault();
     }
