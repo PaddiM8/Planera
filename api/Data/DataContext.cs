@@ -29,6 +29,8 @@ public class DataContext : IdentityDbContext<User>
     {
         base.OnModelCreating(modelBuilder);
 
+        modelBuilder.HasPostgresExtension("pg_trgm");
+
         modelBuilder.Entity<User>()
             .HasMany(e => e.Tickets)
             .WithOne(e => e.Author)
@@ -43,6 +45,12 @@ public class DataContext : IdentityDbContext<User>
             .WithOne(e => e.Ticket)
             .HasForeignKey(e => new { e.TicketId, e.ProjectId })
             .IsRequired();
+        modelBuilder
+            .Entity<Ticket>()
+            .HasIndex(x => new { x.Title, x.Description })
+            .HasMethod("gin")
+            .HasOperators("gin_trgm_ops")
+            .IsTsVectorExpressionIndex("english");
         modelBuilder.Entity<Project>()
             .HasMany(e => e.Participants)
             .WithMany(e => e.JoinedProjects)

@@ -20,6 +20,7 @@ namespace Planera.Migrations
                 .HasAnnotation("ProductVersion", "7.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
+            NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "pg_trgm");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -291,6 +292,12 @@ namespace Planera.Migrations
                     b.HasIndex("AuthorId");
 
                     b.HasIndex("ProjectId");
+
+                    b.HasIndex("Title", "Description")
+                        .HasAnnotation("Npgsql:TsVectorConfig", "english");
+
+                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("Title", "Description"), "gin");
+                    NpgsqlIndexBuilderExtensions.HasOperators(b.HasIndex("Title", "Description"), new[] { "gin_trgm_ops" });
 
                     b.ToTable("Tickets");
                 });

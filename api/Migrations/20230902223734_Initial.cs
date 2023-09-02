@@ -12,6 +12,9 @@ namespace Planera.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AlterDatabase()
+                .Annotation("Npgsql:PostgresExtension:pg_trgm", ",,");
+
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
@@ -391,6 +394,14 @@ namespace Planera.Migrations
                 name: "IX_Tickets_ProjectId",
                 table: "Tickets",
                 column: "ProjectId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tickets_Title_Description",
+                table: "Tickets",
+                columns: new[] { "Title", "Description" })
+                .Annotation("Npgsql:IndexMethod", "gin")
+                .Annotation("Npgsql:IndexOperators", new[] { "gin_trgm_ops" })
+                .Annotation("Npgsql:TsVectorConfig", "english");
         }
 
         /// <inheritdoc />

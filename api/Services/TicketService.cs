@@ -95,20 +95,47 @@ public class TicketService
         var query = _dataContext.Tickets
             .Where(x => x.ProjectId == project.Id);
 
-        if (searchQuery != null)
-            query = query.Where(x => x.Title.Contains(searchQuery));
+        if (!string.IsNullOrEmpty(searchQuery))
+        {
+            query = query
+                .Select(x =>
+                    // Mostly rely on TS vector full text search
+                    new
+                    {
+                        Row = x,
+                        Similarity = (double)EF.Functions
+                            .ToTsVector("english", x.Title + " " + x.Description)
+                            .Rank(EF.Functions.PhraseToTsQuery(searchQuery)) * 100,
+                    }
+                )
+                .Select(x =>
+                    // But also do a trigram word search to eg. find partial searches of words
+                    new
+                    {
+                        Row = x.Row,
+                        Similarity = x.Similarity + EF.Functions
+                            .TrigramsWordSimilarity(searchQuery, x.Row.Title),
+                    }
+                )
+                .Where(x => x.Similarity > 0.5)
+                .OrderByDescending(x => x.Similarity)
+                .Select(x => x.Row);
+        }
 
         if (filterByStatus != null)
             query = query.Where(x => x.Status == filterByStatus);
 
-        query = sorting switch
+        if (searchQuery == null)
         {
-            TicketSorting.Newest => query.OrderByDescending(x => x.Timestamp),
-            TicketSorting.Oldest => query.OrderBy(x => x.Timestamp),
-            TicketSorting.HighestPriority => query.OrderByDescending(x => x.Priority),
-            TicketSorting.LowestPriority => query.OrderBy(x => x.Priority),
-            _ => throw new ArgumentException("sorting"),
-        };
+            query = sorting switch
+            {
+                TicketSorting.Newest => query.OrderByDescending(x => x.Timestamp),
+                TicketSorting.Oldest => query.OrderBy(x => x.Timestamp),
+                TicketSorting.HighestPriority => query.OrderByDescending(x => x.Priority),
+                TicketSorting.LowestPriority => query.OrderBy(x => x.Priority),
+                _ => throw new ArgumentException("sorting"),
+            };
+        }
 
         return await query
             .Include(x => x.Author)
