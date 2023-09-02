@@ -36,13 +36,7 @@
             }
         }
 
-        projectHub.subscribe(hub => {
-            if (!hub) {
-                return;
-            }
-
-            hub.on("onUpdateTicket", onUpdateTicket);
-        });
+        projectHub.subscribe(hub => hub?.on("onUpdateTicket", onUpdateTicket));
     });
 
     async function loadMore() {
@@ -162,7 +156,8 @@
                name="title"
                placeholder="Title..."
                bind:this={titleInput} />
-        <Editor placeholder="Describe the ticket..." bind:this={editor} />
+        <Editor placeholder="Describe the ticket..."
+                bind:this={editor} />
         <div class="bottom-row">
             <span class="group">
                 <span class="label">
@@ -185,7 +180,9 @@
                             bind:this={assignees}
                             showUserIcons={true} />
             </span>
-            <Button value="Create" primary submit />
+            <Button value="Create"
+                    primary
+                    submit />
         </div>
     </Form>
 </section>

@@ -11,6 +11,8 @@ namespace Planera.Controllers;
 [Route("tickets")]
 public class TicketController : ControllerBase
 {
+    private const long TICKET_SIZE_LIMIT = 10000000;
+
     private readonly TicketService _ticketService;
 
     public TicketController(TicketService ticketService)
@@ -71,6 +73,7 @@ public class TicketController : ControllerBase
     }
 
     [HttpPost("{projectId}")]
+    [RequestSizeLimit(TICKET_SIZE_LIMIT)]
     [ProducesResponseType(typeof(TicketDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> Create(string projectId, [FromBody] CreateTicketModel model)
     {

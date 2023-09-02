@@ -1,9 +1,12 @@
+using System.Collections;
+using System.Text.RegularExpressions;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Planera.Data;
 using ErrorOr;
 using Microsoft.EntityFrameworkCore;
 using Planera.Data.Dto;
+using Planera.Data.Files;
 using Planera.Models.Ticket;
 
 namespace Planera.Services;
@@ -13,12 +16,23 @@ public class TicketService
     private readonly DataContext _dataContext;
     private readonly IMapper _mapper;
     private readonly ProjectService _projectService;
+    private readonly IFileStorage _fileStorage;
 
-    public TicketService(DataContext dataContext, IMapper mapper, ProjectService projectService)
+    private static readonly Regex _imageSrcRegex = new(
+        "(\\<img[^>]+src=)['\"]([^'\"]+)['\"]",
+        RegexOptions.Compiled | RegexOptions.Multiline
+    );
+
+    public TicketService(
+        DataContext dataContext,
+        IMapper mapper,
+        ProjectService projectService,
+        IFileStorage fileStorage)
     {
         _dataContext = dataContext;
         _mapper = mapper;
         _projectService = projectService;
+        _fileStorage = fileStorage;
     }
 
     public static ErrorOr<T> TicketNotFoundError<T>()
@@ -134,7 +148,7 @@ public class TicketService
             Id = id,
             ProjectId = project.Id,
             Title = title,
-            Description = description,
+            Description = await SaveImagesAndReplaceUrls(project.Id, description),
             Priority = priority,
             Assignees = assignees,
             AuthorId = userId,
@@ -160,7 +174,11 @@ public class TicketService
 
         var ticket = ticketResult.Value;
         ticket.Title = title;
-        ticket.Description = description;
+        ticket.Description = await SaveImagesAndReplaceUrls(
+            projectId,
+            description,
+            ticket.Description
+        );
         _dataContext.Tickets.Update(ticket);
         await _dataContext.SaveChangesAsync();
 
@@ -267,5 +285,70 @@ public class TicketService
         await _dataContext.SaveChangesAsync();
 
         return new ErrorOr<Deleted>();
+    }
+
+    private async Task<string> SaveImagesAndReplaceUrls(string projectId, string ticketBody, string? oldBody = null)
+    {
+        // If the pre-edit body of the ticket was provided, put all the
+        // existing image paths in a collection and remove the ones that
+        // exist in the new body as well. In the end, we will end up
+        // with a collection of all the images that were removed.
+        // These should be removed from the file storage.
+        HashSet<string>? filesToRemove = null;
+        const string urlPrefix = "planera:";
+        if (oldBody != null)
+        {
+            filesToRemove = new HashSet<string>(
+                _imageSrcRegex.Matches(oldBody)
+                    .Where(x => x.Groups.Count > 2)
+                    .Select(x => x.Groups[2].Value)
+                    .Where(x => x.StartsWith(urlPrefix))
+            );
+            Console.WriteLine("Files to remove: " + string.Join(", ", filesToRemove.ToArray()));
+        }
+
+        var writeTasks = new List<Task<string>>();
+        foreach (Match match in _imageSrcRegex.Matches(ticketBody))
+        {
+            if (match.Groups.Count < 3)
+                continue;
+
+            var src = match.Groups[2].Value;
+
+            // If an already saved image was both in the previous body and the
+            // new one, remove it from the to-be-removed list.
+            if (filesToRemove != null && src.StartsWith(urlPrefix) && filesToRemove.Contains(src))
+                filesToRemove.Remove(src);
+
+            // Only base64 encoded png images should be saved.
+            if (!src.StartsWith("data:image/png;base64,"))
+                continue;
+
+            var bytes = Convert.FromBase64String(src.Split(",")[1]);
+            var encoded = ImagePreparer.Encode(bytes);
+            writeTasks.Add(_fileStorage.WriteAsync(projectId, encoded));
+        }
+
+        if (filesToRemove != null)
+        {
+            foreach (var fileToRemove in filesToRemove.Select(x => x[urlPrefix.Length..]))
+                _fileStorage.Delete(fileToRemove);
+        }
+
+        var newFileNames = new Queue(await Task.WhenAll(writeTasks.ToArray()));
+
+        // Perform an identical second pass, but this time replace all the values
+        return _imageSrcRegex.Replace(
+            ticketBody,
+            matches =>
+            {
+                if (matches.Groups.Count < 3 || !matches.Groups[2].Value.StartsWith("data:image/png;base64,"))
+                    return matches.Value;
+
+                var newFileName = newFileNames.Dequeue()!;
+
+                return $"{matches.Groups[1]}'{urlPrefix}{newFileName}'";
+            }
+        );
     }
 }

@@ -4,6 +4,7 @@ import {getTicketClient} from "$lib/clients";
 import {parsePriority} from "$lib/priority";
 import {handleProblem, handleProblemForForm} from "$lib/problemDetails";
 import {ticketsPerPage} from "./store";
+import {makeImagePathsAbsolute} from "$lib/paths";
 
 export async function load({ cookies, params }: ServerLoadEvent) {
     let response: TicketDto[];
@@ -16,6 +17,10 @@ export async function load({ cookies, params }: ServerLoadEvent) {
         );
     } catch (ex) {
         return handleProblem(ex as SwaggerException);
+    }
+
+    for (const ticket of response) {
+        ticket.description = makeImagePathsAbsolute(ticket.description);
     }
 
     return {

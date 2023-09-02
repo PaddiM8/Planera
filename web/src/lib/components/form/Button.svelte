@@ -2,8 +2,9 @@
     import {createEventDispatcher} from "svelte";
 
     export let value: string;
-    export let primary: boolean = false;
-    export let submit: boolean = false;
+    export let primary = false;
+    export let submit = false;
+    export let disabled = false;
 
     const dispatch = createEventDispatcher();
     let element: HTMLElement;
@@ -19,12 +20,14 @@
 
 {#if submit}
     <input type="submit"
-           class:primary={primary}
-           bind:value={value}
+           class:primary
+           bind:value
+           {disabled}
            bind:this={element} />
 {:else}
     <button type="button"
-            class:primary={primary}
+            class:primary
+            {disabled}
             on:click={handleClick}
             bind:this={element}>{value}</button>
 {/if}

@@ -3,6 +3,7 @@ import {handleProblem, handleProblemForForm} from "$lib/problemDetails";
 import type {TicketDto, SwaggerException, CreateTicketModel, CreateNoteModel, EditNoteModel} from "../../../../../../../gen/planeraClient";
 import {getNoteClient, getTicketClient} from "$lib/clients";
 import type {RequestEvent} from "@sveltejs/kit";
+import {makeImagePathsAbsolute, makeImagePathsRelative} from "$lib/paths";
 
 export async function load({ cookies, params }: ServerLoadEvent) {
     let response: TicketDto;
@@ -11,6 +12,8 @@ export async function load({ cookies, params }: ServerLoadEvent) {
     } catch (ex) {
         return handleProblem(ex as SwaggerException);
     }
+
+    response.description = makeImagePathsAbsolute(response.description);
 
     return {
         ticket: structuredClone(response),
@@ -26,7 +29,7 @@ export const actions = {
                 Number(formData.get("ticketId")),
                 {
                     title: formData.get("title") as string,
-                    description: formData.get("description") as string,
+                    description: makeImagePathsRelative(formData.get("description") as string),
                 } as CreateTicketModel,
             );
         } catch (ex) {
