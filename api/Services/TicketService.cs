@@ -152,7 +152,7 @@ public class TicketService
             Priority = priority,
             Assignees = assignees,
             AuthorId = userId,
-            Timestamp = DateTime.Now,
+            Timestamp = DateTime.UtcNow,
         };
         await _dataContext.Tickets.AddAsync(ticket);
         await _dataContext.SaveChangesAsync();

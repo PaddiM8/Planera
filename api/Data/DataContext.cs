@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
 namespace Planera.Data;
 
 public class DataContext : IdentityDbContext<User>
 {
+    private readonly IConfiguration _configuration;
     public DbSet<Project> Projects { get; set; } = null!;
 
 
@@ -19,9 +19,10 @@ public class DataContext : IdentityDbContext<User>
 
     public DbSet<Note> Notes { get; set; } = null!;
 
-    public DataContext(DbContextOptions<DataContext> context)
+    public DataContext(DbContextOptions<DataContext> context, IConfiguration configuration)
         : base(context)
     {
+        _configuration = configuration;
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -56,14 +57,11 @@ public class DataContext : IdentityDbContext<User>
             .UsingEntity<Invitation>();
     }
 
-    public void CreateOfflineBackup()
-    {
-        if (Database.GetDbConnection() is not SqliteConnection connection)
-            throw new NotSupportedException("Can not create a backup of this database type.");
-
-        if (File.Exists(connection.DataSource))
-        {
-            File.Copy(connection.DataSource, connection.DataSource + ".bak");
-        }
-    }
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        => optionsBuilder.UseNpgsql(
+            $"Host={_configuration["Postgres:Host"]};" +
+                $"Username={_configuration["Postgres:User"]};" +
+                $"Password={_configuration["Postgres:Password"]};" +
+                $"Database={_configuration["Postgres:Database"]}"
+        );
 }

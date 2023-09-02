@@ -52,7 +52,7 @@ public class NoteService
         var note = new Note
         {
             Content = content,
-            Timestamp = DateTime.Now,
+            Timestamp = DateTime.UtcNow,
             TicketId = ticketId,
             ProjectId = projectId,
             AuthorId = userId,

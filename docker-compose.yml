@@ -6,18 +6,36 @@
       - 443:443
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
+  db:
+    image: postgres:latest
+    restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}" ]
+      interval: 1s
+      timeout: 5s
+      retries: 30
+    environment:
+      POSTGRES_USER: planera
+      POSTGRES_PASSWORD: planera
+      POSTGRES_DB: planera
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
   planera-api:
     image: ghcr.io/paddim8/planera-api:latest
     environment:
       PLANERA_FRONTENDURL: http://localhost:2000
       PLANERA_EMAILCONFIRMATION: false
+      PLANERA_POSTGRES__HOST: "db:5432"
+      PLANERA_POSTGRES__USER: planera
+      PLANERA_POSTGRES__PASSWORD: planera
+      PLANERA_POSTGRES__DB: planera
       PLANERA_SMTP__HOST: ""
       PLANERA_SMTP__PORT: ""
       PLANERA_SMTP__USER: ""
       PLANERA_SMTP__PASSWORD: ""
       PLANERA_SMTP__SENDER: ""
     volumes:
-      - ./data:/app/data
+      - ./data/api:/app/data
   planera-web:
     image: ghcr.io/paddim8/planera-web:latest
     environment:

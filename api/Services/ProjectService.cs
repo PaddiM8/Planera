@@ -107,7 +107,7 @@ public class ProjectService
             Slug = slug.ToLower(),
             Name = name,
             Description = description,
-            Timestamp = DateTime.Now,
+            Timestamp = DateTime.UtcNow,
             Participants = new List<User> { author },
         };
 

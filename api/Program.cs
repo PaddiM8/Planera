@@ -71,9 +71,7 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Password.RequiredUniqueChars = 1;
 
 });
-builder.Services.AddDbContext<DataContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("IdentityContextConnection"))
-);
+builder.Services.AddDbContext<DataContext>();
 builder.Services.AddAuthentication(o =>
 {
     o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -155,9 +153,6 @@ var services = scope.ServiceProvider;
 
 var context = services.GetRequiredService<DataContext>();
 if (context.Database.GetPendingMigrations().Any())
-{
-    context.CreateOfflineBackup();
     context.Database.Migrate();
-}
 
 app.Run();
