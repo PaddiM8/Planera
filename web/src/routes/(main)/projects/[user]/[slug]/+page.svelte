@@ -16,6 +16,7 @@
     import {toast} from "$lib/toast";
     import Select from "$lib/components/form/Select.svelte";
     import {TicketSorting, TicketStatus} from "../../../../../gen/planeraClient";
+    import {makeImagePathsAbsolute} from "$lib/paths";
 
     export let data: {
         project: ProjectDto,
@@ -54,7 +55,13 @@
             sortingMap[sorting],
             filterMap[filterByStatus],
         );
+
+        for (const ticket of newTickets) {
+            ticket.description = makeImagePathsAbsolute(ticket.description);
+        }
+
         data.tickets = [...data.tickets, ...newTickets];
+
         if (newTickets.length === 0) {
             reachedEndOfTickets = true;
         }
@@ -114,7 +121,7 @@
             queryTimeout = newTimeout;
 
             try {
-                data.tickets = await $projectHub!.invoke(
+                const newTickets = await $projectHub!.invoke(
                     "queryTickets",
                     data.project.author.username,
                     data.project.slug,
@@ -124,6 +131,12 @@
                     sortingMap[sorting],
                     filterMap[filterByStatus],
                 );
+
+                for (const ticket of newTickets) {
+                    ticket.description = makeImagePathsAbsolute(ticket.description);
+                }
+
+                data.tickets = newTickets;
             } catch {
                 toast.error("Failed to fetch tickets.");
             }
