@@ -287,6 +287,9 @@
     :global(.ticket .description p)
         margin: 0
 
+    :global(.ticket .description img)
+        max-width: 40em
+
     .group
         display: flex
         flex-direction: column
