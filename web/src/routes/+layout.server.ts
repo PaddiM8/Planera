@@ -12,8 +12,11 @@ export const load = (async ({ cookies, url }) => {
     let response: UserDto;
     try {
         response = await getUserClient(cookies).get();
-    } catch (ex) {
-        console.log(ex)
+    } catch (ex: any) {
+        if (ex["headers"] && ex["headers"]["www-authenticate"]?.includes("invalid_token")) {
+            cookies.delete("token");
+        }
+
         return handleProblem(ex as SwaggerException);
     }
 
