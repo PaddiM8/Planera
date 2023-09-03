@@ -1,3 +1,4 @@
+using ErrorOr;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Planera.Extensions;
@@ -12,10 +13,14 @@ namespace Planera.Controllers;
 public class AuthenticationController : ControllerBase
 {
     private readonly AuthenticationService _authenticationService;
+    private readonly IConfiguration _configuration;
 
-    public AuthenticationController(AuthenticationService authenticationService)
+    public AuthenticationController(
+        AuthenticationService authenticationService,
+        IConfiguration configuration)
     {
         _authenticationService = authenticationService;
+        _configuration = configuration;
     }
 
     [AllowAnonymous]
@@ -33,6 +38,9 @@ public class AuthenticationController : ControllerBase
     [ProducesResponseType(typeof(AuthenticationResult), StatusCodes.Status200OK)]
     public async Task<IActionResult> Register([FromBody] RegisterModel model)
     {
+        if (_configuration.GetValue<bool>("DisableRegistration"))
+            return Error.Conflict("Registration", "Registration has been disabled.").ToActionResult();
+
         var result = await _authenticationService.RegisterAsync(model.Username, model.Email, model.Password);
 
         return result.ToActionResult();

@@ -5,6 +5,22 @@ namespace Planera.Extensions;
 
 public static class ResultsExtensions
 {
+    public static IActionResult ToActionResult(this Error error)
+    {
+        var problemDetails = new ProblemDetails
+        {
+            Title = "Invalid request.",
+            Status = 400,
+        };
+        problemDetails.Extensions.Add(
+            "errors",
+            FormatErrors(new List<Error> { error })
+        );
+
+        return new BadRequestObjectResult(problemDetails);
+    }
+
+
     public static IActionResult ToActionResult<T>(this ErrorOr<T> errors)
     {
         if (errors.IsError)
