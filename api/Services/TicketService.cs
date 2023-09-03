@@ -130,7 +130,10 @@ public class TicketService
                 TicketFilter.Closed => query.Where(x => x.Status == TicketStatus.Closed),
                 TicketFilter.Inactive => query.Where(x => x.Status == TicketStatus.Inactive),
                 TicketFilter.Done => query.Where(x => x.Status == TicketStatus.Done),
-                TicketFilter.AssignedToMe => query.Where(x => x.Assignees.Any(user => user.Id == userId)),
+                TicketFilter.AssignedToMe => query.Where(x =>
+                    (x.Status == TicketStatus.None || x.Status == TicketStatus.Inactive)
+                        && x.Assignees.Any(user => user.Id == userId)
+                ),
                 _ => query,
             };
         }
