@@ -56,9 +56,6 @@
             toast.info("Project updated successfully.");
         }
     }
-
-    function handleBeforeDeleteSubmit() {
-    }
 </script>
 
 <svelte:head>

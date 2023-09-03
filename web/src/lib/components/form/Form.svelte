@@ -59,12 +59,16 @@
 
     async function enhanceHandler(e) {
         isSubmitting = true;
-        if (beforeSubmit) {
-            await beforeSubmit(e);
+
+        // Trim all input values
+        for (const [key, value] of e.formData.entries()) {
+            if (typeof value === "string") {
+                e.formData.set(key, value.trim());
+            }
         }
 
-        for (const input of form.querySelectorAll("input")) {
-            input.value = input.value?.trim();
+        if (beforeSubmit) {
+            await beforeSubmit(e);
         }
 
         return async ({ result, update }) => {
