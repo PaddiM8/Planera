@@ -30,12 +30,12 @@ public class ProjectHub : Hub<IProjectHubContext>
 
     public async Task Join(string projectId)
     {
-        await Groups.AddToGroupAsync(Context.ConnectionId, projectId.ToString());
+        await Groups.AddToGroupAsync(Context.ConnectionId, projectId);
     }
 
     public async Task Leave(string projectId)
     {
-        await Groups.RemoveFromGroupAsync(Context.ConnectionId, projectId.ToString());
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, projectId);
     }
 
     public async Task<IEnumerable<TicketDto>> QueryTickets(
@@ -45,7 +45,7 @@ public class ProjectHub : Hub<IProjectHubContext>
         int amount,
         string? query = null,
         TicketSorting sorting = TicketSorting.Newest,
-        TicketStatus? orderByStatus = null)
+        TicketFilter? filter = null)
     {
         var result = await _ticketService.GetAllAsync(
             Context.User!.FindFirst("Id")!.Value,
@@ -55,7 +55,7 @@ public class ProjectHub : Hub<IProjectHubContext>
             amount,
             query,
             sorting,
-            orderByStatus
+            filter
         );
 
         return result.Unwrap();
@@ -71,7 +71,7 @@ public class ProjectHub : Hub<IProjectHubContext>
         result.Unwrap();
 
         await Clients
-            .Group(projectId.ToString())
+            .Group(projectId)
             .OnRemoveTicket(projectId, ticketId);
     }
 
@@ -90,7 +90,7 @@ public class ProjectHub : Hub<IProjectHubContext>
             { nameof(TicketDto.Status), status },
         };
         await Clients
-            .Group(projectId.ToString())
+            .Group(projectId)
             .OnUpdateTicket(projectId, ticketId, newFields);
     }
 
@@ -109,7 +109,7 @@ public class ProjectHub : Hub<IProjectHubContext>
             { nameof(TicketDto.Status), priority },
         };
         await Clients
-            .Group(projectId.ToString())
+            .Group(projectId)
             .OnUpdateTicket(projectId, ticketId, newFields);
     }
 

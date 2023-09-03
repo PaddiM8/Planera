@@ -84,7 +84,7 @@ public class TicketService
         int amount,
         string? searchQuery = null,
         TicketSorting sorting = TicketSorting.Newest,
-        TicketStatus? filterByStatus = null)
+        TicketFilter? filter = null)
     {
         var project = await _projectService
             .QueryBySlug(userId, username, slug)
@@ -122,18 +122,27 @@ public class TicketService
                 .Select(x => x.Row);
         }
 
-        if (filterByStatus != null)
-            query = query.Where(x => x.Status == filterByStatus);
+        if (filter != null)
+        {
+            query = filter switch
+            {
+                TicketFilter.Open => query.Where(x => x.Status == TicketStatus.None),
+                TicketFilter.Closed => query.Where(x => x.Status == TicketStatus.Closed),
+                TicketFilter.Inactive => query.Where(x => x.Status == TicketStatus.Inactive),
+                TicketFilter.Done => query.Where(x => x.Status == TicketStatus.Done),
+                TicketFilter.AssignedToMe => query.Where(x => x.Assignees.Any(user => user.Id == userId)),
+                _ => query,
+            };
+        }
 
         if (searchQuery == null)
         {
             query = sorting switch
             {
-                TicketSorting.Newest => query.OrderByDescending(x => x.Timestamp),
                 TicketSorting.Oldest => query.OrderBy(x => x.Timestamp),
                 TicketSorting.HighestPriority => query.OrderByDescending(x => x.Priority),
                 TicketSorting.LowestPriority => query.OrderBy(x => x.Priority),
-                _ => throw new ArgumentException("sorting"),
+                _ => query.OrderByDescending(x => x.Timestamp),
             };
         }
 

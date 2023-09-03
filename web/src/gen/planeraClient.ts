@@ -1074,7 +1074,7 @@ export class TicketClient extends AuthorizedApiBase {
         return Promise.resolve<TicketDto[]>(null as any);
     }
 
-    getAll2(username: string, slug: string, startIndex: number, amount: number, sorting: TicketSorting, filterByStatus: TicketStatus): Promise<TicketDto[]> {
+    getAll2(username: string, slug: string, startIndex: number, amount: number, sorting: TicketSorting, filter: TicketFilter): Promise<TicketDto[]> {
         let url_ = this.baseUrl + "/tickets/{username}/{slug}/query?";
         if (username === undefined || username === null)
             throw new Error("The parameter 'username' must be defined.");
@@ -1094,10 +1094,10 @@ export class TicketClient extends AuthorizedApiBase {
             throw new Error("The parameter 'sorting' must be defined and cannot be null.");
         else
             url_ += "sorting=" + encodeURIComponent("" + sorting) + "&";
-        if (filterByStatus === undefined)
-            throw new Error("The parameter 'filterByStatus' must be defined.");
-        else if(filterByStatus !== null)
-            url_ += "filterByStatus=" + encodeURIComponent("" + filterByStatus) + "&";
+        if (filter === undefined)
+            throw new Error("The parameter 'filter' must be defined.");
+        else if(filter !== null)
+            url_ += "filter=" + encodeURIComponent("" + filter) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
@@ -2285,6 +2285,15 @@ export enum TicketSorting {
     Oldest = 1,
     HighestPriority = 2,
     LowestPriority = 3,
+}
+
+export enum TicketFilter {
+    All = 0,
+    Open = 1,
+    Closed = 2,
+    Inactive = 3,
+    Done = 4,
+    AssignedToMe = 5,
 }
 
 export class CreateTicketModel implements ICreateTicketModel {

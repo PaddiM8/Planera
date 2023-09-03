@@ -56,7 +56,7 @@ public class TicketController : ControllerBase
         int startIndex,
         int amount,
         TicketSorting sorting,
-        TicketStatus? filterByStatus)
+        TicketFilter? filter)
     {
         var result = await _ticketService.GetAllAsync(
             User.FindFirst("Id")!.Value,
@@ -66,7 +66,7 @@ public class TicketController : ControllerBase
             amount,
             searchQuery: null,
             sorting,
-            filterByStatus
+            filter
         );
 
         return result.ToActionResult();

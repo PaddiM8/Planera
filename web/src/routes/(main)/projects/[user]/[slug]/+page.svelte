@@ -15,7 +15,7 @@
     import UserIcon from "$lib/components/UserIcon.svelte";
     import {toast} from "$lib/toast";
     import Select from "$lib/components/form/Select.svelte";
-    import {TicketSorting, TicketStatus} from "../../../../../gen/planeraClient";
+    import {TicketFilter, TicketSorting} from "../../../../../gen/planeraClient";
     import {makeImagePathsAbsolute} from "$lib/paths";
 
     export let data: {
@@ -53,7 +53,7 @@
             ticketsPerPage,
             searchQuery,
             sortingMap[sorting],
-            filterMap[filterByStatus],
+            filterMap[filter],
         );
 
         for (const ticket of newTickets) {
@@ -81,14 +81,15 @@
     let assignees;
     let priority;
     let searchQuery: string;
-    let filterByStatus: string = "All";
+    let filter: string = "All";
     let sorting: string = "Newest";
     const filterMap = {
-        "All": null,
-        "Open": TicketStatus.None,
-        "Closed": TicketStatus.Closed,
-        "Inactive": TicketStatus.Inactive,
-        "Done": TicketStatus.Done,
+        "All": TicketFilter.All,
+        "Open": TicketFilter.Open,
+        "Closed": TicketFilter.Closed,
+        "Inactive": TicketFilter.Inactive,
+        "Done": TicketFilter.Done,
+        "Assigned to Me": TicketFilter.AssignedToMe,
     };
     const sortingMap = {
         "Newest": TicketSorting.Newest,
@@ -129,7 +130,7 @@
                     ticketsPerPage,
                     searchQuery,
                     sortingMap[sorting],
-                    filterMap[filterByStatus],
+                    filterMap[filter],
                 );
 
                 for (const ticket of newTickets) {
@@ -208,7 +209,7 @@
                    on:input={query} />
         <div class="sorting">
             <Select choices={Object.keys(filterMap)}
-                    bind:selectedValue={filterByStatus}
+                    bind:selectedValue={filter}
                     on:change={query} />
             <Select choices={Object.keys(sortingMap)}
                     bind:selectedValue={sorting}
@@ -264,6 +265,7 @@
     .search-area .sorting
         display: flex
         gap: var(--spacing)
+        width: 37em
 
     @media screen and (max-width: 980px)
         .bottom-row
