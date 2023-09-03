@@ -121,7 +121,14 @@ public class ProjectHub : Hub<IProjectHubContext>
             ticketId,
             assigneeId
         );
-        result.Unwrap();
+
+        var newFields = new Dictionary<string, object>
+        {
+            { nameof(TicketDto.Assignees), result.Unwrap() },
+        };
+        await Clients
+            .Group(projectId)
+            .OnUpdateTicket(projectId, ticketId, newFields);
     }
 
     public async Task RemoveTicketAssignee(string projectId, int ticketId, string assigneeId)

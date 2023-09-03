@@ -273,7 +273,7 @@ public class TicketService
         return new ErrorOr<Updated>();
     }
 
-    public async Task<ErrorOr<Updated>> AddAssigneeAsync(
+    public async Task<ErrorOr<ICollection<UserDto>>> AddAssigneeAsync(
         string userId,
         string projectId,
         int ticketId,
@@ -296,7 +296,9 @@ public class TicketService
         );
         await _dataContext.SaveChangesAsync();
 
-        return new ErrorOr<Updated>();
+        return ErrorOrFactory.From(
+            _mapper.Map<ICollection<UserDto>>(ticketResult.Value.Assignees)
+        );
     }
 
     public async Task<ErrorOr<Deleted>> RemoveAssigneeAsync(

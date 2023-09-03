@@ -1,12 +1,14 @@
 <script lang="ts">
     import UserIcon from "$lib/components/UserIcon.svelte";
-    import {Check, Icon, Minus, XMark} from "svelte-hero-icons";
+    import {Check, Icon, Minus, Plus, XMark} from "svelte-hero-icons";
     import {TicketStatus, TicketDto} from "../../../gen/planeraClient";
     import {projectHub} from "../../../routes/(main)/projects/[user]/[slug]/store";
     import {getAvatarUrl} from "$lib/clients";
     import PriorityLabel from "$lib/components/ticket/PriorityLabel.svelte";
     import IconButton from "$lib/components/IconButton.svelte";
     import {goto} from "$app/navigation";
+    import {toast} from "$lib/toast";
+    import {user} from "../../../routes/(main)/store";
 
     export let ticket: TicketDto;
 
@@ -27,6 +29,22 @@
             ticket.id,
             status
         );
+    }
+
+    async function assignToMe() {
+        try {
+            await $projectHub!.invoke(
+                "addTicketAssignee",
+                ticket.projectId,
+                ticket.id,
+                $user.id
+            );
+
+            toast.info("Added assignee successfully.");
+        } catch {
+            toast.error("Failed to add assignee.");
+            ticket.assignees = ticket.assignees.filter(x => x.id !== $user.id);
+        }
     }
 
     function openTouchOverlay() {
@@ -142,6 +160,9 @@
                               type="user" />
                 </span>
             {/each}
+            <button class="assignee add-button" on:click={assignToMe}>
+                <Icon src={Plus} />
+            </button>
         </span>
     </div>
 </div>
@@ -255,7 +276,7 @@
         &:hover
             text-decoration: underline
 
-    .ticket:not(:hover) .status-buttons, .ticket.has-status .status-buttons
+    .ticket:not(:hover) .status-buttons, .ticket.has-status .status-buttons, .ticket:not(:hover) .add-button
         visibility: hidden
 
     .status-buttons
@@ -296,14 +317,34 @@
 
     .bottom
         display: flex
+        align-items: center
         gap: 0.4em
 
     .assignees
         display: flex
         gap: 0.25em
 
-        .assignee
-            height: 1.125em
+        .add-button
+            display: flex
+            align-items: center
+            justify-content: center
+            width: 1.375em
+            height: 1.375em
+            padding: 0
+            aspect-ratio: 1 / 1
+            text-align: center
+            border-radius: 100%
+            border: var(--border)
+            background-color: var(--background)
+            font-size: 1em
+            cursor: pointer
+
+            &:hover
+                background-color: var(--background-hover)
+
+        :global(.add-button > *)
+            width: 0.75em
+            height: 0.75em
 
     @media (hover: none)
         .status-buttons

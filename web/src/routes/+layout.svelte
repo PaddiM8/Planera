@@ -8,10 +8,15 @@
     import YesNoDialog from "$lib/components/dialogs/YesNoDialog.svelte";
     import {UserDto} from "../gen/planeraClient";
     import {getAvatarUrl} from "$lib/clients";
+    import {user} from "./(main)/store";
 
     export let data = {
         user: UserDto,
     };
+
+    $: {
+        $user = data.user;
+    }
 
     let contextMenuTarget: HTMLElement | undefined;
 
