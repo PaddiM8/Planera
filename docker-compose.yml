@@ -22,6 +22,9 @@
       - ./data/db:/var/lib/postgresql/data
   planera-api:
     image: ghcr.io/paddim8/planera-api:latest
+    depends_on:
+      db:
+        condition: service_healthy
     environment:
       PLANERA_FRONTENDURL: http://localhost:2000
       PLANERA_EMAILCONFIRMATION: false
