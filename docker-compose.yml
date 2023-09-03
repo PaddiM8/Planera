@@ -25,6 +25,7 @@
     environment:
       PLANERA_FRONTENDURL: http://localhost:2000
       PLANERA_EMAILCONFIRMATION: false
+      PLANERA_DISABLEREGISTRATION: false
       PLANERA_POSTGRES__HOST: "db:5432"
       PLANERA_POSTGRES__USER: planera
       PLANERA_POSTGRES__PASSWORD: planera
