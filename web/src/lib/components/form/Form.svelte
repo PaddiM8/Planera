@@ -45,6 +45,10 @@
             await beforeSubmit(e);
         }
 
+        for (const input of form.querySelectorAll("input")) {
+            input.value = input.value?.trim();
+        }
+
         return async ({ result, update }) => {
             await update({ reset });
 
