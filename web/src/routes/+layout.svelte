@@ -119,6 +119,7 @@
         --green: #16a34a
         --blue: #2563eb
         --red: #e11d48
+        --red-hover: #ef4444
 
     :global(h1)
         font-size: 2.1em

@@ -7,7 +7,7 @@
     import {browser} from "$app/environment";
 
     export let action: string | undefined = undefined;
-    export let problem: ProblemDetails;
+    export let problem: ProblemDetails | undefined = undefined;
     export let beforeSubmit = undefined;
     export let afterSubmit = undefined;
     export let reset = true;

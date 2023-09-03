@@ -44,37 +44,43 @@
     }
 </script>
 
-{#if canAdd}
-    <div class="add-area">
-        <Input {placeholder}
-               submitButton={addButton}
-               bind:value={inputValue} />
-        <Button value={addButtonText}
-                primary
-                bind:this={addButton}
-                on:click={handleClickAdd} />
-    </div>
-{/if}
-
-<div class="list">
-    {#if items.length === 0 && emptyText}
-        <span class="item empty">
-            <span class="text">{emptyText}</span>
-        </span>
+<div class="list-box">
+    {#if canAdd}
+        <div class="add-area">
+            <Input {placeholder}
+                   submitButton={addButton}
+                   bind:value={inputValue} />
+            <Button value={addButtonText}
+                    primary
+                    bind:this={addButton}
+                    on:click={handleClickAdd} />
+        </div>
     {/if}
-    {#each items as item}
-        <span class="item">
-            <span class="text">{getValue(item)}</span>
-            {#if canRemove && isRemovable(item)}
-                <span class="remove-button" on:click={() => handleClickRemove(item)}>
-                    <Icon src={MinusCircle} />
-                </span>
-            {/if}
-        </span>
-    {/each}
+
+    <div class="list">
+        {#if items.length === 0 && emptyText}
+            <span class="item empty">
+                <span class="text">{emptyText}</span>
+            </span>
+        {/if}
+        {#each items as item}
+            <span class="item">
+                <span class="text">{getValue(item)}</span>
+                {#if canRemove && isRemovable(item)}
+                    <span class="remove-button" on:click={() => handleClickRemove(item)}>
+                        <Icon src={MinusCircle} />
+                    </span>
+                {/if}
+            </span>
+        {/each}
+    </div>
 </div>
 
 <style lang="sass">
+    .list-box
+        display: flex
+        flex-direction: column
+
     .add-area
         width: 100%
         display: grid

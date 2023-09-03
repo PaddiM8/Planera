@@ -4,6 +4,7 @@
     export let value: string;
     export let primary = false;
     export let submit = false;
+    export let danger = false;
     export let disabled = false;
 
     const dispatch = createEventDispatcher();
@@ -21,12 +22,14 @@
 {#if submit}
     <input type="submit"
            class:primary
+           class:danger
            bind:value
            {disabled}
            bind:this={element} />
 {:else}
     <button type="button"
             class:primary
+            class:danger
             {disabled}
             on:click={handleClick}
             bind:this={element}>{value}</button>
@@ -58,6 +61,12 @@
 
             &:hover
                 background-color: var(--primary-hover)
+
+        &.danger
+            background-color: var(--red)
+
+            &:hover
+                background-color: var(--red-hover)
 
         &:hover
             background-color: var(--button-background-hover)

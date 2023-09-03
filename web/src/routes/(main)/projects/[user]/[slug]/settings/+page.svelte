@@ -10,12 +10,15 @@
     import {projectHub} from "../store";
     import {getAvatarUrl} from "$lib/clients";
     import AvatarPicker from "$lib/components/form/AvatarPicker.svelte";
+    import {goto} from "$app/navigation";
 
     export let data: {
         project: ProjectDto,
     };
 
     export let form;
+
+    let deleteFormSlugValue: string;
 
     async function handleAddParticipant(name: string): Promise<boolean> {
         try {
@@ -52,6 +55,9 @@
         if (success) {
             toast.info("Project updated successfully.");
         }
+    }
+
+    function handleBeforeDeleteSubmit() {
     }
 </script>
 
@@ -106,6 +112,20 @@
              handleRemove={handleRemoveParticipant} />
 </section>
 
+<hr>
+
+<h2>Delete Project</h2>
+<section class="delete">
+    <Form action="?/delete"
+          afterSubmit={() => goto("/")}
+          validState={deleteFormSlugValue === data.project.slug}>
+        <p>Type <strong>{data.project.slug}</strong> to confirm that you want to delete the project.</p>
+        <input type="hidden" name="projectId" value={data.project.id} />
+        <Input placeholder="Project slug..." bind:value={deleteFormSlugValue} />
+        <Button value="Delete" danger primary submit />
+    </Form>
+</section>
+
 <style lang="sass">
     section
         max-width: 35em
@@ -118,4 +138,16 @@
 
     .participants
         height: 11.5em
+
+    :global(.participants > *)
+        height: 100%
+
+    .delete
+        p
+            margin: 0
+
+        strong
+            word-break: break-all
+            font-style: normal
+            font-weight: 500
 </style>

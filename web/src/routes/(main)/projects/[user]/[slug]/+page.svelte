@@ -99,10 +99,14 @@
         "Lowest Priority": TicketSorting.LowestPriority,
     };
     let queryTimeout: number;
+    let isFormLoading = false;
+
+    $: isSubmitDisabled = titleValue?.length < 2 || isFormLoading;
 
     $: validFormState = titleValue?.length >= 2;
 
     async function beforeSubmit({ formData }) {
+        isFormLoading = true;
         formData.append("description", await editor.getHtml());
     }
 
@@ -117,6 +121,12 @@
             }, 100);
             toast.info("Created ticket successfully.");
         }
+
+        // Wait a little bit before enabling the button again
+        // to prevent ugly flickering.
+        setTimeout(() => {
+            isFormLoading = false;
+        }, 500);
     }
 
     function query() {
@@ -205,7 +215,8 @@
             </span>
             <Button value="Create"
                     primary
-                    submit />
+                    submit
+                    bind:disabled={isSubmitDisabled} />
         </div>
     </Form>
 </section>

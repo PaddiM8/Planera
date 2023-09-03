@@ -10,7 +10,7 @@ public class CreateProjectModel
 
     [RegularExpression(@"[a-z0-9\-]+")]
     [MinLength(2, ErrorMessage = ErrorStrings.MinLength)]
-    [StringLength(100, ErrorMessage = ErrorStrings.StringLength)]
+    [StringLength(64, ErrorMessage = ErrorStrings.StringLength)]
     public required string Slug { get; init; }
 
     [StringLength(150, ErrorMessage = ErrorStrings.StringLength)]
