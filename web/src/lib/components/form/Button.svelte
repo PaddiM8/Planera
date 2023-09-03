@@ -36,13 +36,13 @@
     input[type="submit"], button
         align-self: flex-end
         padding: var(--vertical-padding) var(--horizontal-padding)
+        border: 0
+        border-radius: var(--radius)
+
         background-color: var(--button-background)
         color: var(--on-button-background)
         font-size: 1rem
         font-weight: 600
-
-        border: 0
-        border-radius: var(--radius)
         cursor: pointer
 
         &.primary

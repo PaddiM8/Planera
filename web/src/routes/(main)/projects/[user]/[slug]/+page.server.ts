@@ -5,6 +5,7 @@ import {parsePriority} from "$lib/priority";
 import {handleProblem, handleProblemForForm} from "$lib/problemDetails";
 import {ticketsPerPage} from "./store";
 import {makeImagePathsAbsolute} from "$lib/paths";
+import {sanitizeHtml} from "$lib/formatting";
 
 export async function load({ cookies, params }: ServerLoadEvent) {
     let response: TicketDto[];
@@ -20,7 +21,7 @@ export async function load({ cookies, params }: ServerLoadEvent) {
     }
 
     for (const ticket of response) {
-        ticket.description = makeImagePathsAbsolute(ticket.description);
+        ticket.description = sanitizeHtml(makeImagePathsAbsolute(ticket.description));
     }
 
     return {

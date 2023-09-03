@@ -26,7 +26,7 @@
       db:
         condition: service_healthy
     environment:
-      PLANERA_FRONTENDURL: http://localhost:2000
+      PLANERA_FRONTENDURL: https://dexter.serveo.net
       PLANERA_EMAILCONFIRMATION: false
       PLANERA_POSTGRES__HOST: "db:5432"
       PLANERA_POSTGRES__USER: planera
@@ -45,7 +45,7 @@
   planera-web:
     image: planera-web
     environment:
-      ORIGIN: http://localhost:2000
+      ORIGIN: https://dexter.serveo.net
     build:
       context: .
       dockerfile: web/Dockerfile

@@ -4,6 +4,7 @@ import type {TicketDto, SwaggerException, CreateTicketModel, CreateNoteModel, Ed
 import {getNoteClient, getTicketClient} from "$lib/clients";
 import type {RequestEvent} from "@sveltejs/kit";
 import {makeImagePathsAbsolute, makeImagePathsRelative} from "$lib/paths";
+import {sanitizeHtml} from "$lib/formatting";
 
 export async function load({ cookies, params }: ServerLoadEvent) {
     let response: TicketDto;
@@ -13,7 +14,7 @@ export async function load({ cookies, params }: ServerLoadEvent) {
         return handleProblem(ex as SwaggerException);
     }
 
-    response.description = makeImagePathsAbsolute(response.description);
+    response.description = sanitizeHtml(makeImagePathsAbsolute(response.description));
 
     return {
         ticket: structuredClone(response),
