@@ -16,12 +16,37 @@
             return;
         }
 
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            src = event.target.result as string;
-        }
+        const file = target.files![0];
+        const image = new Image();
+        image.onload = () => {
+            const aspectRatio = image.width / image.height;
+            const maxWidth = 512;
+            const maxHeight = 512;
 
-        reader.readAsDataURL(target.files![0]);
+            let newWidth = image.width;
+            let newHeight = image.height;
+
+            if (newWidth > maxWidth) {
+                newWidth = maxWidth;
+                newHeight = newWidth / aspectRatio;
+            }
+
+            if (newHeight > maxHeight) {
+                newHeight = maxHeight;
+                newWidth = newHeight * aspectRatio;
+            }
+
+            const canvas = document.createElement("canvas");
+            canvas.width = newWidth;
+            canvas.height = newHeight;
+
+            const context = canvas.getContext("2d");
+            context.drawImage(image, 0, 0, newWidth, newHeight);
+
+            src = canvas.toDataURL(file.type);
+        };
+
+        image.src = URL.createObjectURL(file);
     }
 
     function handleClear() {

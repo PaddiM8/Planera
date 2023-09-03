@@ -18,7 +18,6 @@
         align-items: center
         justify-content: center
 
-        padding: 0.5em
         aspect-ratio: 1 / 1
         border-radius: 100%
         cursor: default
@@ -32,8 +31,8 @@
             background-color: #737373
 
         img
-            width: inherit
-            height: inherit
+            width: 100%
+            height: 100%
             object-fit: cover
 
         .letter

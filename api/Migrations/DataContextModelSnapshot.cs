@@ -167,7 +167,7 @@ namespace Planera.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Invitations");
+                    b.ToTable("Invitations", (string)null);
                 });
 
             modelBuilder.Entity("Planera.Data.Note", b =>
@@ -205,7 +205,7 @@ namespace Planera.Migrations
 
                     b.HasIndex("TicketId", "ProjectId");
 
-                    b.ToTable("Notes");
+                    b.ToTable("Notes", (string)null);
                 });
 
             modelBuilder.Entity("Planera.Data.Project", b =>
@@ -240,7 +240,7 @@ namespace Planera.Migrations
                     b.HasIndex("AuthorId", "Slug")
                         .IsUnique();
 
-                    b.ToTable("Projects");
+                    b.ToTable("Projects", (string)null);
                 });
 
             modelBuilder.Entity("Planera.Data.ProjectParticipant", b =>
@@ -255,7 +255,7 @@ namespace Planera.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ProjectParticipants");
+                    b.ToTable("ProjectParticipants", (string)null);
                 });
 
             modelBuilder.Entity("Planera.Data.Ticket", b =>
@@ -299,7 +299,7 @@ namespace Planera.Migrations
                     NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("Title", "Description"), "gin");
                     NpgsqlIndexBuilderExtensions.HasOperators(b.HasIndex("Title", "Description"), new[] { "gin_trgm_ops" });
 
-                    b.ToTable("Tickets");
+                    b.ToTable("Tickets", (string)null);
                 });
 
             modelBuilder.Entity("Planera.Data.TicketAssignee", b =>
@@ -317,7 +317,7 @@ namespace Planera.Migrations
 
                     b.HasIndex("TicketId", "TicketProjectId");
 
-                    b.ToTable("TicketAssignees");
+                    b.ToTable("TicketAssignees", (string)null);
                 });
 
             modelBuilder.Entity("Planera.Data.User", b =>
