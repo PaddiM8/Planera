@@ -20,7 +20,7 @@ export function getAvatarUrl(path: string | undefined, size: "small" | "big") {
 
 export function getFileUrl(path: string, mimeType: string, param: string | undefined) {
     const paramString = param ? `&param=${param}` : "";
-    return `${serverUrl}/files/${path}?mimeType=${encodeURIComponent(mimeType)}${paramString}`
+    return `${import.meta.env.VITE_PUBLIC_API_URL}/files/${path}?mimeType=${encodeURIComponent(mimeType)}${paramString}`
 }
 
 export function getAuthenticationClient(cookies: any): AuthenticationClient {
