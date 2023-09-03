@@ -66,6 +66,7 @@
     <Form action="?/update"
           problem={form?.problem}
           afterSubmit={handleSubmit}
+          promptWhenModified
           reset={false}>
         <AvatarPicker name="icon"
                       entityName={data.project.name}

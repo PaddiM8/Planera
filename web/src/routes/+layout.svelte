@@ -104,6 +104,7 @@
         --on-button-background: #0a0a0a
         --button-background-hover: #bbbbbb
         --button-background-selected: #a8a8a8
+        --button-background-disabled: #d4d4d4
         --border-width: 1px
         --border: var(--border-width) solid #d1d5db
         --text-gray: #757575

@@ -22,7 +22,7 @@
 
 <h1>New Project</h1>
 <section class="form">
-    <Form problem={form?.problem}>
+    <Form problem={form?.problem} promptWhenModified>
         <input type="hidden" name="username" value={data.user.username} />
         <div class="avatar-area">
             <FormLabel value="Project Icon" />

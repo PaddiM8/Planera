@@ -4,6 +4,7 @@
     import type {ProblemDetails} from "$lib/problemDetails";
     import {onMount} from "svelte";
     import {beforeNavigate} from "$app/navigation";
+    import {browser} from "$app/environment";
 
     export let action: string | undefined = undefined;
     export let problem: ProblemDetails;
@@ -12,19 +13,36 @@
     export let reset = true;
     export let horizontal = false;
     export let smallMargins = false;
+    export let validState = true;
+    export let promptWhenModified = false;
 
     let form: HTMLFormElement;
     let isModified = false;
     let isSubmitting = false;
 
+    $: {
+        if (browser) {
+            const primaryButton = form?.querySelector("button.primary, input.primary");
+            const canSubmit = !isSubmitting && validState;
+            if (primaryButton && canSubmit) {
+                primaryButton.removeAttribute("disabled");
+            } else if (primaryButton) {
+                primaryButton.setAttribute("disabled", "");
+            }
+        }
+    }
+
     beforeNavigate(({ cancel }) => {
-        if (!isSubmitting && isModified && !confirm("Are you sure you want to leave this page? You have unsaved changes that will be lost.")) {
+        if (promptWhenModified &&
+            !isSubmitting &&
+            isModified &&
+            !confirm("Are you sure you want to leave this page? You have unsaved changes that will be lost.")) {
             cancel();
         }
     });
 
     function handleBeforeUnload() {
-        if (!isSubmitting && isModified) {
+        if (promptWhenModified && !isSubmitting && isModified) {
             return true;
         }
     }
@@ -59,7 +77,11 @@
                 }, 100);
             }
 
-            isSubmitting = false;
+            // Wait a little bit before enabling the button again
+            // to prevent ugly flickering.
+            setTimeout(() => {
+                isSubmitting = false;
+            }, 300);
         };
     }
 

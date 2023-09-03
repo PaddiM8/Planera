@@ -139,7 +139,12 @@
 </script>
 <BackButton placeName={data?.ticket.project.name} />
 <div class="edit-area" class:hidden={!isEditing}>
-    <Form action="?/edit" {beforeSubmit} {afterSubmit} problem={form?.problem} reset={false}>
+    <Form action="?/edit"
+          {beforeSubmit}
+          {afterSubmit}
+          promptWhenModified
+          problem={form?.problem}
+          reset={false}>
         <input type="hidden" name="projectId" value={data.ticket.projectId} />
         <input type="hidden" name="ticketId" value={data.ticket.id} />
 
@@ -204,6 +209,7 @@
 <h2>Notes</h2>
 <Form action="?/addNote"
       problem={form?.addNoteProblem}
+      promptWhenModified
       horizontal>
     <input type="hidden" name="projectId" value={data.ticket.projectId} />
     <input type="hidden" name="ticketId" value={data.ticket.id} />

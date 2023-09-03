@@ -77,6 +77,7 @@
     }
 
     let editor;
+    let titleValue: string;
     let titleInput: HTMLInputElement;
     let assignees;
     let priority;
@@ -99,12 +100,15 @@
     };
     let queryTimeout: number;
 
+    $: validFormState = titleValue?.length >= 2;
+
     async function beforeSubmit({ formData }) {
         formData.append("description", await editor.getHtml());
     }
 
     function afterSubmit(success: boolean) {
         if (success) {
+            titleValue = "";
             editor.reset();
             priority.reset();
             assignees.reset();
@@ -163,12 +167,17 @@
 
 <section class="new-ticket">
     <h2>New Ticket</h2>
-    <Form {beforeSubmit} {afterSubmit} problem={form?.problem}>
+    <Form {beforeSubmit}
+          {afterSubmit}
+          promptWhenModified
+          problem={form?.problem}
+          bind:validState={validFormState}>
         <input type="hidden" name="projectId" value={data.project.id} />
 
         <Input type="text"
                name="title"
                placeholder="Title..."
+               bind:value={titleValue}
                bind:this={titleInput} />
         <Editor placeholder="Describe the ticket..."
                 bind:this={editor} />

@@ -45,6 +45,13 @@
         font-weight: 600
         cursor: pointer
 
+        &[disabled], &.primary[disabled]
+            background-color: var(--button-background-disabled)
+            cursor: default
+
+            &:hover
+                background-color: var(--button-background-disabled)
+
         &.primary
             background-color: var(--primary)
             color: var(--on-primary)
