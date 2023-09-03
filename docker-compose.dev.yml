@@ -2,8 +2,7 @@
   caddy:
     image: caddy:2.7
     ports:
-      - 2000:80
-      - 443:443
+      - 2000:2000
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
   db:

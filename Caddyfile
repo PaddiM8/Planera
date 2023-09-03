@@ -1,5 +1,5 @@
-http://0.0.0.0 {
-    handle_path /api/* {
+:2000 {
+    handle_path /api* {
         reverse_proxy http://planera-api:5065
     }
 
