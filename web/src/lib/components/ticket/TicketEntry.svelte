@@ -299,7 +299,7 @@
         overflow: hidden
 
         &::before
-            $fade-height: 3em
+            $fade-height: 1.25em
             position: absolute
             content: ''
             top: calc(7em - #{$fade-height})
@@ -308,7 +308,8 @@
             height: $fade-height
 
             $step1: rgba(var(--component-background-rgb), 0.85) 30%
-            $step2: rgba(var(--component-background-rgb), 0.6) 75%
+            $step2: rgba(var(--component-background-rgb), 0.65) 50%
+            $step3: rgba(var(--component-background-rgb), 0.4) 80%
             background: linear-gradient(0deg, var(--component-background), $step1, $step2, transparent)
             z-index: 500
 
