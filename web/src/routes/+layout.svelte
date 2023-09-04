@@ -112,6 +112,7 @@
         --vertical-padding: 0.55rem
         --horizontal-padding: 0.7rem
         --radius: 0.375rem
+        --none: #a3a3a3
         --low: #2563eb
         --normal: #059669
         --high: #f97316

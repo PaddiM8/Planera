@@ -23,7 +23,7 @@
         cursor: default
 
         &:global(.priority-None)
-            display: none
+            background-color: var(--none)
 
         &:global(.priority-Low)
             background-color: var(--low)
