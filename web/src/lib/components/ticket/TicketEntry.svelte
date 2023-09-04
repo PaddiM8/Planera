@@ -261,6 +261,8 @@
 
     .status
         display: block
+        margin-top: 0.1em
+        margin-left: -0.1em
         height: 1.2em
         min-width: 1.2em
         margin-right: -0.2em
