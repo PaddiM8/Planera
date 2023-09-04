@@ -12,7 +12,7 @@ const schemeLength = "planera:".length;
 const imageUrlPrefix = ensureTrailingSlash(import.meta.env.VITE_PUBLIC_API_URL) + "files/";
 
 function ensureTrailingSlash(input: string) {
-    return input.startsWith("/") ? input : input + "/";
+    return input.endsWith("/") ? input : input + "/";
 }
 
 export function pathRequiresAuthentication(url: URL) {

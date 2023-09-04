@@ -6,6 +6,10 @@ function extractToken(cookies: any): IConfig {
     return { token: cookies.get("token") ?? "{}" };
 }
 
+function ensureTrailingSlash(input: string) {
+    return input.endsWith("/") ? input : input + "/";
+}
+
 export function getAvatarUrl(path: string | undefined, size: "small" | "big") {
     if (!path) {
         return undefined;
@@ -20,7 +24,7 @@ export function getAvatarUrl(path: string | undefined, size: "small" | "big") {
 
 export function getFileUrl(path: string, mimeType: string, param: string | undefined) {
     const paramString = param ? `&param=${param}` : "";
-    return `${import.meta.env.VITE_PUBLIC_API_URL}/files/${path}?mimeType=${encodeURIComponent(mimeType)}${paramString}`
+    return `${ensureTrailingSlash(import.meta.env.VITE_PUBLIC_API_URL)}files/${path}?mimeType=${encodeURIComponent(mimeType)}${paramString}`
 }
 
 export function getAuthenticationClient(cookies: any): AuthenticationClient {
