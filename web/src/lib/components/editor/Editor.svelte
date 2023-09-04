@@ -57,6 +57,9 @@
     import lexicalHtml from "@lexical/html";
     const generateHtmlFromNodes = lexicalHtml.$generateHtmlFromNodes;
     const generateNodesFromDOM = lexicalHtml.$generateNodesFromDOM;
+    import lexical from "lexical";
+    const createParagraphNode = lexical.$createParagraphNode;
+    const getSelection = lexical.$getSelection;
 
     export let placeholder: string = "";
 
@@ -134,6 +137,17 @@
     export function reset() {
         editor.update(() => {
             getRoot().clear();
+        });
+        editor.update(() => {
+            const root = getRoot();
+            const selection = getSelection();
+            const paragraph = createParagraphNode();
+            root.clear();
+            root.append(paragraph);
+
+            if (selection !== null) {
+                paragraph.select();
+            }
         });
     }
 </script>
