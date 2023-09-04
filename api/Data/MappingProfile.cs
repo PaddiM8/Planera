@@ -18,6 +18,10 @@ public class MappingProfile : Profile
             .ForMember(
                 dest => dest.ProjectSlug,
                 opt => opt.MapFrom(src => src.Project.Slug)
+            )
+            .ForMember(
+                dest => dest.NoteCount,
+                opt => opt.MapFrom(src => src.Notes.Count)
             );
         CreateMap<Invitation, InvitationDto>();
         CreateMap<Note, NoteDto>();

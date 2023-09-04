@@ -1865,6 +1865,7 @@ export class TicketDto implements ITicketDto {
     author: UserDto;
     status: TicketStatus;
     timestamp: Date;
+    noteCount?: number;
 
     constructor(data?: ITicketDto) {
         if (data) {
@@ -1902,6 +1903,7 @@ export class TicketDto implements ITicketDto {
             this.author = _data["author"] ? UserDto.fromJS(_data["author"]) : new UserDto();
             this.status = _data["status"];
             this.timestamp = _data["timestamp"] ? new Date(_data["timestamp"].toString()) : <any>undefined;
+            this.noteCount = _data["noteCount"];
         }
     }
 
@@ -1934,6 +1936,7 @@ export class TicketDto implements ITicketDto {
         data["author"] = this.author ? this.author.toJSON() : <any>undefined;
         data["status"] = this.status;
         data["timestamp"] = this.timestamp ? this.timestamp.toISOString() : <any>undefined;
+        data["noteCount"] = this.noteCount;
         return data;
     }
 }
@@ -1951,6 +1954,7 @@ export interface ITicketDto {
     author: UserDto;
     status: TicketStatus;
     timestamp: Date;
+    noteCount?: number;
 }
 
 export class ProjectDto implements IProjectDto {

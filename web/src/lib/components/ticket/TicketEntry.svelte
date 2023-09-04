@@ -1,6 +1,6 @@
 <script lang="ts">
     import UserIcon from "$lib/components/UserIcon.svelte";
-    import {Check, Icon, Minus, Plus, XMark} from "svelte-hero-icons";
+    import {ChatBubbleBottomCenterText, Check, Icon, Minus, Plus, XMark} from "svelte-hero-icons";
     import {TicketStatus, TicketDto} from "../../../gen/planeraClient";
     import {projectHub} from "../../../routes/(main)/projects/[user]/[slug]/store";
     import {getAvatarUrl} from "$lib/clients";
@@ -164,6 +164,12 @@
                 <Icon src={Plus} />
             </button>
         </span>
+        {#if ticket.noteCount}
+            <span class="note-count">
+                <Icon src={ChatBubbleBottomCenterText} />
+                <span class="count">{ticket.noteCount}</span>
+            </span>
+        {/if}
     </div>
 </div>
 
@@ -325,6 +331,9 @@
         display: flex
         gap: 0.25em
 
+        .assignee
+            width: 1.35em
+
         .add-button
             display: flex
             align-items: center
@@ -346,6 +355,21 @@
         :global(.add-button > *)
             width: 0.75em
             height: 0.75em
+
+    .note-count
+        display: flex
+        align-items: center
+        gap: 0.3em
+        margin-left: auto
+        align-self: flex-end
+
+        .count
+            font-weight: 500
+            font-size: 0.9em
+
+    :global(.note-count > *:first-child)
+        width: 1em
+        height: 1em
 
     @media (hover: none)
         .status-buttons

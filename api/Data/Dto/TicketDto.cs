@@ -25,4 +25,6 @@ public class TicketDto
     public TicketStatus Status { get; set; }
 
     public DateTime Timestamp { get; set; }
+
+    public int? NoteCount { get; set; }
 }
