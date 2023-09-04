@@ -19,7 +19,7 @@ function zeroPad(value: number) {
 export function formatDate(date: Date) {
     return isToday(date)
         ? `${zeroPad(date.getHours())}:${zeroPad(date.getMinutes())}`
-        : `${zeroPad(date.getDay())}/${zeroPad(date.getMonth())}`;
+        : `${zeroPad(date.getDate())}/${zeroPad(date.getMonth() + 1)}`;
 }
 
 const sanitizerOptions = {
