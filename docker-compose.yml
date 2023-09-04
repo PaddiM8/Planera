@@ -1,6 +1,7 @@
 ﻿services:
   caddy:
     image: caddy:2.7
+    restart: always
     ports:
       - 2000:2000
     volumes:
@@ -21,6 +22,7 @@
       - ./data/db:/var/lib/postgresql/data
   planera-api:
     image: ghcr.io/paddim8/planera-api:latest
+    restart: always
     depends_on:
       db:
         condition: service_healthy
@@ -41,5 +43,6 @@
       - ./data/api:/app/data
   planera-web:
     image: ghcr.io/paddim8/planera-web:latest
+    restart: always
     environment:
       ORIGIN: http://localhost:2000
