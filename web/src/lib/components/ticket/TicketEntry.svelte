@@ -251,7 +251,7 @@
 
     .top
         display: flex
-        align-items: center
+        align-items: flex-start
         gap: 0.4em
         margin-bottom: 0.2em
 
