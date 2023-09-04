@@ -104,12 +104,14 @@
     background-color: #eee;
     left: 0;
     top: 0;
+    height: 100%;
     border-right: 1px solid #ccc;
     padding: 8px;
     color: #777;
     white-space: pre-wrap;
     text-align: right;
     min-width: 25px;
+    box-sizing: border-box;
 }
 .TicketEditorTheme__table {
     border-collapse: collapse;

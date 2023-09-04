@@ -324,6 +324,9 @@
         :global(br)
             display: none
 
+        :global(code br)
+            display: initial
+
     .bottom
         display: flex
         align-items: center
