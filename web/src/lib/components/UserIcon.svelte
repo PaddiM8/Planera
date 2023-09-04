@@ -4,7 +4,7 @@
     export let type: "user" | "project";
 </script>
 
-<span class="logo {type}">
+<span class="logo {type}" class:image={image}>
     {#if image}
         <img class="image" src={image} alt={name} />
     {:else}
@@ -24,10 +24,14 @@
         user-select: none
         overflow: hidden
 
-        &.user
+        &.image
+            outline: var(--border)
+            background-color: var(--background)
+
+        &:not(.image).user
             background-color: #64748b
 
-        &.project
+        &:not(.image).project
             background-color: #737373
 
         img
