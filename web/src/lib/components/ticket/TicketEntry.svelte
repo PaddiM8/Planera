@@ -78,39 +78,39 @@
 </script>
 
 <div class="ticket" class:has-status={ticket.status}>
-    <div class="touch-overlay" on:touchstart={openTouchOverlay}>
+    <div class="touch-overlay" on:click={openTouchOverlay}>
         <div class="menu" class:shown={showTouchOverlay}>
             <span class="row">
                 {#if ticket.status === TicketStatus.None}
-                    <button class="item" on:touchstart={() => setStatus(TicketStatus.Done)}>
+                    <button class="item" on:click={() => setStatus(TicketStatus.Done)}>
                         <span class="icon done">
                             <Icon src={Check} />
                         </span>
                         <span class="name">Done</span>
                     </button>
-                    <button class="item" on:touchstart={() => setStatus(TicketStatus.Inactive)}>
+                    <button class="item" on:click={() => setStatus(TicketStatus.Inactive)}>
                         <span class="icon inactive">
                             <Icon src={Minus} />
                         </span>
                         <span class="name">Inactive</span>
                     </button>
-                    <button class="item" on:touchstart={() => setStatus(TicketStatus.Closed)}>
+                    <button class="item" on:click={() => setStatus(TicketStatus.Closed)}>
                         <span class="icon close">
                             <Icon src={XMark} />
                         </span>
                         <span class="name">Close</span>
                     </button>
                 {:else}
-                    <button class="item" on:touchstart={() => setStatus(TicketStatus.None)}>
+                    <button class="item" on:click={() => setStatus(TicketStatus.None)}>
                         <span class="name">Clear Status</span>
                     </button>
                 {/if}
             </span>
             <span class="row">
-                <button class="item" on:touchstart={() => !preventTouch && goto(ticketUrl)}>
+                <button class="item" on:click={() => !preventTouch && goto(ticketUrl)}>
                     <span class="name">Open</span>
                 </button>
-                <button class="item" on:touchstart={closeTouchOverlay}>
+                <button class="item" on:click={closeTouchOverlay}>
                     <span class="name">Back</span>
                 </button>
             </span>
