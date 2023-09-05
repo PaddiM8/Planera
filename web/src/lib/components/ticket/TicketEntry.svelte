@@ -279,7 +279,7 @@
         stroke-width: 2
 
     .title
-        margin-top: -0.075em
+        margin-top: 0
         margin-bottom: 0
 
         &:hover
