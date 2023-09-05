@@ -7,16 +7,16 @@
     import BlockInput from "$lib/components/form/BlockInput.svelte";
     import MultiButton from "$lib/components/form/MultiButton.svelte";
     import PriorityLabel from "$lib/components/ticket/PriorityLabel.svelte";
-    import {PencilSquare, Trash} from "svelte-hero-icons";
+    import {Check, Icon, Minus, PencilSquare, Trash, XMark} from "svelte-hero-icons";
     import Editor from "$lib/components/editor/Editor.svelte";
     import Form from "$lib/components/form/Form.svelte";
     import Input from "$lib/components/form/Input.svelte";
     import Button from "$lib/components/form/Button.svelte";
     import {dialog} from "$lib/dialog";
     import {toast} from "$lib/toast";
-    import {TicketPriority, UserDto} from "../../../../../../../gen/planeraClient";
+    import {TicketPriority, TicketStatus, UserDto} from "../../../../../../../gen/planeraClient";
     import {projectHub} from "../../store";
-    import {beforeNavigate, goto} from "$app/navigation";
+    import {goto} from "$app/navigation";
     import NoteEntry from "$lib/components/ticket/NoteEntry.svelte";
     import IconButton from "$lib/components/IconButton.svelte";
     import {onMount} from "svelte";
@@ -39,7 +39,14 @@
 
     onMount(() => {
         selectedPriorityName = TicketPriority[data?.ticket?.priority ?? 0];
+        projectHub.subscribe(hub => hub?.on("onUpdateTicket", onUpdateTicket));
     });
+
+    function onUpdateTicket(projectId: string, ticketId: number, newFields: TicketDto) {
+        for (const [key, value] of Object.entries(newFields)) {
+            data.ticket[key] = value;
+        }
+    }
 
     async function beforeSubmit({ formData }) {
         formData.append("description", await editor.getHtml());
@@ -61,6 +68,15 @@
     function handleEdit() {
         isEditing = true;
         editor.setHtml(data.ticket.description);
+    }
+
+    async function setStatus(status: TicketStatus) {
+        await $projectHub?.invoke(
+            "setTicketStatus",
+            data.ticket.projectId,
+            data.ticket.id,
+            status
+        );
     }
 
     async function handleRemove() {
@@ -158,7 +174,36 @@
 </div>
 <div class="ticket" class:hidden={isEditing}>
     <div class="top">
+        {#if data.ticket.status === TicketStatus.Done}
+            <div class="status done" on:click={() => setStatus(TicketStatus.None)}>
+                <Icon src={Check} />
+            </div>
+        {:else if data.ticket.status === TicketStatus.Inactive}
+            <div class="status inactive" on:click={() => setStatus(TicketStatus.None)}>
+                <Icon src={Minus} />
+            </div>
+        {:else if data.ticket.status === TicketStatus.Closed}
+            <div class="status closed" on:click={() => setStatus(TicketStatus.None)}>
+                <Icon src={XMark} />
+            </div>
+        {/if}
         <h2>{data.ticket.title}</h2>
+        {#if data.ticket.status === TicketStatus.None}
+            <div class="status-buttons">
+                <IconButton value="Close"
+                            icon={XMark}
+                            color="red"
+                            on:click={() => setStatus(TicketStatus.Closed)} />
+                <IconButton value="Inactive"
+                            icon={Minus}
+                            color="blue"
+                            on:click={() => setStatus(TicketStatus.Inactive)} />
+                <IconButton value="Done"
+                            icon={Check}
+                            color="green"
+                            on:click={() => setStatus(TicketStatus.Done)} />
+            </div>
+        {/if}
         <div class="icons">
             <IconButton icon={Trash} on:click={handleRemove} />
             <IconButton icon={PencilSquare} on:click={handleEdit} />
@@ -231,20 +276,43 @@
     :global(.hidden)
         display: none
 
-    h2
-        margin-top: 0.2em
-        margin-bottom: 0.6em
+    .status
+        display: block
+        margin-top: 0.1em
+        margin-left: -0.1em
+        height: 1.2em
+        min-width: 1.2em
+        margin-right: -0.2em
+        cursor: pointer
+
+        &.done
+            color: var(--green)
+
+        &.inactive
+            color: var(--blue)
+
+        &.closed
+            color: var(--red)
+
+    :global(.status svg)
+        stroke-width: 2
 
     .top
         display: flex
-        align-items: center
+        align-items: flex-start
+        padding-top: 0.2em
+
+        h2
+            margin: -0.2em auto 0.6em 0.4em
+
+        .status-buttons
+            display: flex
+            gap: 0.4em
+            margin-right: 0.4em
 
         .icons
             display: flex
-            align-self: flex-start
-            margin-top: 0.4em
             gap: 0.5em
-            margin-left: auto
             color: var(--on-background-inactive)
 
         :global(.icons > *)
