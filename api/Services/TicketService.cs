@@ -138,7 +138,7 @@ public class TicketService
             };
         }
 
-        if (searchQuery == null)
+        if (string.IsNullOrEmpty(searchQuery))
         {
             query = sorting switch
             {
