@@ -151,7 +151,8 @@
     </div>
     <span class="description">{@html ticket.description}</span>
     <div class="bottom">
-        <PriorityLabel bind:priority={ticket.priority} />
+        <PriorityLabel bind:priority={ticket.priority}
+                       active={ticket.status === TicketStatus.Done || ticket.status === TicketStatus.Closed} />
         <span class="assignees">
             {#each ticket.assignees as assignee}
                 <span class="assignee">
@@ -276,6 +277,9 @@
 
         &.closed
             color: var(--red)
+
+    :global(.status svg)
+        stroke-width: 2
 
     .title
         margin-top: 0

@@ -3,9 +3,10 @@
     import type {TicketPriority} from "../../../gen/planeraClient";
 
     export let priority: TicketPriority;
+    export let active = true;
 </script>
 
-<span class="priority priority-{priorityToName(priority)}">
+<span class="priority priority-{priorityToName(priority)}" class:active>
     {priorityToName(priority)}
 </span>
 
@@ -17,24 +18,23 @@
         border-radius: var(--radius)
         width: fit-content
 
+        background-color: var(--none)
         font-size: 0.7em
         font-weight: 500
         color: white
         cursor: default
 
-        &:global(.priority-None)
-            background-color: var(--none)
+        &:not(.active)
+            &:global(.priority-Low)
+                background-color: var(--low)
 
-        &:global(.priority-Low)
-            background-color: var(--low)
+            &:global(.priority-Normal)
+                background-color: var(--normal)
 
-        &:global(.priority-Normal)
-            background-color: var(--normal)
+            &:global(.priority-High)
+                background-color: var(--high)
 
-        &:global(.priority-High)
-            background-color: var(--high)
-
-        &:global(.priority-Severe)
-            background-color: var(--severe)
+            &:global(.priority-Severe)
+                background-color: var(--severe)
 
 </style>
