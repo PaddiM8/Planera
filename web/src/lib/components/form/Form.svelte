@@ -115,8 +115,10 @@
         {#if problem && (!problem?.errors || Object.keys(problem.errors).length === 0)}
             <ErrorText value={problem?.summary} />
         {/if}
-        {#each Object.values(problem?.errors ?? {}) as error}
-            <ErrorText value={error} />
+        {#each Object.values(problem?.errors ?? {}) as errorList}
+            {#each errorList as error}
+                <ErrorText value={error} />
+            {/each}
         {/each}
     </div>
     <div class="fields">

@@ -220,7 +220,8 @@
         </div>
     </div>
     <div class="description">{@html data.ticket.description}</div>
-    <PriorityLabel bind:priority={data.ticket.priority} />
+    <PriorityLabel bind:priority={data.ticket.priority}
+                   bind:status={data.ticket.status} />
 </div>
 
 <div class="bottom-row">

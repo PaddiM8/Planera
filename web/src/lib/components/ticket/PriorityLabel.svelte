@@ -1,12 +1,14 @@
 <script lang="ts">
     import {priorityToName} from "$lib/priority";
     import type {TicketPriority} from "../../../gen/planeraClient";
+    import {TicketStatus} from "../../../gen/planeraClient";
 
     export let priority: TicketPriority;
-    export let active = true;
+    export let status: TicketStatus;
 </script>
 
-<span class="priority priority-{priorityToName(priority)}" class:active>
+<span class="priority priority-{priorityToName(priority)}"
+      class:active={status !== TicketStatus.Done && status !== TicketStatus.Closed}>
     {priorityToName(priority)}
 </span>
 
