@@ -24,7 +24,7 @@
         color: white
         cursor: default
 
-        &:not(.active)
+        &.active
             &:global(.priority-Low)
                 background-color: var(--low)
 
