@@ -304,7 +304,7 @@
         padding-top: 0.2em
 
         h2
-            margin: -0.2em auto 0.6em 0.4em
+            margin: -0.1em auto 0.4em 0.1em
 
         .status-buttons
             display: flex
