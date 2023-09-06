@@ -1017,7 +1017,7 @@ export class TicketClient extends AuthorizedApiBase {
         return Promise.resolve<TicketDto>(null as any);
     }
 
-    getAll(username: string, slug: string, startIndex: number, amount: number): Promise<TicketDto[]> {
+    getAll(username: string, slug: string, startIndex: number, amount: number): Promise<TicketQueryResult> {
         let url_ = this.baseUrl + "/tickets/{username}/{slug}?";
         if (username === undefined || username === null)
             throw new Error("The parameter 'username' must be defined.");
@@ -1049,21 +1049,14 @@ export class TicketClient extends AuthorizedApiBase {
         });
     }
 
-    protected processGetAll(response: Response): Promise<TicketDto[]> {
+    protected processGetAll(response: Response): Promise<TicketQueryResult> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200.push(TicketDto.fromJS(item));
-            }
-            else {
-                result200 = <any>null;
-            }
+            result200 = TicketQueryResult.fromJS(resultData200);
             return result200;
             });
         } else if (status !== 200 && status !== 204) {
@@ -1071,10 +1064,10 @@ export class TicketClient extends AuthorizedApiBase {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<TicketDto[]>(null as any);
+        return Promise.resolve<TicketQueryResult>(null as any);
     }
 
-    getAll2(username: string, slug: string, startIndex: number, amount: number, sorting: TicketSorting, filter: TicketFilter): Promise<TicketDto[]> {
+    getAll2(username: string, slug: string, startIndex: number, amount: number, sorting: TicketSorting, filter: TicketFilter): Promise<TicketQueryResult> {
         let url_ = this.baseUrl + "/tickets/{username}/{slug}/query?";
         if (username === undefined || username === null)
             throw new Error("The parameter 'username' must be defined.");
@@ -1114,21 +1107,14 @@ export class TicketClient extends AuthorizedApiBase {
         });
     }
 
-    protected processGetAll2(response: Response): Promise<TicketDto[]> {
+    protected processGetAll2(response: Response): Promise<TicketQueryResult> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200.push(TicketDto.fromJS(item));
-            }
-            else {
-                result200 = <any>null;
-            }
+            result200 = TicketQueryResult.fromJS(resultData200);
             return result200;
             });
         } else if (status !== 200 && status !== 204) {
@@ -1136,7 +1122,7 @@ export class TicketClient extends AuthorizedApiBase {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<TicketDto[]>(null as any);
+        return Promise.resolve<TicketQueryResult>(null as any);
     }
 
     create(projectId: string, model?: CreateTicketModel): Promise<TicketDto> {
@@ -2282,6 +2268,61 @@ export interface IEditProjectModel {
     name: string;
     description: string;
     icon?: string;
+}
+
+export class TicketQueryResult implements ITicketQueryResult {
+    tickets: TicketDto[];
+    sorting: TicketSorting;
+    filter?: TicketFilter;
+
+    constructor(data?: ITicketQueryResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.tickets = [];
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["tickets"])) {
+                this.tickets = [] as any;
+                for (let item of _data["tickets"])
+                    this.tickets.push(TicketDto.fromJS(item));
+            }
+            this.sorting = _data["sorting"];
+            this.filter = _data["filter"];
+        }
+    }
+
+    static fromJS(data: any): TicketQueryResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new TicketQueryResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.tickets)) {
+            data["tickets"] = [];
+            for (let item of this.tickets)
+                data["tickets"].push(item.toJSON());
+        }
+        data["sorting"] = this.sorting;
+        data["filter"] = this.filter;
+        return data;
+    }
+}
+
+export interface ITicketQueryResult {
+    tickets: TicketDto[];
+    sorting: TicketSorting;
+    filter?: TicketFilter;
 }
 
 export enum TicketSorting {

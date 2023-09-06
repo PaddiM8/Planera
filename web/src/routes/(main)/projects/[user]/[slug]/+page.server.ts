@@ -1,5 +1,5 @@
 import type {RequestEvent, ServerLoadEvent} from "@sveltejs/kit";
-import type {CreateTicketModel, SwaggerException, TicketDto} from "../../../../../gen/planeraClient";
+import type {CreateTicketModel, SwaggerException, TicketQueryResult} from "../../../../../gen/planeraClient";
 import {getTicketClient} from "$lib/clients";
 import {parsePriority} from "$lib/priority";
 import {handleProblem, handleProblemForForm} from "$lib/problemDetails";
@@ -8,7 +8,7 @@ import {makeImagePathsAbsolute} from "$lib/paths";
 import {sanitizeHtml} from "$lib/formatting";
 
 export async function load({ cookies, params }: ServerLoadEvent) {
-    let response: TicketDto[];
+    let response: TicketQueryResult;
     try {
         response = await getTicketClient(cookies).getAll(
             params.user!,
@@ -20,12 +20,14 @@ export async function load({ cookies, params }: ServerLoadEvent) {
         return handleProblem(ex as SwaggerException);
     }
 
-    for (const ticket of response) {
+    for (const ticket of response.tickets) {
         ticket.description = sanitizeHtml(makeImagePathsAbsolute(ticket.description));
     }
 
     return {
-        tickets: structuredClone(response),
+        sorting: response.sorting,
+        filter: response.filter,
+        tickets: structuredClone(response.tickets),
     };
 }
 export const actions = {

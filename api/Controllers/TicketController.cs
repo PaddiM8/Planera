@@ -35,7 +35,7 @@ public class TicketController : ControllerBase
     }
 
     [HttpGet("{username}/{slug}")]
-    [ProducesResponseType(typeof(IEnumerable<TicketDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(TicketQueryResult), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll(string username, string slug, int startIndex, int amount) {
         var result = await _ticketService.GetAllAsync(
             User.FindFirst("Id")!.Value,
@@ -49,7 +49,7 @@ public class TicketController : ControllerBase
     }
 
     [HttpGet("{username}/{slug}/query")]
-    [ProducesResponseType(typeof(IEnumerable<TicketDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(TicketQueryResult), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll(
         string username,
         string slug,

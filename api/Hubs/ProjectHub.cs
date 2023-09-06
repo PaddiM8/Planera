@@ -38,7 +38,7 @@ public class ProjectHub : Hub<IProjectHubContext>
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, projectId);
     }
 
-    public async Task<IEnumerable<TicketDto>> QueryTickets(
+    public async Task<TicketQueryResult> QueryTickets(
         string username,
         string slug,
         int startIndex,

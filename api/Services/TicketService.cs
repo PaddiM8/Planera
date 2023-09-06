@@ -76,21 +76,40 @@ public class TicketService
             : _mapper.Map<TicketDto>(ticket);
     }
 
-    public async Task<ErrorOr<IEnumerable<TicketDto>>> GetAllAsync(
+    // TODO: Return an object containing both a collection of tickets and the
+    // sorting/filtering options that were used.
+    public async Task<ErrorOr<TicketQueryResult>> GetAllAsync(
         string userId,
         string username,
         string slug,
         int startIndex,
         int amount,
         string? searchQuery = null,
-        TicketSorting sorting = TicketSorting.Newest,
+        TicketSorting? sorting = null,
         TicketFilter? filter = null)
     {
         var project = await _projectService
             .QueryBySlug(userId, username, slug)
             .SingleOrDefaultAsync();
         if (project == null)
-            return ProjectService.ProjectNotFoundError<IEnumerable<TicketDto>>();
+            return ProjectService.ProjectNotFoundError<TicketQueryResult>();
+
+        // If sorting was provided explicitly, the sorting/filter should be saved
+        // for the user-project combination. Otherwise, the existing saved values
+        // should be used.
+        var projectParticipant = await _dataContext.ProjectParticipants.FindAsync(project.Id, userId);
+        if (sorting == null)
+        {
+            sorting = projectParticipant!.Sorting;
+            filter = projectParticipant.Filter;
+        }
+        else if (projectParticipant!.Sorting != sorting.Value || projectParticipant.Filter != filter)
+        {
+            projectParticipant.Sorting = sorting.Value;
+            projectParticipant.Filter = filter;
+            _dataContext.Update(projectParticipant);
+            await _dataContext.SaveChangesAsync();
+        }
 
         var query = _dataContext.Tickets
             .Where(x => x.ProjectId == project.Id);
@@ -149,13 +168,15 @@ public class TicketService
             };
         }
 
-        return await query
+        var tickets = await query
             .Include(x => x.Author)
             .Include(x => x.Assignees)
             .Skip(startIndex)
             .Take(amount)
             .ProjectTo<TicketDto>(_mapper.ConfigurationProvider)
             .ToListAsync();
+
+        return new TicketQueryResult(tickets, sorting.Value, filter);
     }
 
     public async Task<ErrorOr<TicketDto>> AddTicketAsync(

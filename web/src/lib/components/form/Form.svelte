@@ -15,6 +15,7 @@
     export let smallMargins = false;
     export let validState = true;
     export let promptWhenModified = false;
+    export let refresh = true;
 
     let form: HTMLFormElement;
     let isModified = false;
@@ -72,7 +73,9 @@
         }
 
         return async ({ result, update }) => {
-            await update({ reset });
+            if (refresh) {
+                await update({ reset });
+            }
 
             if (afterSubmit) {
                 await afterSubmit(result.type === "success");
