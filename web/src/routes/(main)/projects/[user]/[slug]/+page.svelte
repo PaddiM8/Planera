@@ -78,10 +78,7 @@
             }
         }
 
-        projectHub.subscribe(hub => {
-            console.log("new hub", hub);
-            hub?.on("onUpdateTicket", onUpdateTicket)
-        });
+        projectHub.subscribe(hub => hub?.on("onUpdateTicket", onUpdateTicket));
     });
 
     async function loadMore() {

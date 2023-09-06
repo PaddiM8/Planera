@@ -50,12 +50,18 @@
         }
 
         participants.set(data.project.participants);
-        projectHub.set(await startProjectHub());
-        await connectToProject(data.project.id);
-
-        $projectHub?.on("onAddParticipant", onAddParticipant);
-        $projectHub?.on("onRemoveParticipant", onRemoveParticipant);
+        await createProjectHub();
     });
+
+    async function createProjectHub() {
+        const hub = await startProjectHub();
+        projectHub.set(hub);
+        hub.onreconnected(createProjectHub);
+        hub.on("onAddParticipant", onAddParticipant);
+        hub.on("onRemoveParticipant", onRemoveParticipant);
+        previousProjectId = undefined;
+        await connectToProject(data.project.id);
+    }
 
     function onAddParticipant(participant: UserDto) {
         participants.update(x => [participant, ...x]);

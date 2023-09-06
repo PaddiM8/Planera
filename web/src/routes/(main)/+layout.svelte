@@ -23,11 +23,16 @@
 
     onMount(async () => {
         invitations.set(data.invitations);
-
-        userHub.set(await startUserHub());
-        $userHub?.on("onAddProject", onAddProject);
-        $userHub?.on("onAddInvitation", onAddInvitation);
+        await createUserHub();
     });
+
+    async function createUserHub() {
+        const hub = await startUserHub();
+        userHub.set(hub);
+        hub.onreconnected(createUserHub);
+        hub.on("onAddProject", onAddProject);
+        hub.on("onAddInvitation", onAddInvitation);
+    }
 
     function onAddProject(project: ProjectDto) {
         data.projects = [project, ...data.projects];
