@@ -5,6 +5,8 @@
     import CenteredLayout from "$lib/components/CenteredLayout.svelte";
     import {toast} from "$lib/toast";
 
+    export let form;
+
     function handleSubmit(success: boolean) {
         if (success) {
             toast.info("Sent password reset email.");
