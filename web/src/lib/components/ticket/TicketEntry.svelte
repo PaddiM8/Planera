@@ -287,8 +287,11 @@
         &:hover
             text-decoration: underline
 
-    .ticket:not(:hover) .status-buttons, .ticket.has-status .status-buttons, .ticket:not(:hover) .add-button
+    .ticket:not(:hover) .status-buttons, .ticket:not(:hover) .add-button
         visibility: hidden
+
+    .ticket.has-status .status-buttons
+        visibility: collapse
 
     .status-buttons
         display: flex
