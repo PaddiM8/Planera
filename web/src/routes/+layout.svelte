@@ -134,7 +134,7 @@
     :global(h2)
         font-size: 1.6em
         margin-top: 0.2em
-        margin-bottom: 0.6em
+        margin-bottom: 0.4em
         font-weight: 600
 
     :global(h3)

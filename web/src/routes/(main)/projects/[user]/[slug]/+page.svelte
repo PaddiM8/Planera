@@ -280,10 +280,6 @@
                 width: 1.2em
                 font-size: 2em
 
-    .tickets
-        h2
-            margin-bottom: 0.6em
-
     .group
         display: flex
         flex-direction: column

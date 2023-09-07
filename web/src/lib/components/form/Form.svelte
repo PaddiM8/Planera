@@ -150,16 +150,12 @@
         display: flex
         flex-direction: column
         gap: var(--spacing)
-        margin-top: calc(-0.75 * var(--spacing))
 
         &.horizontal .fields
             flex-direction: row
 
-        &.small-margins
-            margin-top: calc(-0.5 * var(--spacing))
-
-            .fields
-                gap: calc(var(--spacing) / 2)
+        &.small-margins .fields
+            gap: calc(var(--spacing) / 2)
 
     :global(.form-error)
         display: block
