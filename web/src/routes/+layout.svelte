@@ -9,6 +9,7 @@
     import {UserDto} from "../gen/planeraClient";
     import {getAvatarUrl} from "$lib/clients";
     import {user} from "./(main)/store";
+    import {page} from "$app/stores";
 
     export let data = {
         user: UserDto,
@@ -62,6 +63,8 @@
                               name={ data.user.username }
                               image={getAvatarUrl(data.user.avatarPath, "big")} />
                 </div>
+            {:else if $page.url.pathname === "/register"}
+                <a href="/login" class="item">Sign In</a>
             {:else}
                 <a href="/register" class="item">Register</a>
             {/if}
