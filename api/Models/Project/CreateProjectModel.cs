@@ -8,7 +8,7 @@ public class CreateProjectModel
     [StringLength(100, ErrorMessage = ErrorStrings.StringLength)]
     public required string Name { get; init; }
 
-    [RegularExpression(@"[a-z0-9\-]+", ErrorMessage = "Slugs can only contains letters, digits and dashes.")]
+    [RegularExpression(@"[a-z0-9\-]+", ErrorMessage = "URL names can only contains letters, digits and dashes.")]
     [MinLength(2, ErrorMessage = ErrorStrings.MinLength)]
     [StringLength(64, ErrorMessage = ErrorStrings.StringLength)]
     public required string Slug { get; init; }

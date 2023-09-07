@@ -38,8 +38,8 @@
                    bind:value={name} />
             <Input type="text"
                    name="slug"
-                   placeholder="project-slug..."
-                   label="Slug"
+                   placeholder="project-url-name..."
+                   label="URL"
                    bind:value={slug} />
         </div>
         <Input type="text"
