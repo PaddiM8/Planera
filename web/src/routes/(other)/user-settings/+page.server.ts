@@ -43,7 +43,7 @@ export const actions = {
                 } as ChangePasswordModel,
             );
         } catch (ex) {
-            return handleProblemForForm(ex as SwaggerException);
+            return handleProblemForForm(ex as SwaggerException, "changePassword");
         }
     },
 };

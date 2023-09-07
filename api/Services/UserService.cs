@@ -109,7 +109,7 @@ public class UserService
         var identityResult = await _userManager.ChangePasswordAsync(user!, currentPassword, newPassword);
 
         return !identityResult.Succeeded
-            ? Error.Validation("CurrentPassword.Invalid", "Failed to change password.")
+            ? Error.Validation("CurrentPassword.Invalid", "Incorrect password.")
             : new ErrorOr<Updated>();
     }
 

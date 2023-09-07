@@ -4,9 +4,9 @@ namespace Planera.Models.Authentication;
 
 public class LoginModel
 {
-    [Required]
+    [Required(ErrorMessage = ErrorStrings.Required)]
     public required string Username { get; init; }
 
-    [Required]
+    [Required(ErrorMessage = ErrorStrings.Required)]
     public required string Password { get; init; }
 }

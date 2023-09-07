@@ -8,9 +8,9 @@ public class CreateNoteModel
     [StringLength(1024, ErrorMessage = ErrorStrings.StringLength)]
     public required string Content { get; init; }
 
-    [Required]
+    [Required(ErrorMessage = ErrorStrings.Required)]
     public required int TicketId { get; init; }
 
-    [Required]
+    [Required(ErrorMessage = ErrorStrings.Required)]
     public required string ProjectId { get; init; }
 }

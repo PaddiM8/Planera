@@ -48,7 +48,7 @@ public class AuthenticationService
         {
             return Error.NotFound(
                 "Username.NotFound",
-                "A user with the given username/email was not found"
+                "A user with the given username/email was not found."
             );
         }
 
@@ -75,9 +75,9 @@ public class AuthenticationService
         }
 
         if (result.IsLockedOut)
-            Error.Failure("LockedOut", "Locked out.");
+            Error.Failure("Username.LockedOut", "Locked out.");
 
-        return Error.Failure("NotAllowed", "Could not login.");
+        return Error.Failure("Password.Invalid", "Could not login. Is the password correct?");
     }
 
     public async Task<ErrorOr<AuthenticationResult?>> RegisterAsync(

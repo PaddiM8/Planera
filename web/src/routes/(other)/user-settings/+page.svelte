@@ -64,7 +64,7 @@
 <h2>Change Password</h2>
 <section class="password-change">
     <Form action="?/changePassword"
-          problem={form?.changePassword?.errors}
+          problem={form?.changePassword}
           afterSubmit={afterSubmitChangePassword}>
         <Input type="password"
                label="Current Password"

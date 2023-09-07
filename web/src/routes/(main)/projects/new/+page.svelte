@@ -57,4 +57,11 @@
     .name-area
         display: flex
         gap: var(--spacing)
+
+    :global(.name-area .wrapper)
+        display: flex
+        flex-direction: column
+
+    :global(.name-area input)
+        margin-top: auto
 </style>

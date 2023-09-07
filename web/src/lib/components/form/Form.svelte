@@ -92,6 +92,35 @@
         };
     }
 
+    $: {
+        if (problem && browser) {
+            showErrors();
+        }
+    }
+
+    function showErrors() {
+        // Remove existing errors
+        for (const error of form.querySelectorAll(".form-error")) {
+            error.parentElement.removeChild(error);
+        }
+
+        if (!problem?.errors) {
+            return;
+        }
+
+        for (const fieldName in problem!.errors) {
+            const field = form.querySelector(`[name="${fieldName}"]`);
+            if (!field) {
+                continue;
+            }
+
+            const errorElement = document.createElement("span");
+            errorElement.className = "form-error";
+            errorElement.innerHTML = problem.errors[fieldName].join("<br>");
+            field.parentElement.insertBefore(errorElement, field);
+        }
+    }
+
     function handleKeyDown(e: KeyboardEvent) {
         if (e.ctrlKey && e.key === "Enter") {
             e.preventDefault();
@@ -111,16 +140,6 @@
       on:input={() => isModified = true}
       on:keydown={handleKeyDown}
       use:enhance={enhanceHandler}>
-    <div class="errors">
-        {#if problem && (!problem?.errors || Object.keys(problem.errors).length === 0)}
-            <ErrorText value={problem?.summary} />
-        {/if}
-        {#each Object.values(problem?.errors ?? {}) as errorList}
-            {#each errorList as error}
-                <ErrorText value={error} />
-            {/each}
-        {/each}
-    </div>
     <div class="fields">
         <slot></slot>
     </div>
@@ -131,7 +150,7 @@
         display: flex
         flex-direction: column
         gap: var(--spacing)
-        margin-top: calc(-1 * var(--spacing))
+        margin-top: calc(-0.75 * var(--spacing))
 
         &.horizontal .fields
             flex-direction: row
@@ -142,9 +161,10 @@
             .fields
                 gap: calc(var(--spacing) / 2)
 
-    .errors
-        display: flex
-        flex-direction: column
+    :global(.form-error)
+        display: block
+        color: var(--red)
+        margin-bottom: 0.3em
 
     .fields
         display: flex
