@@ -7,6 +7,7 @@ public class EditUserModel
     [Required]
     [MinLength(2, ErrorMessage = ErrorStrings.MinLength)]
     [StringLength(20, ErrorMessage = ErrorStrings.StringLength)]
+    [RegularExpression(@"[\w-.]+")]
     public required string Username { get; init; }
 
     [Required]
