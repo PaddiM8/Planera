@@ -41,6 +41,9 @@
     }
 
     $: connectToProject(data?.project.id);
+    $: if (data) {
+        $participants = data.project.participants;
+    }
 
     onMount(async () => {
         for (const participant of data.project.participants) {
@@ -49,7 +52,6 @@
             }
         }
 
-        participants.set(data.project.participants);
         await createProjectHub();
     });
 
