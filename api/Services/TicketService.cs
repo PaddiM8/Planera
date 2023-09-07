@@ -38,6 +38,20 @@ public class TicketService
     public static ErrorOr<T> TicketNotFoundError<T>()
         => Error.Conflict("Ticket.NotFound", "Ticket was not found.");
 
+    private async Task<ErrorOr<IQueryable<Ticket>>> QueryAsync(string userId, string projectId, int ticketId)
+    {
+        var project = await _projectService
+            .QueryById(userId, projectId)
+            .SingleOrDefaultAsync();
+        if (project == null)
+            return ProjectService.ProjectNotFoundError<IQueryable<Ticket>>();
+
+        return ErrorOrFactory.From(
+            _dataContext.Tickets
+                .Where(x => x.Id == ticketId && x.ProjectId == projectId)
+        );
+    }
+
     private async Task<ErrorOr<Ticket>> FindAsync(string userId, string projectId, int ticketId)
     {
         var project = await _projectService
@@ -303,9 +317,15 @@ public class TicketService
         int ticketId,
         string assigneeId)
     {
-        var ticketResult = await FindAsync(userId, projectId, ticketId);
-        if (ticketResult.IsError)
-            return ticketResult.Errors;
+        var query = await QueryAsync(userId, projectId, ticketId);
+        if (query.IsError)
+            return query.Errors;
+
+        var ticket = await query.Value
+            .Include(x => x.Assignees)
+            .SingleOrDefaultAsync();
+        if (ticket == null)
+            return TicketNotFoundError<ICollection<UserDto>>();
 
         var assignee = await _dataContext.Users.FindAsync(assigneeId);
         if (assignee == null)
@@ -314,14 +334,14 @@ public class TicketService
         await _dataContext.TicketAssignees.AddAsync(
             new TicketAssignee
             {
-                Ticket = ticketResult.Value,
+                Ticket = ticket,
                 User = assignee,
             }
         );
         await _dataContext.SaveChangesAsync();
 
         return ErrorOrFactory.From(
-            _mapper.Map<ICollection<UserDto>>(ticketResult.Value.Assignees)
+            _mapper.Map<ICollection<UserDto>>(ticket.Assignees)
         );
     }
 
