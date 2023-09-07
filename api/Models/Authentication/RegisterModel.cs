@@ -11,7 +11,7 @@ public class RegisterModel
 
     [Required]
     [EmailAddress]
-    [StringLength(60, ErrorMessage = ErrorStrings.StringLength)]
+    [StringLength(256, ErrorMessage = ErrorStrings.StringLength)]
     public required string Email { get; init; }
 
     [Required]

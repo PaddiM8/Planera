@@ -11,7 +11,7 @@ public class EditUserModel
 
     [Required]
     [EmailAddress(ErrorMessage = "Invalid email address.")]
-    [StringLength(60, ErrorMessage = ErrorStrings.StringLength)]
+    [StringLength(256, ErrorMessage = ErrorStrings.StringLength)]
 
     public required string Email { get; init; }
 
