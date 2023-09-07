@@ -23,11 +23,13 @@
     }
 
     $: {
-        if (items.length > 0) {
-            selectedValue = items[selectedIndex];
+        if (shownItems.length > 0) {
+            selectedValue = shownItems[selectedIndex];
         }
+    }
 
-        if (previousIndex == selectedIndex) {
+    $: {
+        //if (previousIndex == selectedIndex) {
             const indexedItems = items.map((x, i) => {
                 return { ...x, index: i };
             });
@@ -36,8 +38,16 @@
                 !ignored.some(y => y[key] === x[key]) && getValue(x).includes(query)
             );
             selectedIndex = 0;
-            previousIndex = selectedIndex;
-        }
+            //previousIndex = selectedIndex;
+        //}
+    }
+
+    export function selectNext() {
+        selectedIndex = Math.min(shownItems.length - 1, selectedIndex + 1);
+    }
+
+    export function selectPrevious() {
+        selectedIndex = Math.max(0, selectedIndex - 1);
     }
 
     // Needs to be fired by a mousedown event in order to
@@ -45,10 +55,10 @@
     // components may want to listen to on:blur to know
     // when the close the suggestion list, but the suggestion
     // list should get a chance to listen for clicks first.
-    function handleItemClick(e) {
+    function handleItemClick(index) {
         query = "";
         dispatch("select", {
-            index: e.target.getAttribute("data-index")
+            value: shownItems[index],
         });
     }
 </script>
@@ -56,9 +66,9 @@
 <div class="list" class:shown={shown}>
     {#each shownItems as item, i}
         <span class="item"
-              data-index={item.index}
+              data-index={i}
               class:selected={i === selectedIndex}
-              on:mousedown={handleItemClick}>
+              on:mousedown={() => handleItemClick(i)}>
             {#if showUserIcons}
                 <span class="icon">
                     <UserIcon name={getValue(item)}

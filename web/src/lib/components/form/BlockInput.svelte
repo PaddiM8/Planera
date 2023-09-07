@@ -22,6 +22,7 @@
     let value: string = "";
     let isFocused: boolean = false;
     let selectedSuggestion: any = undefined;
+    let suggestionList: SuggestionList;
     const dispatcher = createEventDispatcher();
 
     function getValue(obj) {
@@ -48,10 +49,21 @@
             popBlock();
         }
 
+        if (e.key === "ArrowDown") {
+            suggestionList.selectNext();
+            return;
+        }
+
+        if (e.key === "ArrowUp") {
+            suggestionList.selectPrevious();
+            return;
+        }
+
         if (e.key != "Space" && e.key != "Enter" || !selectedSuggestion) {
             return;
         }
 
+        value = "";
         addBlock(selectedSuggestion);
         e.preventDefault();
     }
@@ -74,13 +86,10 @@
         });
     }
 
-    function handleSelectedSuggestion(e: CustomEvent<{ index: number }>) {
-        const selectedObject = options.at(e.detail.index);
-        if (!selectedObject) {
-            return
+    function handleSelectedSuggestion(e: CustomEvent<{ value: any }>) {
+        if (e.detail.value) {
+            addBlock(e.detail.value);
         }
-
-        addBlock(selectedObject);
     }
 </script>
 
@@ -125,6 +134,7 @@
                     shown={isFocused}
                     {showUserIcons}
                     bind:selectedValue={selectedSuggestion}
+                    bind:this={suggestionList}
                     on:select={handleSelectedSuggestion} />
 </span>
 

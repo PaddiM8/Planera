@@ -15,7 +15,7 @@
     let showTouchOverlay = false;
     let preventTouch = false;
 
-    $: ticketUrl = `/projects/${ticket?.author.username}/${ticket?.projectSlug}/tickets/${ticket?.id}`;
+    $: ticketUrl = `/projects/${ticket?.project?.author.username}/${ticket?.projectSlug}/tickets/${ticket?.id}`;
 
     async function setStatus(status: TicketStatus) {
         if (preventTouch) {
@@ -161,9 +161,11 @@
                               type="user" />
                 </span>
             {/each}
-            <button class="assignee add-button" on:click={assignToMe}>
-                <Icon src={Plus} />
-            </button>
+            {#if !ticket.assignees.some(x => x.username === $user.username)}
+                <button class="assignee add-button" on:click={assignToMe}>
+                    <Icon src={Plus} />
+                </button>
+            {/if}
         </span>
         {#if ticket.noteCount}
             <span class="note-count">

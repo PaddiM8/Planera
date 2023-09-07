@@ -1300,6 +1300,10 @@ button.item.dropdown-item-active i {
     padding-top: 20px;
 }
 
+.ContentEditable__root {
+    box-sizing: border-box;
+}
+
 .Button__root {
     padding: 10px 15px;
     border-top-width: 0;

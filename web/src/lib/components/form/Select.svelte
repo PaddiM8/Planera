@@ -19,6 +19,18 @@
         selectedValue = item;
         dispatcher("change", item);
     }
+
+    function handleKeyDown(e: KeyboardEvent) {
+        if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+            const direction = e.key === "ArrowDown" ? 1 : -1;
+            const currentIndex = choices.indexOf(selectedValue);
+            const newIndex = Math.min(
+                choices.length - 1,
+                Math.max(0, currentIndex + direction)
+            );
+            selectedValue = choices[newIndex];
+        }
+    }
 </script>
 
 <div class="select" class:open={isOpen}>
@@ -27,7 +39,8 @@
            readonly
            bind:value={selectedValue}
            on:focus={() => isOpen = true}
-           on:blur={() => isOpen = false} />
+           on:blur={() => isOpen = false}
+           on:keydown={handleKeyDown} />
     <span class="icon">
         <Icon src={ChevronDown} />
     </span>
@@ -61,6 +74,9 @@
         outline: var(--border)
         box-sizing: border-box
         cursor: pointer
+
+        &::selection, &::-moz-selection
+            background-color: transparent
 
         &:hover
             background-color: var(--background-hover)
