@@ -457,7 +457,7 @@ select.font-family {
     border-radius: var(--radius);
     min-width: 100px;
     min-height: 40px;
-    background-color: var(--background);
+    background-color: var(--component-background);
     z-index: 5;
 }
 
