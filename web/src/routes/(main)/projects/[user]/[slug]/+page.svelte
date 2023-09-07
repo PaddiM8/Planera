@@ -55,6 +55,7 @@
     let queryTimeout: number;
     let isFormLoading = false;
     let reachedEndOfTickets = false;
+    let isLoadingMore = false;
 
     $: isSubmitDisabled = titleValue?.length < 2 || isFormLoading;
     $: validFormState = titleValue?.length >= 2;
@@ -73,7 +74,7 @@
         localStorage.setItem("lastVisited", window.location.pathname);
         document.getElementById("main-area").onscroll = e => {
             const target = e.target as HTMLElement;
-            if (target.scrollTop + target.clientHeight >= target.scrollHeight - 100) {
+            if (!isLoadingMore && target.scrollTop + target.clientHeight >= target.scrollHeight - 100) {
                 loadMore();
             }
         }
@@ -86,6 +87,7 @@
             return;
         }
 
+        isLoadingMore = true;
         const queryResult = await $projectHub!.invoke(
             "queryTickets",
             data.project.author.username,
@@ -106,6 +108,8 @@
         if (queryResult.tickets.length === 0) {
             reachedEndOfTickets = true;
         }
+
+        isLoadingMore = false;
     }
 
     function onUpdateTicket(projectId: string, ticketId: number, newFields: TicketDto) {
