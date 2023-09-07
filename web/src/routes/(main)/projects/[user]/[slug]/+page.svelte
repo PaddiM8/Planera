@@ -305,7 +305,8 @@
         .sorting
             display: flex
             gap: var(--spacing)
-            width: 37em
+            width: 100%
+            max-width: 37em
 
     @media screen and (max-width: 980px)
         .bottom-row

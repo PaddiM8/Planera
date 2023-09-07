@@ -22,7 +22,8 @@
 </script>
 
 <div class="select" class:open={isOpen}>
-    <input type="text" {name}
+    <input type="text"
+           {name}
            readonly
            bind:value={selectedValue}
            on:focus={() => isOpen = true}
@@ -53,6 +54,7 @@
         width: 100%
         font-size: 1rem
         padding: var(--vertical-padding) var(--horizontal-padding)
+        padding-right: 2em
         border-radius: var(--radius)
         border: 0
         background-color: var(--component-background)
