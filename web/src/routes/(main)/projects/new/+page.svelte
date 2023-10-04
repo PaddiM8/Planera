@@ -20,6 +20,10 @@
     }
 </script>
 
+<svelte:head>
+    <title>New Project - Planera</title>
+</svelte:head>
+
 <h1>New Project</h1>
 <section class="form">
     <Form problem={form?.problem} promptWhenModified>

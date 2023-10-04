@@ -6,3 +6,9 @@ export function getKeyFromValue(dictionary: {}, key: any) {
 
     return matchedEntries[0][0];
 }
+
+export function truncate(value: string, length: number) {
+    return value.length > length
+        ? value.slice(0, length).trim() + "..."
+        : value;
+}

@@ -23,6 +23,7 @@
     import BackButton from "$lib/components/BackButton.svelte";
     import type {ProblemDetails} from "$lib/problemDetails";
     import type {FormSubmitInput} from "../../../../../../types";
+    import {truncate} from "$lib/util";
 
     export let form: {
         problem: ProblemDetails,
@@ -154,6 +155,11 @@
         }
     }
 </script>
+
+<svelte:head>
+    <title>{truncate(data.ticket.title, 25)} - Planera</title>
+</svelte:head>
+
 <BackButton placeName={data?.ticket.project?.name} />
 <div class="edit-area" class:hidden={!isEditing}>
     <Form action="?/edit"

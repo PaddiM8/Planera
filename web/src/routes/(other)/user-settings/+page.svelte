@@ -31,6 +31,10 @@
 
 </script>
 
+<svelte:head>
+    <title>Account Settings - Planera</title>
+</svelte:head>
+
 <h1>Account Settings</h1>
 
 <h2>Edit Account</h2>
