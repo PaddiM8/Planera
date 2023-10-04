@@ -179,6 +179,7 @@
 <style lang="sass">
     :global(.ticket .description img)
         margin-top: 0.25em
+        border-radius: calc(var(--radius) / 2)
 
     .ticket
         position: relative

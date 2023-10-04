@@ -673,6 +673,7 @@ select.font-family {
 
 .editor-shell .editor-image img {
     max-width: 100%;
+    border-radius: calc(var(--radius) / 2);
     cursor: default;
 }
 
