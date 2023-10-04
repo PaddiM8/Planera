@@ -96,11 +96,11 @@
 
     $: {
         if (form && browser) {
-            showErrors();
+            showErrors(problem);
         }
     }
 
-    function showErrors() {
+    function showErrors(problem: ProblemDetails | undefined) {
         // Remove existing errors
         for (const error of form.querySelectorAll(".form-error")) {
             (error as HTMLElement).parentElement?.removeChild(error);
