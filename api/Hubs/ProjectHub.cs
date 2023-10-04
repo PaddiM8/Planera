@@ -106,7 +106,7 @@ public class ProjectHub : Hub<IProjectHubContext>
 
         var newFields = new Dictionary<string, object>
         {
-            { nameof(TicketDto.Status), priority },
+            { nameof(TicketDto.Priority), priority },
         };
         await Clients
             .Group(projectId)
