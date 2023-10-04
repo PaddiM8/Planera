@@ -177,6 +177,9 @@
 </div>
 
 <style lang="sass">
+    :global(.ticket .description img)
+        margin-top: 0.25em
+
     .ticket
         position: relative
         display: flex
