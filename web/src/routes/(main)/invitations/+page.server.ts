@@ -1,7 +1,6 @@
 import {getUserClient} from "$lib/clients";
 import type {RequestEvent} from "@sveltejs/kit";
-import {fail} from "@sveltejs/kit";
-import {handleProblemForForm, toProblemDetails} from "$lib/problemDetails";
+import {handleProblemForForm} from "$lib/problemDetails";
 import type {SwaggerException} from "../../../gen/planeraClient";
 
 export const actions = {

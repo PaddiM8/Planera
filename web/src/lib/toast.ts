@@ -1,4 +1,4 @@
-let timeoutId: number;
+let timeoutId: NodeJS.Timeout;
 
 export const toast = {
     info: (text: string, timeout = 2750) => {

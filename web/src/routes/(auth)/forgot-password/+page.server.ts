@@ -1,8 +1,7 @@
 import type {RequestEvent} from "@sveltejs/kit";
-import {fail} from "@sveltejs/kit";
 import {getAuthenticationClient} from "$lib/clients";
 import type {SwaggerException} from "../../../gen/planeraClient";
-import {handleProblemForForm, toProblemDetails} from "$lib/problemDetails";
+import {handleProblemForForm} from "$lib/problemDetails";
 
 export const actions = {
     default: async ({ request, cookies }: RequestEvent) => {

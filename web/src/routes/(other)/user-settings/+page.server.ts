@@ -18,7 +18,7 @@ export async function load({ cookies }: ServerLoadEvent) {
 }
 
 export const actions = {
-    update: async ({ request, cookies, params }: RequestEvent) => {
+    update: async ({ request, cookies }: RequestEvent) => {
         const formData = await request.formData();
         try {
             await getUserClient(cookies).edit(
@@ -32,7 +32,7 @@ export const actions = {
             return handleProblemForForm(ex as SwaggerException);
         }
     },
-    changePassword: async ({ request, cookies, params }: RequestEvent) => {
+    changePassword: async ({ request, cookies }: RequestEvent) => {
         const formData = await request.formData();
         try {
             await getUserClient(cookies).changePassword(

@@ -1,7 +1,7 @@
 <script lang="ts">
     import {ArrowLongLeft, Icon} from "svelte-hero-icons";
 
-    export let placeName: string;
+    export let placeName: string | undefined = "";
     export let href: string | undefined = "../";
 </script>
 
@@ -9,7 +9,11 @@
     <span class="icon">
         <Icon src={ArrowLongLeft} />
     </span>
-    <span class="text">Back to {placeName}</span>
+    {#if placeName}
+        <span class="text">Back to {placeName}</span>
+    {:else}
+        <span class="text">Back</span>
+    {/if}
 </a>
 
 <style lang="sass">

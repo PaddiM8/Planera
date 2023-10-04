@@ -5,12 +5,11 @@
     import CenteredLayout from "$lib/components/CenteredLayout.svelte";
     import {toast} from "$lib/toast";
     import {onMount} from "svelte";
-    import {browser} from "$app/environment";
 
     export let form;
     export let data;
 
-    let isEmailConfirmationFailure;
+    let isEmailConfirmationFailure: boolean;
     let usernameValue: string;
 
     onMount(() => {

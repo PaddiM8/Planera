@@ -9,7 +9,7 @@ const ASSETS = [
     ...files  // everything in `static`
 ];
 
-self.addEventListener("install", (event) => {
+self.addEventListener("install", (event: any) => {
     // Create a new cache and add all files to it
     async function addFilesToCache() {
         const cache = await caches.open(CACHE);
@@ -19,7 +19,7 @@ self.addEventListener("install", (event) => {
     event.waitUntil(addFilesToCache());
 });
 
-self.addEventListener("activate", (event) => {
+self.addEventListener("activate", (event: any) => {
     // Remove previous cached data from disk
     async function deleteOldCaches() {
         for (const key of await caches.keys()) {
@@ -30,7 +30,7 @@ self.addEventListener("activate", (event) => {
     event.waitUntil(deleteOldCaches());
 });
 
-self.addEventListener("fetch", (event) => {
+self.addEventListener("fetch", (event: any) => {
     // ignore POST requests etc
     if (event.request.method !== "GET") {
         return;

@@ -20,7 +20,7 @@ export const actions = {
             return handleProblemForForm(ex as SwaggerException);
         }
     },
-    delete: async ({ request, cookies, params }: RequestEvent) => {
+    delete: async ({ request, cookies }: RequestEvent) => {
         const formData = await request.formData();
         try {
             await getProjectClient(cookies).remove(formData.get("projectId") as string);

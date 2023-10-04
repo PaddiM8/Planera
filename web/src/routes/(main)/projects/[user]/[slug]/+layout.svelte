@@ -1,7 +1,7 @@
 <script lang="ts">
     import {startProjectHub} from "$lib/hubs";
     import {onMount} from "svelte";
-    import {ProjectDto, UserDto} from "../../../../../gen/planeraClient";
+    import type {ProjectDto, UserDto} from "../../../../../gen/planeraClient";
     import {participants} from "../../../store";
     import {browser} from "$app/environment";
     import {toast} from "$lib/toast";
@@ -12,9 +12,9 @@
         project: ProjectDto,
     };
 
-    let previousProjectId: number | undefined = undefined;
+    let previousProjectId: string | undefined = undefined;
 
-    async function connectToProject(projectId) {
+    async function connectToProject(projectId: string) {
         if (!browser || !$projectHub || $projectHub.state !== HubConnectionState.Connected) {
             return;
         }
@@ -48,7 +48,7 @@
     onMount(async () => {
         for (const participant of data.project.participants) {
             if (participant.id === data.project.author.id) {
-                participant["removable"] = false;
+                (participant as any).removable = false;
             }
         }
 

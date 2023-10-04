@@ -22,6 +22,7 @@
     import {onMount} from "svelte";
     import BackButton from "$lib/components/BackButton.svelte";
     import type {ProblemDetails} from "$lib/problemDetails";
+    import type {FormSubmitInput} from "../../../../../../types";
 
     export let form: {
         problem: ProblemDetails,
@@ -33,7 +34,7 @@
     };
 
     let isEditing = false;
-    let editor;
+    let editor: any;
     let selectedPriorityName: string;
     let previousPriority = data?.ticket?.priority;
 
@@ -44,11 +45,11 @@
 
     function onUpdateTicket(projectId: string, ticketId: number, newFields: TicketDto) {
         for (const [key, value] of Object.entries(newFields)) {
-            data.ticket[key] = value;
+            (data.ticket as { [key: string]: any })[key] = value;
         }
     }
 
-    async function beforeSubmit({ formData }) {
+    async function beforeSubmit({ formData }: FormSubmitInput) {
         formData.append("description", await editor.getHtml());
     }
 
@@ -109,8 +110,8 @@
             );
 
             toast.info("Changed priority successfully.", 1500);
-            data.ticket.priority = priority;
-            previousPriority = priority;
+            data.ticket.priority = priority as unknown as TicketPriority;
+            previousPriority = priority as unknown as TicketPriority;
         } catch {
             toast.error("Failed to change priority.");
             if (previousPriority) {
@@ -153,7 +154,7 @@
         }
     }
 </script>
-<BackButton placeName={data?.ticket.project.name} />
+<BackButton placeName={data?.ticket.project?.name} />
 <div class="edit-area" class:hidden={!isEditing}>
     <Form action="?/edit"
           {beforeSubmit}
@@ -175,17 +176,17 @@
 <div class="ticket" class:hidden={isEditing}>
     <div class="top">
         {#if data.ticket.status === TicketStatus.Done}
-            <div class="status done" on:click={() => setStatus(TicketStatus.None)}>
+            <button class="status done" on:click={() => setStatus(TicketStatus.None)}>
                 <Icon src={Check} />
-            </div>
+            </button>
         {:else if data.ticket.status === TicketStatus.Inactive}
-            <div class="status inactive" on:click={() => setStatus(TicketStatus.None)}>
+            <button class="status inactive" on:click={() => setStatus(TicketStatus.None)}>
                 <Icon src={Minus} />
-            </div>
+            </button>
         {:else if data.ticket.status === TicketStatus.Closed}
-            <div class="status closed" on:click={() => setStatus(TicketStatus.None)}>
+            <button class="status closed" on:click={() => setStatus(TicketStatus.None)}>
                 <Icon src={XMark} />
-            </div>
+            </button>
         {/if}
         <h2>{data.ticket.title}</h2>
         {#if data.ticket.status === TicketStatus.None}

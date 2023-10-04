@@ -19,9 +19,9 @@
         }
     }
 
-    function handlePageClick(e) {
-        const targetIsOutside = e.target !== element && !element.contains(e.target);
-        if (canBeClosed && (targetIsOutside || window.getComputedStyle(e.target).cursor === "pointer")) {
+    function handlePageClick(e: MouseEvent) {
+        const targetIsOutside = e.target !== element && !element.contains(e.target as HTMLElement);
+        if (canBeClosed && (targetIsOutside || window.getComputedStyle(e.target as HTMLElement).cursor === "pointer")) {
             target = undefined;
         }
     }

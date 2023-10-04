@@ -2,11 +2,10 @@
     import {createEventDispatcher, onMount} from "svelte";
 
     export let choices: string[];
-    export let selectedValue: string;
+    export let selectedValue: string | undefined = undefined;
     export let defaultChoice: string | undefined = undefined;
     export let name: string | undefined = undefined;
 
-    let element: HTMLElement;
     const dispatcher = createEventDispatcher();
 
     onMount(() => {
@@ -23,15 +22,15 @@
         }
     }
 
-    function handleChange(e, value: string) {
-        if (e.target.checked) {
+    function handleChange(e: Event, value: string) {
+        if ((e.target as HTMLInputElement).checked) {
             selectedValue = value;
             dispatcher("change", value);
         }
     }
 </script>
 
-<span class="multi-button" bind:this={element}>
+<span class="multi-button">
     {#each choices as choice}
         <span class="button">
             <input type="radio"

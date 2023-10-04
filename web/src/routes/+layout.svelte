@@ -149,6 +149,13 @@
         margin-top: 1.2em
         margin-bottom: 1.2em
 
+    :global(button)
+      border-radius: 0
+      border: 0
+      padding: 0
+      background-color: inherit
+      font-family: inherit
+
     #content
         display: grid
         grid-template-rows: auto 1fr

@@ -8,7 +8,7 @@
     import IconButton from "$lib/components/IconButton.svelte";
     import {goto} from "$app/navigation";
     import {toast} from "$lib/toast";
-    import {user} from "../../../routes/(main)/store";
+    import {closeTouchOverlay, user} from "../../../routes/(main)/store";
 
     export let ticket: TicketDto;
 
@@ -22,7 +22,7 @@
             return;
         }
 
-        closeTouchOverlay();
+        closeTouchOverlayImpl();
         await $projectHub?.invoke(
             "setTicketStatus",
             ticket.projectId,
@@ -52,11 +52,11 @@
             return;
         }
 
-        if (window["closeTouchOverlay"]) {
-            window["closeTouchOverlay"]();
+        if ($closeTouchOverlay) {
+            $closeTouchOverlay();
         }
 
-        window["closeTouchOverlay"] = closeTouchOverlay;
+        $closeTouchOverlay = closeTouchOverlayImpl;
         showTouchOverlay = true;
         preventTouch = true;
         setTimeout(() => {
@@ -64,7 +64,7 @@
         }, 175);
     }
 
-    export function closeTouchOverlay() {
+    export function closeTouchOverlayImpl() {
         if (preventTouch) {
             return;
         }
@@ -78,8 +78,8 @@
 </script>
 
 <div class="ticket" class:has-status={ticket.status}>
-    <div class="touch-overlay" on:click={openTouchOverlay}>
-        <div class="menu" class:shown={showTouchOverlay}>
+    <button class="touch-overlay" on:click={openTouchOverlay}>
+        <span class="menu" class:shown={showTouchOverlay}>
             <span class="row">
                 {#if ticket.status === TicketStatus.None}
                     <button class="item" on:click={() => setStatus(TicketStatus.Done)}>
@@ -114,21 +114,21 @@
                     <span class="name">Back</span>
                 </button>
             </span>
-        </div>
-    </div>
+        </span>
+    </button>
     <div class="top">
         {#if ticket.status === TicketStatus.Done}
-            <div class="status done" on:click={() => setStatus(TicketStatus.None)}>
+            <button class="status done" on:click={() => setStatus(TicketStatus.None)}>
                 <Icon src={Check} />
-            </div>
+            </button>
         {:else if ticket.status === TicketStatus.Inactive}
-            <div class="status inactive" on:click={() => setStatus(TicketStatus.None)}>
+            <button class="status inactive" on:click={() => setStatus(TicketStatus.None)}>
                 <Icon src={Minus} />
-            </div>
+            </button>
         {:else if ticket.status === TicketStatus.Closed}
-            <div class="status closed" on:click={() => setStatus(TicketStatus.None)}>
+            <button class="status closed" on:click={() => setStatus(TicketStatus.None)}>
                 <Icon src={XMark} />
-            </div>
+            </button>
         {/if}
         <a href={ticketUrl}>
             <h3 class="title">{ticket.title}</h3>

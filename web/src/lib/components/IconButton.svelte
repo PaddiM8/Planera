@@ -2,7 +2,7 @@
     import {Icon} from "svelte-hero-icons";
 
     export let value: string | undefined = undefined;
-    export let icon;
+    export let icon: unknown;
     export let color: "default" | "green" | "blue" | "red" = "default";
 </script>
 

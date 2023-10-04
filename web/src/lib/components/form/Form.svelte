@@ -1,15 +1,16 @@
 <script lang="ts">
     import { enhance } from "$app/forms";
-    import ErrorText from "$lib/components/form/ErrorText.svelte";
     import type {ProblemDetails} from "$lib/problemDetails";
     import {onMount} from "svelte";
     import {beforeNavigate} from "$app/navigation";
     import {browser} from "$app/environment";
+    import type {SubmitFunction} from "@sveltejs/kit";
+    import type {FormSubmitInput} from "../../../routes/types";
 
     export let action: string | undefined = undefined;
     export let problem: ProblemDetails | undefined = undefined;
-    export let beforeSubmit = undefined;
-    export let afterSubmit = undefined;
+    export let beforeSubmit: (input: FormSubmitInput) => void = undefined!;
+    export let afterSubmit: (success: boolean) => void = undefined!;
     export let reset = true;
     export let horizontal = false;
     export let smallMargins = false;
@@ -58,7 +59,8 @@
         return () => window.removeEventListener("beforeunload", handleBeforeUnload);
     });
 
-    async function enhanceHandler(e) {
+    // TODO: Fix type annotations
+    const enhanceHandler: SubmitFunction<Record<string, unknown>, Record<string, any>> = async e => {
         isSubmitting = true;
 
         // Trim all input values
@@ -101,7 +103,7 @@
     function showErrors() {
         // Remove existing errors
         for (const error of form.querySelectorAll(".form-error")) {
-            error.parentElement.removeChild(error);
+            (error as HTMLElement).parentElement?.removeChild(error);
         }
 
         if (!problem?.errors) {
@@ -117,7 +119,7 @@
             const errorElement = document.createElement("span");
             errorElement.className = "form-error";
             errorElement.innerHTML = problem.errors[fieldName].join("<br>");
-            field.parentElement.insertBefore(errorElement, field);
+            (field as HTMLElement).parentElement?.insertBefore(errorElement, field);
         }
     }
 

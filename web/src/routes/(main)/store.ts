@@ -6,3 +6,4 @@ export const user = writable<UserDto>();
 export const userHub = writable<HubConnection | undefined>(undefined);
 export const invitations = writable<ProjectDto[]>([]);
 export const participants = writable<UserDto[]>([]);
+export const closeTouchOverlay = writable<() => void>();

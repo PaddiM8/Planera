@@ -59,17 +59,17 @@
 <div class="note" class:has-status={note.status !== TicketStatus.None}>
     <div class="top">
         {#if note.status === TicketStatus.Done}
-            <div class="status done" on:click={() => setStatus(TicketStatus.None)}>
+            <button class="status done" on:click={() => setStatus(TicketStatus.None)}>
                 <Icon src={Check} />
-            </div>
+            </button>
         {:else if note.status === TicketStatus.Inactive}
-            <div class="status inactive" on:click={() => setStatus(TicketStatus.None)}>
+            <button class="status inactive" on:click={() => setStatus(TicketStatus.None)}>
                 <Icon src={Minus} />
-            </div>
+            </button>
         {:else if note.status === TicketStatus.Closed}
-            <div class="status closed" on:click={() => setStatus(TicketStatus.None)}>
+            <button class="status closed" on:click={() => setStatus(TicketStatus.None)}>
                 <Icon src={XMark} />
-            </div>
+            </button>
         {/if}
         <h3 class="user">{note.author?.username}</h3>
         {#if !isEditing}
@@ -160,10 +160,6 @@
         display: flex
         align-items: center
         gap: 0.4em
-
-        .icon
-            width: 1.2em
-            height: 1.2em
 
     .bottom
         display: flex

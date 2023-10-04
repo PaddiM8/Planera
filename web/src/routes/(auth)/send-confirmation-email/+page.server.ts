@@ -1,4 +1,4 @@
-import {error, redirect, type ServerLoadEvent} from "@sveltejs/kit";
+import {error, type ServerLoadEvent} from "@sveltejs/kit";
 import {getAuthenticationClient} from "$lib/clients";
 import type {SwaggerException} from "../../../gen/planeraClient";
 import {toProblemDetails} from "$lib/problemDetails";

@@ -19,6 +19,8 @@
     import {makeImagePathsAbsolute} from "$lib/paths";
     import {sanitizeHtml} from "$lib/formatting";
     import {getKeyFromValue} from "$lib/util.js";
+    import type {FormSubmitInput} from "../../../../types";
+    import type {ProblemDetails} from "$lib/problemDetails";
 
     export let data: {
         project: ProjectDto,
@@ -28,15 +30,16 @@
     };
     export let form: {
         errors: { string: string[] } | undefined,
+        problem: ProblemDetails,
     };
 
-    let editor;
+    let editor: any;
     let titleValue: string;
-    let titleInput: HTMLInputElement;
-    let assignees;
-    let priority;
+    let titleInput: Input;
+    let assigneesInput: BlockInput;
+    let priorityInput: MultiButton;
     let searchQuery: string;
-    const filterMap = {
+    const filterMap: { [key: string]: TicketFilter } = {
         "All": TicketFilter.All,
         "Open": TicketFilter.Open,
         "Closed": TicketFilter.Closed,
@@ -44,7 +47,7 @@
         "Done": TicketFilter.Done,
         "Assigned to Me": TicketFilter.AssignedToMe,
     };
-    const sortingMap = {
+    const sortingMap: { [key: string]: TicketSorting } = {
         "Newest": TicketSorting.Newest,
         "Oldest": TicketSorting.Oldest,
         "Highest Priority": TicketSorting.HighestPriority,
@@ -52,7 +55,7 @@
     };
     let sorting: string;
     let filter: string;
-    let queryTimeout: number;
+    let queryTimeout: NodeJS.Timeout;
     let isFormLoading = false;
     let reachedEndOfTickets = false;
     let isLoadingMore = false;
@@ -72,7 +75,8 @@
 
     onMount(async () => {
         localStorage.setItem("lastVisited", window.location.pathname);
-        document.getElementById("main-area").onscroll = e => {
+        const mainArea = document.getElementById("main-area") as HTMLElement;
+        mainArea.onscroll = e => {
             const target = e.target as HTMLElement;
             if (!isLoadingMore && target.scrollTop + target.clientHeight >= target.scrollHeight - 100) {
                 loadMore();
@@ -116,12 +120,12 @@
         const index = data.tickets.findIndex(x => x.id === ticketId);
         if (index !== -1) {
             for (const [key, value] of Object.entries(newFields)) {
-                data.tickets[index][key] = value;
+                (data.tickets as any)[index][key] = value;
             }
         }
     }
 
-    async function beforeSubmit({ formData }) {
+    async function beforeSubmit({ formData }: FormSubmitInput) {
         isFormLoading = true;
         formData.append("description", await editor.getHtml());
     }
@@ -130,8 +134,8 @@
         if (success) {
             titleValue = "";
             editor.reset();
-            priority.reset();
-            assignees.reset();
+            priorityInput.reset();
+            assigneesInput.reset();
             setTimeout(() => {
                 titleInput.focus();
             }, 100);
@@ -218,7 +222,7 @@
                 <MultiButton name="priority"
                              choices={["None", "Low", "Normal", "High", "Severe"]}
                              defaultChoice="Normal"
-                             bind:this={priority} />
+                             bind:this={priorityInput} />
             </span>
             <span class="group">
                 <span class="label">
@@ -229,7 +233,7 @@
                             key="username"
                             outputKey="id"
                             name="assignee"
-                            bind:this={assignees}
+                            bind:this={assigneesInput}
                             showUserIcons={true} />
             </span>
             <Button value="Create"
