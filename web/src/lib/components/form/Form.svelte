@@ -59,7 +59,6 @@
         return () => window.removeEventListener("beforeunload", handleBeforeUnload);
     });
 
-    // TODO: Fix type annotations
     const enhanceHandler: SubmitFunction<Record<string, unknown>, Record<string, any>> = async e => {
         isSubmitting = true;
 
@@ -81,10 +80,13 @@
 
             if (afterSubmit) {
                 await afterSubmit(result.type === "success");
-                setTimeout(() => {
-                    isModified = false;
-                }, 100);
             }
+
+            setTimeout(() => {
+                if (result.type === "success") {
+                    isModified = false;
+                }
+            }, 100);
 
             // Wait a little bit before enabling the button again
             // to prevent ugly flickering.
