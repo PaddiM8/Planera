@@ -258,10 +258,12 @@
         display: flex
         align-items: flex-start
         gap: 0.4em
+        overflow: hidden
 
         a
             color: var(--on-background)
             text-decoration: none
+            overflow: hidden
 
     .status
         display: block

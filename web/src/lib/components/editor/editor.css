@@ -13,11 +13,6 @@ body {
     line-height: 1.7;
     font-weight: 400;
 }
-
-.editor-shell *, .description * {
-    word-break: break-all;
-}
-
 .editor-shell.has-focus {
     outline: 2px solid var(--primary);
 }
@@ -1193,7 +1188,6 @@ button.item.dropdown-item-active i {
 
     font-size: 1em;
     white-space: pre-wrap;
-    word-break: break-word;
     tab-size: 1;
     user-select: text;
     resize: none;

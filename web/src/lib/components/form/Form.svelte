@@ -95,7 +95,7 @@
     }
 
     $: {
-        if (problem && browser) {
+        if (form && browser) {
             showErrors();
         }
     }

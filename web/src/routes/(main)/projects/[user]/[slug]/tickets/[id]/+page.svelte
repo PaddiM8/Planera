@@ -302,9 +302,11 @@
         display: flex
         align-items: flex-start
         padding-top: 0.2em
+        overflow: hidden
 
         h2
             margin: -0.1em auto 0.4em 0.1em
+            overflow: hidden
 
         .status-buttons
             display: flex
