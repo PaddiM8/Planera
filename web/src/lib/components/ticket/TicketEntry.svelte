@@ -69,8 +69,8 @@
             return;
         }
 
-        showTouchOverlay = false;
         preventTouch = true;
+        showTouchOverlay = false;
         setTimeout(() => {
             preventTouch = false;
         }, 175);
@@ -79,42 +79,44 @@
 
 <div class="ticket" class:has-status={ticket.status}>
     <button class="touch-overlay" on:click={openTouchOverlay}>
-        <span class="menu" class:shown={showTouchOverlay}>
-            <span class="row">
-                {#if ticket.status === TicketStatus.None}
-                    <button class="item" on:click={() => setStatus(TicketStatus.Done)}>
-                        <span class="icon done">
-                            <Icon src={Check} />
-                        </span>
-                        <span class="name">Done</span>
+        {#if showTouchOverlay}
+            <span class="menu">
+                <span class="row">
+                    {#if ticket.status === TicketStatus.None}
+                        <button class="item" on:click={() => setStatus(TicketStatus.Done)}>
+                            <span class="icon done">
+                                <Icon src={Check} />
+                            </span>
+                            <span class="name">Done</span>
+                        </button>
+                        <button class="item" on:click={() => setStatus(TicketStatus.Inactive)}>
+                            <span class="icon inactive">
+                                <Icon src={Minus} />
+                            </span>
+                            <span class="name">Inactive</span>
+                        </button>
+                        <button class="item" on:click={() => setStatus(TicketStatus.Closed)}>
+                            <span class="icon close">
+                                <Icon src={XMark} />
+                            </span>
+                            <span class="name">Close</span>
+                        </button>
+                    {:else}
+                        <button class="item" on:click={() => setStatus(TicketStatus.None)}>
+                            <span class="name">Clear Status</span>
+                        </button>
+                    {/if}
+                </span>
+                <span class="row">
+                    <button class="item" on:click={() => !preventTouch && goto(ticketUrl)}>
+                        <span class="name">Open</span>
                     </button>
-                    <button class="item" on:click={() => setStatus(TicketStatus.Inactive)}>
-                        <span class="icon inactive">
-                            <Icon src={Minus} />
-                        </span>
-                        <span class="name">Inactive</span>
+                    <button class="item" on:click={closeTouchOverlayImpl}>
+                        <span class="name">Back</span>
                     </button>
-                    <button class="item" on:click={() => setStatus(TicketStatus.Closed)}>
-                        <span class="icon close">
-                            <Icon src={XMark} />
-                        </span>
-                        <span class="name">Close</span>
-                    </button>
-                {:else}
-                    <button class="item" on:click={() => setStatus(TicketStatus.None)}>
-                        <span class="name">Clear Status</span>
-                    </button>
-                {/if}
+                </span>
             </span>
-            <span class="row">
-                <button class="item" on:click={() => !preventTouch && goto(ticketUrl)}>
-                    <span class="name">Open</span>
-                </button>
-                <button class="item" on:click={closeTouchOverlay}>
-                    <span class="name">Back</span>
-                </button>
-            </span>
-        </span>
+        {/if}
     </button>
     <div class="top">
         {#if ticket.status === TicketStatus.Done}
@@ -198,6 +200,7 @@
         left: 0
         width: 100%
         height: 100%
+        background-color: transparent
         box-sizing: border-box
         border-radius: var(--radius)
         overflow: hidden
@@ -251,9 +254,6 @@
 
                 .name
                     font-size: 1.1em
-
-            &:not(.shown)
-                display: none
 
     .top
         display: flex
