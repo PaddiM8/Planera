@@ -31,10 +31,11 @@ public class NoteService
         if (project == null)
             return ProjectService.ProjectNotFoundError<List<NoteDto>>();
 
-        return await _dataContext.Notes
+        return _dataContext.Notes
             .Where(x => x.ProjectId == projectId && x.TicketId == ticketId)
+            .OrderBy(x => x.Timestamp)
             .ProjectTo<NoteDto>(_mapper.ConfigurationProvider)
-            .ToListAsync();
+            .ToList();
     }
 
     public async Task<ErrorOr<NoteDto>> AddAsync(string userId, string projectId, int ticketId, string content)

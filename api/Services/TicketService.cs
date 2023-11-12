@@ -82,7 +82,7 @@ public class TicketService
             .Where(x => x.Id == ticketId && x.ProjectId == project.Id)
             .Include(x => x.Project)
             .Include(x => x.Assignees)
-            .Include(x => x.Notes)
+            .Include(x => x.Notes.OrderBy(note => note.Timestamp))
             .SingleOrDefaultAsync();
 
         return ticket == null
