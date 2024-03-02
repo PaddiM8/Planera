@@ -34,7 +34,7 @@
 		"express-http-proxy": "^1.6.3",
 		"http-proxy-middleware": "^2.0.6",
 		"lexical": "0.11.1",
-		"svelte-lexical": "https://gitpkg.now.sh/PaddiM8/svelte-lexical/packages/svelte-lexical?fix-image-paste",
+		"@paddim8/svelte-lexical": "0.3.4",
 		"xss": "^1.0.14"
 	}
 }
