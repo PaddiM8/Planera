@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using NSwag.Generation;
+using Planera;
 using Planera.Data;
 using Planera.Data.Files;
 using Planera.Hubs;
@@ -52,6 +54,8 @@ builder.Services.AddControllers()
         options.SerializerSettings.ReferenceLoopHandling = serializerSettings.ReferenceLoopHandling;
         options.SerializerSettings.ContractResolver = serializerSettings.ContractResolver;
     });
+
+builder.Services.AddOpenApiDocument();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAuthorization();
@@ -72,36 +76,37 @@ builder.Services.Configure<IdentityOptions>(options =>
 
 });
 builder.Services.AddDbContext<DataContext>();
-builder.Services.AddAuthentication(o =>
-{
-    o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    o.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
+builder.Services
+    .AddAuthentication(o =>
     {
-        IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? string.Empty)
-        ),
-        ValidateIssuer = false,
-        ValidateAudience = false,
-        ValidateLifetime = false,
-        ValidateIssuerSigningKey = true,
-    };
-
-    options.Events = new JwtBearerEvents
+        o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        o.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
     {
-        OnMessageReceived = context =>
+        options.TokenValidationParameters = new TokenValidationParameters
         {
-            if (context.Request.Cookies.TryGetValue("token", out var jwtCookie))
-                context.Token = jwtCookie;
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? string.Empty)
+            ),
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateLifetime = false,
+            ValidateIssuerSigningKey = true,
+        };
 
-            return Task.CompletedTask;
-        }
-    };
-});
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                if (context.Request.Cookies.TryGetValue("token", out var jwtCookie))
+                    context.Token = jwtCookie;
+
+                return Task.CompletedTask;
+            }
+        };
+    });
 builder.Services.AddSignalR()
     .AddNewtonsoftJsonProtocol(options =>
     {
