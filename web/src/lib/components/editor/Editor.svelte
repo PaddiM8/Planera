@@ -49,7 +49,7 @@
         FloatingLinkEditorPlugin,
         CodeHighlightPlugin,
         CodeActionMenuPlugin,
-    } from "svelte-lexical";
+    } from "@paddim8/svelte-lexical";
     import "./editor.css";
     import TaskEditorTheme from "$lib/components/editor/ticketEditorTheme";
     import {createEventDispatcher, onMount} from "svelte";
