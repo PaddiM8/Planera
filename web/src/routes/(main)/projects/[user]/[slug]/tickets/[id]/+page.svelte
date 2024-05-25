@@ -160,7 +160,27 @@
     <title>{truncate(data.ticket.title, 25)} - Planera</title>
 </svelte:head>
 
-<BackButton placeName={data?.ticket.project?.name} />
+<div class="header">
+    <BackButton placeName={data?.ticket.project?.name} />
+
+    {#if data.ticket.status === TicketStatus.None}
+        <div class="status-buttons">
+            <IconButton value="Close"
+                        icon={XMark}
+                        color="red"
+                        on:click={() => setStatus(TicketStatus.Closed)} />
+            <IconButton value="Inactive"
+                        icon={Minus}
+                        color="blue"
+                        on:click={() => setStatus(TicketStatus.Inactive)} />
+            <IconButton value="Done"
+                        icon={Check}
+                        color="green"
+                        on:click={() => setStatus(TicketStatus.Done)} />
+        </div>
+    {/if}
+</div>
+
 <div class="edit-area" class:hidden={!isEditing}>
     <Form action="?/edit"
           {beforeSubmit}
@@ -179,6 +199,7 @@
         </div>
     </Form>
 </div>
+
 <div class="ticket" class:hidden={isEditing}>
     <div class="top">
         {#if data.ticket.status === TicketStatus.Done}
@@ -195,22 +216,6 @@
             </button>
         {/if}
         <h2>{data.ticket.title}</h2>
-        {#if data.ticket.status === TicketStatus.None}
-            <div class="status-buttons">
-                <IconButton value="Close"
-                            icon={XMark}
-                            color="red"
-                            on:click={() => setStatus(TicketStatus.Closed)} />
-                <IconButton value="Inactive"
-                            icon={Minus}
-                            color="blue"
-                            on:click={() => setStatus(TicketStatus.Inactive)} />
-                <IconButton value="Done"
-                            icon={Check}
-                            color="green"
-                            on:click={() => setStatus(TicketStatus.Done)} />
-            </div>
-        {/if}
         <div class="icons">
             <IconButton icon={Trash} on:click={handleRemove} />
             <IconButton icon={PencilSquare} on:click={handleEdit} />
@@ -304,6 +309,20 @@
     :global(.status svg)
         stroke-width: 2
 
+    .header
+        display: flex
+        gap: 0.4rem
+        align-items: center
+        justify-content: space-between
+        flex-wrap: wrap
+        margin-bottom: 0.4rem
+
+        .status-buttons
+            flex: 1
+            display: flex
+            gap: 0.4em
+            justify-content: end
+            flex-wrap: nowrap
     .top
         display: flex
         align-items: flex-start
@@ -313,11 +332,6 @@
         h2
             margin: -0.1em auto 0.4em 0.1em
             overflow: hidden
-
-        .status-buttons
-            display: flex
-            gap: 0.4em
-            margin-right: 0.4em
 
         .icons
             display: flex

@@ -20,10 +20,10 @@
     a
         display: flex
         align-items: center
+        flex-wrap: nowrap
         gap: 0.4em
         width: fit-content
         padding: calc(var(--vertical-padding) / 1.5) calc(var(--horizontal-padding) / 1.5)
-        margin-bottom: 0.4em
         border: 0
         border-radius: var(--radius)
 
@@ -34,6 +34,7 @@
         text-decoration: none
         cursor: pointer
         -webkit-tap-highlight-color: transparent
+        white-space: nowrap
 
         &:hover
             background-color: var(--background-hover)

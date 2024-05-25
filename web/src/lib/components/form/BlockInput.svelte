@@ -149,6 +149,7 @@
         display: flex
         flex-wrap: wrap
         padding-top: calc(var(--vertical-padding) / 2)
+        padding-bottom: calc(var(--vertical-padding) / 2)
         padding-left: calc(var(--vertical-padding) / 2)
         border-radius: var(--radius)
         border: 0
@@ -162,8 +163,8 @@
     .block
         position: relative
         display: inline-flex
+        align-items: center
         padding: calc(var(--vertical-padding) / 2) calc(var(--horizontal-padding) / 2)
-        margin-bottom: calc(var(--vertical-padding) / 2)
         margin-right: calc(var(--vertical-padding) / 2)
         border-radius: var(--radius)
         background-color: var(--background-selected)
