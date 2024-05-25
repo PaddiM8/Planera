@@ -135,6 +135,8 @@
         <a href={ticketUrl}>
             <h3 class="title">{ticket.title}</h3>
         </a>
+        <h3 class="id">{ticket.id}</h3>
+
         <div class="status-buttons">
             <IconButton value="Close"
                         icon={XMark}
@@ -149,7 +151,6 @@
                         color="green"
                         on:click={() => setStatus(TicketStatus.Done)} />
         </div>
-        <h3 class="id">{ticket.id}</h3>
     </div>
     <span class="description">{@html ticket.description}</span>
     <div class="bottom">
@@ -300,10 +301,18 @@
         visibility: collapse
 
     .status-buttons
+        background-color: #ffffff
         display: flex
         gap: 0.4em
         margin-left: auto
-        margin-right: 0.4em
+        position: absolute
+        top: 0
+        right: 0
+        padding: calc(var(--vertical-padding) / 2) calc(var(--horizontal-padding) / 2)
+        border-left: var(--border)
+        border-bottom: var(--border)
+        border-bottom-left-radius: var(--radius)
+        border-top-right-radius: var(--radius)
 
     .id
         margin-top: 0
