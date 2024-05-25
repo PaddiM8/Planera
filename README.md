@@ -27,7 +27,7 @@ Planera should now be running and listening at localhost:2000.
 
 ### Dependencies
 
-* .NET 7
+* .NET 8
 * Node
 * NPM
 
