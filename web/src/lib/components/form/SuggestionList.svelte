@@ -103,6 +103,7 @@
 
     .item
         display: flex
+        align-items: center
         padding: var(--vertical-padding) var(--horizontal-padding)
         border-bottom: var(--border)
         font-weight: 450
