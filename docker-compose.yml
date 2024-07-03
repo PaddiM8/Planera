@@ -28,8 +28,8 @@
         condition: service_healthy
     environment:
       PLANERA_FRONTENDURL: http://localhost:2000
-      PLANERA_EMAILCONFIRMATION: false
-      PLANERA_DISABLEREGISTRATION: false
+      PLANERA_EMAILCONFIRMATION: "false"
+      PLANERA_DISABLEREGISTRATION: "false"
       PLANERA_POSTGRES__HOST: "db:5432"
       PLANERA_POSTGRES__USER: planera
       PLANERA_POSTGRES__PASSWORD: planera
@@ -46,3 +46,4 @@
     restart: always
     environment:
       ORIGIN: http://localhost:2000
+      VITE_PUBLIC_API_URL: https://localhost:2000/api

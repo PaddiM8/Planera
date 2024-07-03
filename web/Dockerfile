@@ -1,4 +1,4 @@
-FROM node:20.5
+FROM node:20.12
 WORKDIR /app
 COPY ["web/package.json", "web/package-lock.json", "web/"]
 WORKDIR /app/web
