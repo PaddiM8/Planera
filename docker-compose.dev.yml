@@ -1,12 +1,14 @@
 ﻿services:
   caddy:
     image: caddy:2.7
+    privileged: true
     ports:
       - 2000:2000
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
   db:
     image: postgres:latest
+    privileged: true
     restart: always
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}" ]
@@ -21,6 +23,7 @@
       - ./data/db:/var/lib/postgresql/data
   planera-api:
     image: planera-api
+    privileged: true
     depends_on:
       db:
         condition: service_healthy
