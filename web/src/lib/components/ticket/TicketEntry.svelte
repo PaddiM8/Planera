@@ -15,7 +15,7 @@
     let showTouchOverlay = false;
     let preventTouch = false;
 
-    $: ticketUrl = `/projects/${ticket?.project?.author.username}/${ticket?.projectSlug}/tickets/${ticket?.id}`;
+    $: ticketUrl = `/projects/${ticket?.project?.author?.username}/${ticket?.projectSlug}/tickets/${ticket?.id}`;
 
     async function setStatus(status: TicketStatus) {
         if (preventTouch) {
@@ -43,7 +43,7 @@
             toast.info("Added assignee successfully.");
         } catch {
             toast.error("Failed to add assignee.");
-            ticket.assignees = ticket.assignees.filter(x => x.id !== $user.id);
+            ticket.assignees = ticket.assignees?.filter(x => x.id !== $user.id);
         }
     }
 
@@ -157,14 +157,14 @@
         <PriorityLabel bind:priority={ticket.priority}
                        bind:status={ticket.status} />
         <span class="assignees">
-            {#each ticket.assignees as assignee}
+            {#each ticket.assignees ?? [] as assignee}
                 <span class="assignee">
-                    <UserIcon name={assignee.username}
+                    <UserIcon name={assignee.username ?? ""}
                               image={getAvatarUrl(assignee.avatarPath, "small")}
                               type="user" />
                 </span>
             {/each}
-            {#if !ticket.assignees.some(x => x.username === $user.username)}
+            {#if !ticket.assignees?.some(x => x.username === $user.username)}
                 <button class="assignee add-button" on:click={assignToMe}>
                     <Icon src={Plus} />
                 </button>
@@ -317,6 +317,7 @@
     .id
         margin-top: 0
         margin-bottom: 0
+        color: var(--text-gray)
 
         &::before
             content: '#'
