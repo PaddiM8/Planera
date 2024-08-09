@@ -87,7 +87,9 @@ public class ProjectController : ControllerBase
             slug,
             model.Name,
             model.Description,
-            model.Icon
+            model.Icon,
+            model.EnableTicketDescriptions,
+            model.EnableTicketAssignees
         );
 
         return result.ToActionResult();

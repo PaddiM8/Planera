@@ -243,7 +243,7 @@
         </span>
         <MultiButton name="priority"
                      choices={["None", "Low", "Normal", "High", "Severe"]}
-                     defaultChoice="Normal"
+                     defaultValue="Normal"
                      bind:selectedValue={selectedPriorityName}
                      on:change={handlePriorityChange}/>
     </span>

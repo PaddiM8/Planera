@@ -164,7 +164,9 @@ public class ProjectService
         string slug,
         string name,
         string description,
-        string? icon)
+        string? icon,
+        bool? enableTicketDescriptions,
+        bool? enableTicketAssignees)
     {
         var project = await QueryBySlug(userId, authorName, slug)
             .SingleOrDefaultAsync();
@@ -191,6 +193,12 @@ public class ProjectService
 
         project.Name = name;
         project.Description = description;
+
+        if (enableTicketDescriptions != null)
+            project.EnableTicketDescriptions = enableTicketDescriptions.Value;
+
+        if (enableTicketAssignees != null)
+            project.EnableTicketAssignees = enableTicketAssignees.Value;
 
         _dataContext.Projects.Update(project);
         try

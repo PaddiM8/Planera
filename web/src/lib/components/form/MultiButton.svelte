@@ -2,8 +2,9 @@
     import {createEventDispatcher, onMount} from "svelte";
 
     export let choices: string[];
+    export let choiceValues: string[] | undefined = undefined;
     export let selectedValue: string | undefined = undefined;
-    export let defaultChoice: string | undefined = undefined;
+    export let defaultValue: string | undefined = undefined;
     export let name: string | undefined = undefined;
 
     const dispatcher = createEventDispatcher();
@@ -17,8 +18,8 @@
     export function reset() {
         selectedValue = "";
 
-        if (defaultChoice) {
-            selectedValue = defaultChoice;
+        if (defaultValue) {
+            selectedValue = defaultValue;
         }
     }
 
@@ -31,15 +32,16 @@
 </script>
 
 <span class="multi-button">
-    {#each choices as choice}
+    {#each choices as choice, i}
+        {@const value = choiceValues ? choiceValues[i] : choice}
         <span class="button">
             <input type="radio"
-                   id="choice-{choice}"
-                   value={choice}
+                   id="choice-{name}-{value.replace(' ', '-')}"
+                   value={value}
                    name={name}
                    bind:group={selectedValue}
-                   on:change={e => handleChange(e, choice)} />
-            <label for="choice-{choice}">{choice}</label>
+                   on:change={e => handleChange(e, value)} />
+            <label for="choice-{name}-{value.replace(' ', '-')}">{choice}</label>
         </span>
     {/each}
 </span>

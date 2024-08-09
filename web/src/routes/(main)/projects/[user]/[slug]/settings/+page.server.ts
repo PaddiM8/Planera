@@ -14,6 +14,8 @@ export const actions = {
                     name: formData.get("name"),
                     description: formData.get("description"),
                     icon: formData.get("icon"),
+                    enableTicketDescriptions: formData.get("enableTicketDescriptions"),
+                    enableTicketAssignees: formData.get("enableTicketAssignees"),
                 } as EditProjectModel
             );
         } catch (ex) {

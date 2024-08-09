@@ -33,7 +33,7 @@
         problem: ProblemDetails,
     };
 
-    let editor: any;
+    let editor: any | undefined;
     let titleValue: string;
     let titleInput: Input;
     let assigneesInput: BlockInput;
@@ -94,7 +94,7 @@
         isLoadingMore = true;
         const queryResult = await $projectHub!.invoke(
             "queryTickets",
-            data.project.author.username,
+            data.project.author?.username,
             data.project.slug,
             data.tickets.length,
             ticketsPerPage,
@@ -127,15 +127,16 @@
 
     async function beforeSubmit({ formData }: FormSubmitInput) {
         isFormLoading = true;
-        formData.append("description", await editor.getHtml());
+        const description = editor ? await editor.getHtml() : "";
+        formData.append("description", description);
     }
 
     function afterSubmit(success: boolean) {
         if (success) {
             titleValue = "";
-            editor.reset();
-            priorityInput.reset();
-            assigneesInput.reset();
+            editor?.reset();
+            priorityInput?.reset();
+            assigneesInput?.reset();
             setTimeout(() => {
                 titleInput.focus();
             }, 100);
@@ -159,7 +160,7 @@
             try {
                 const queryResult = await $projectHub!.invoke(
                     "queryTickets",
-                    data.project.author.username,
+                    data.project.author?.username,
                     data.project.slug,
                     0,
                     ticketsPerPage,
@@ -212,8 +213,12 @@
                placeholder="Title..."
                bind:value={titleValue}
                bind:this={titleInput} />
-        <Editor placeholder="Describe the ticket..."
-                bind:this={editor} />
+
+        {#if data.project.enableTicketDescriptions}
+            <Editor placeholder="Describe the ticket..."
+                    bind:this={editor} />
+        {/if}
+
         <div class="bottom-row">
             <span class="group">
                 <span class="label">
@@ -221,21 +226,25 @@
                 </span>
                 <MultiButton name="priority"
                              choices={["None", "Low", "Normal", "High", "Severe"]}
-                             defaultChoice="Normal"
+                             defaultValue="Normal"
                              bind:this={priorityInput} />
             </span>
-            <span class="group">
-                <span class="label">
-                    <Label value="Assigned To" />
+
+            {#if data.project.enableTicketAssignees}
+                <span class="group">
+                    <span class="label">
+                        <Label value="Assigned To" />
+                    </span>
+                    <BlockInput placeholder="Assignee..."
+                                options={$participants}
+                                key="username"
+                                outputKey="id"
+                                name="assignee"
+                                bind:this={assigneesInput}
+                                showUserIcons={true} />
                 </span>
-                <BlockInput placeholder="Assignee..."
-                            options={$participants}
-                            key="username"
-                            outputKey="id"
-                            name="assignee"
-                            bind:this={assigneesInput}
-                            showUserIcons={true} />
-            </span>
+            {/if}
+
             <Button value="Create"
                     primary
                     submit

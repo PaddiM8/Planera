@@ -1940,6 +1940,8 @@ export class ProjectDto implements IProjectDto {
     description?: string;
     author?: UserDto;
     iconPath?: string;
+    enableTicketDescriptions?: boolean;
+    enableTicketAssignees?: boolean;
     timestamp?: Date;
     participants?: UserDto[];
 
@@ -1960,6 +1962,8 @@ export class ProjectDto implements IProjectDto {
             this.description = _data["description"];
             this.author = _data["author"] ? UserDto.fromJS(_data["author"]) : <any>undefined;
             this.iconPath = _data["iconPath"];
+            this.enableTicketDescriptions = _data["enableTicketDescriptions"];
+            this.enableTicketAssignees = _data["enableTicketAssignees"];
             this.timestamp = _data["timestamp"] ? new Date(_data["timestamp"].toString()) : <any>undefined;
             if (Array.isArray(_data["participants"])) {
                 this.participants = [] as any;
@@ -1984,6 +1988,8 @@ export class ProjectDto implements IProjectDto {
         data["description"] = this.description;
         data["author"] = this.author ? this.author.toJSON() : <any>undefined;
         data["iconPath"] = this.iconPath;
+        data["enableTicketDescriptions"] = this.enableTicketDescriptions;
+        data["enableTicketAssignees"] = this.enableTicketAssignees;
         data["timestamp"] = this.timestamp ? this.timestamp.toISOString() : <any>undefined;
         if (Array.isArray(this.participants)) {
             data["participants"] = [];
@@ -2001,6 +2007,8 @@ export interface IProjectDto {
     description?: string;
     author?: UserDto;
     iconPath?: string;
+    enableTicketDescriptions?: boolean;
+    enableTicketAssignees?: boolean;
     timestamp?: Date;
     participants?: UserDto[];
 }
@@ -2212,6 +2220,8 @@ export class EditProjectModel implements IEditProjectModel {
     name?: string;
     description?: string;
     icon?: string;
+    enableTicketDescriptions?: boolean;
+    enableTicketAssignees?: boolean;
 
     constructor(data?: IEditProjectModel) {
         if (data) {
@@ -2227,6 +2237,8 @@ export class EditProjectModel implements IEditProjectModel {
             this.name = _data["name"];
             this.description = _data["description"];
             this.icon = _data["icon"];
+            this.enableTicketDescriptions = _data["enableTicketDescriptions"];
+            this.enableTicketAssignees = _data["enableTicketAssignees"];
         }
     }
 
@@ -2242,6 +2254,8 @@ export class EditProjectModel implements IEditProjectModel {
         data["name"] = this.name;
         data["description"] = this.description;
         data["icon"] = this.icon;
+        data["enableTicketDescriptions"] = this.enableTicketDescriptions;
+        data["enableTicketAssignees"] = this.enableTicketAssignees;
         return data;
     }
 }
@@ -2250,6 +2264,8 @@ export interface IEditProjectModel {
     name?: string;
     description?: string;
     icon?: string;
+    enableTicketDescriptions?: boolean;
+    enableTicketAssignees?: boolean;
 }
 
 export class TicketQueryResult implements ITicketQueryResult {

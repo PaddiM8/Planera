@@ -12,4 +12,8 @@ public class EditProjectModel
     public required string Description { get; init; }
 
     public string? Icon { get; init; }
+
+    public bool? EnableTicketDescriptions { get; init; }
+
+    public bool? EnableTicketAssignees { get; init; }
 }

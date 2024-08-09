@@ -11,6 +11,8 @@
     import {getAvatarUrl} from "$lib/clients";
     import AvatarPicker from "$lib/components/form/AvatarPicker.svelte";
     import {goto} from "$app/navigation";
+    import MultiButton from "$lib/components/form/MultiButton.svelte";
+    import FormLabel from "$lib/components/form/FormLabel.svelte";
 
     export let data: {
         project: ProjectDto,
@@ -72,7 +74,7 @@
           promptWhenModified
           reset={false}>
         <AvatarPicker name="icon"
-                      entityName={data.project.name}
+                      entityName={data.project.name ?? ""}
                       src={getAvatarUrl(data.project.iconPath, "big")}
                       type="project" />
         <Input type="text"
@@ -85,8 +87,18 @@
                label="Description"
                name="description"
                placeholder="Project description..." />
+        <FormLabel value="Project Descriptions" />
+        <MultiButton choices={["Enable", "Disable"]}
+                     choiceValues={["true", "false"]}
+                     selectedValue={data.project.enableTicketDescriptions ? "true" : "false"}
+                     name="enableTicketDescriptions" />
+        <FormLabel value="Project Assignees" />
+        <MultiButton choices={["Enable", "Disable"]}
+                     choiceValues={["true", "false"]}
+                     selectedValue={data.project.enableTicketAssignees ? "true" : "false"}
+                     name="enableTicketAssignees" />
         <div class="buttons">
-            <a href="/projects/{data.project.author.username}/{data.project.slug}">
+            <a href="/projects/{data.project.author?.username}/{data.project.slug}">
                 <Button value="Cancel" />
             </a>
             <Button value="Update" primary submit />

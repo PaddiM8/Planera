@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,6 +22,10 @@ public class Project
     public string? IconPath { get; set; }
 
     public required DateTime Timestamp { get; set; }
+
+    public bool EnableTicketDescriptions { get; set; } = true;
+
+    public bool EnableTicketAssignees { get; set; } = true;
 
     public ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
 

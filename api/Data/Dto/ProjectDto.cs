@@ -17,6 +17,10 @@ public class ProjectDto
 
     public string? IconPath { get; set; }
 
+    public bool EnableTicketDescriptions { get; set; } = true;
+
+    public bool EnableTicketAssignees { get; set; } = true;
+
     public required DateTime Timestamp { get; set; }
 
     public ICollection<UserDto> Participants { get; set; } = new List<UserDto>();
