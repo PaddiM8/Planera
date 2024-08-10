@@ -116,7 +116,17 @@
     export function getHtml(): Promise<string> {
         return new Promise((resolve, _) => {
             editor.update(() => {
-                resolve(generateHtmlFromNodes(editor));
+                let html = generateHtmlFromNodes(editor);
+                const emptyLineMarkups = [
+                    '<p class="TicketEditorTheme__paragraph"><br></p>',
+                    '<p class="TicketEditorTheme__paragraph" dir="ltr"><br></p>',
+                    '<p class="TicketEditorTheme__paragraph" dir="rtl"><br></p>',
+                ];
+                let toTrim: string | undefined;
+                while (toTrim = emptyLineMarkups.find(x => html.endsWith(x))) {
+                    html = html.slice(0, -toTrim.length);
+                }
+                resolve(html);
             });
         });
     }

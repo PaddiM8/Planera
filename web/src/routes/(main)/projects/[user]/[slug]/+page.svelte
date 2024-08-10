@@ -206,8 +206,6 @@
             toast.info("Created ticket successfully.");
 
             if (data.project.allTicketsCount !== undefined && data.project.openTicketsCount !== undefined) {
-                //data.project.allTicketsCount++;
-                //data.project.openTicketsCount++;
                 refreshFilterMap();
             }
         }
