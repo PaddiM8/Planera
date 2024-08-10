@@ -1,3 +1,5 @@
+import {InterfaceTheme} from "../gen/planeraClient";
+
 export function getKeyFromValue(dictionary: {}, key: any) {
     const matchedEntries = Object.entries(dictionary).filter(x => x[1] === key);
     if (matchedEntries.length === 0) {

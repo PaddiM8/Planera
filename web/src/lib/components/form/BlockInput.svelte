@@ -25,7 +25,7 @@
     let suggestionList: SuggestionList;
     const dispatcher = createEventDispatcher();
 
-    function getValue(obj) {
+    function getValue(obj: any) {
         return key
             ? obj[key]
             : obj;
@@ -191,7 +191,7 @@
             transform: translateY(-50%)
             width: calc(100% - 1em)
             height: 2px
-            background-color: black
+            background-color: var(--on-background)
 
         .icon
             width: 1.2em
@@ -210,6 +210,7 @@
         padding: calc(var(--vertical-padding) / 2) calc(var(--horizontal-padding) / 2)
         border: 0
         min-width: 5em
+        color: var(--on-background)
         background-color: transparent
         box-sizing: border-box
 

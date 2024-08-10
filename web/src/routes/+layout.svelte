@@ -2,28 +2,52 @@
     import UserIcon from "$lib/components/UserIcon.svelte";
     import ContextMenu from "$lib/components/ContextMenu.svelte";
     import ContextMenuEntry from "$lib/components/ContextMenuEntry.svelte";
-    import {Icon, Cog, ArrowRightOnRectangle, Bars3} from "svelte-hero-icons";
+    import {ArrowRightOnRectangle, Bars3, Cog, Icon} from "svelte-hero-icons";
     import Label from "$lib/components/GroupLabel.svelte";
     import Toast from "$lib/components/Toast.svelte";
     import YesNoDialog from "$lib/components/dialogs/YesNoDialog.svelte";
-    import {UserDto} from "../gen/planeraClient";
+    import {InterfaceTheme, UserDto} from "../gen/planeraClient";
     import {getAvatarUrl} from "$lib/clients";
     import {user} from "./(main)/store";
     import {page} from "$app/stores";
+    import {theme} from "./store"
+    import {browser} from "$app/environment";
+    import {onMount} from "svelte";
 
     export let data = {
         user: UserDto,
     };
 
+    theme.subscribe(loadTheme);
+
+    function loadTheme(interfaceTheme: InterfaceTheme | undefined) {
+        if (interfaceTheme == undefined || !browser) {
+            return;
+        }
+
+        document.head.insertAdjacentHTML("beforeend", getThemeLinkHtml(interfaceTheme));
+    }
+
+    function getThemeLinkHtml(interfaceTheme: InterfaceTheme) {
+        let themeName = "light";
+        if (interfaceTheme === InterfaceTheme.Dark) {
+            themeName = "dark";
+        }
+
+        return `<link rel="stylesheet" href="/themes/${themeName}.css">`;
+    }
+
     $: {
-        $user = data.user;
+        if (data.user) {
+            $user = data.user;
+        }
     }
 
     let contextMenuTarget: HTMLElement | undefined;
 
     function openSidebar() {
         const sidebar = document.getElementById("sidebar");
-        sidebar.classList.add("open");
+        sidebar?.classList.add("open");
     }
 
     function handleUserClick(e) {
@@ -33,12 +57,16 @@
     }
 </script>
 
+<svelte:head>
+    {@html getThemeLinkHtml(data.user?.theme ?? InterfaceTheme.Light)}
+</svelte:head>
+
 <Toast />
 <YesNoDialog />
 
 <ContextMenu bind:target={contextMenuTarget}>
     <Label value="@{data.user?.username}" />
-    <ContextMenuEntry name="User Settings" href="/user-settings">
+    <ContextMenuEntry name="Settings" href="/settings/general">
         <Icon src={Cog} />
     </ContextMenuEntry>
     <ContextMenuEntry name="Log Out" href="/logout" noPreload>
@@ -60,7 +88,7 @@
                 <!-- svelte-ignore a11y-click-events-have-key-events -->
                 <div class="user" on:click={handleUserClick}>
                     <UserIcon type="user"
-                              name={ data.user.username }
+                              name={data.user.username}
                               image={getAvatarUrl(data.user.avatarPath, "big")} />
                 </div>
             {:else if $page.url.pathname === "/register"}
@@ -89,41 +117,7 @@
 
         padding: 0
         margin: 0
-
-    :global(:root)
-        --background: #fafaf9
-        --on-background: black
-        --on-background-inactive: #404040
-        --background-hover: #e7e5e4
-        --background-selected: #bbdefb
-        --background-secondary: #f5f5f4
-        --background-secondary-hover: #d4d4d8
-        --component-background-rgb: 255, 255, 255
-        --component-background: rgb(var(--component-background-rgb))
-        --primary: #1d4ed8
-        --on-primary: #fafafa
-        --primary-hover: #2563eb
-        --button-background: #d4d4d4
-        --on-button-background: #0a0a0a
-        --button-background-hover: #bbbbbb
-        --button-background-selected: #a8a8a8
-        --button-background-disabled: #d4d4d4
-        --border-width: 1px
-        --border: var(--border-width) solid #d1d5db
-        --text-gray: #757575
-        --spacing: 0.8rem
-        --vertical-padding: 0.55rem
-        --horizontal-padding: 0.7rem
-        --radius: 0.375rem
-        --none: #a3a3a3
-        --low: #2563eb
-        --normal: #059669
-        --high: #f97316
-        --severe: #ef4444
-        --green: #16a34a
-        --blue: #2563eb
-        --red: #e11d48
-        --red-hover: #ef4444
+        color: var(--on-background)
 
     :global(h1)
         font-size: 2.1em

@@ -69,6 +69,8 @@
         padding: var(--vertical-padding) var(--horizontal-padding)
         padding-right: 2em
         border-radius: var(--radius)
+        color: var(--on-background)
+        font-weight: 500
         border: 0
         background-color: var(--component-background)
         outline: var(--border)

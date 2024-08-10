@@ -1,0 +1,35 @@
+:root {
+    --background: #fafaf9;
+    --on-background: black;
+    --on-background-inactive: #404040;
+    --background-hover: #e7e5e4;
+    --background-selected: #bbdefb;
+    --background-secondary: #f5f5f4;
+    --background-secondary-hover: #d4d4d8;
+    --component-background-rgb: 255, 255, 255;
+    --component-background: rgb(var(--component-background-rgb));
+    --primary: #1d4ed8;
+    --on-primary: #fafafa;
+    --primary-hover: #2563eb;
+    --button-background: #d4d4d4;
+    --on-button-background: #0a0a0a;
+    --button-background-hover: #bbbbbb;
+    --button-background-selected: #a8a8a8;
+    --button-background-disabled: #d4d4d4;
+    --border-width: 1px;
+    --border: var(--border-width) solid #d1d5db;
+    --text-gray: #757575;
+    --spacing: 0.8rem;
+    --vertical-padding: 0.55rem;
+    --horizontal-padding: 0.7rem;
+    --radius: 0.375rem;
+    --none: #a3a3a3;
+    --low: #2563eb;
+    --normal: #059669;
+    --high: #f97316;
+    --severe: #ef4444;
+    --green: #16a34a;
+    --blue: #2563eb;
+    --red: #e11d48;
+    --red-hover: #ef4444;
+}

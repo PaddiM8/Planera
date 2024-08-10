@@ -1,6 +1,7 @@
 import type {LayoutServerLoad} from "../../.svelte-kit/types/src/routes/$types";
 import {handleProblem} from "$lib/problemDetails";
-import type {UserDto, SwaggerException} from "../gen/planeraClient";
+import type {SwaggerException} from "../gen/planeraClient";
+import {UserDto} from "../gen/planeraClient";
 import {getUserClient} from "$lib/clients";
 import {pathRequiresAuthentication} from "$lib/paths";
 
@@ -14,7 +15,7 @@ export const load = (async ({ cookies, url }) => {
         response = await getUserClient(cookies).get();
     } catch (ex: any) {
         if (ex["headers"] && ex["headers"]["www-authenticate"]?.includes("invalid_token")) {
-            cookies.delete("token");
+            cookies.delete("token", { path: "/" });
         }
 
         return handleProblem(ex as SwaggerException);

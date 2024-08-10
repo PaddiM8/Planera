@@ -26,6 +26,7 @@
         border: 0
         padding: 0.3em 0.4em
         border-radius: var(--radius)
+        color: var(--on-background)
         font-family: inherit
         font-weight: 500
         cursor: pointer

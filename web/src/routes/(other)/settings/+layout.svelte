@@ -4,8 +4,21 @@
     import Sidebar from "$lib/components/sidebar/Sidebar.svelte";
     import Label from "$lib/components/GroupLabel.svelte";
     import SidebarEntry from "$lib/components/sidebar/SidebarEntry.svelte";
-    import {ArrowLeft, Icon, User} from "svelte-hero-icons";
+    import {ArrowLeft, Cube, Icon, User} from "svelte-hero-icons";
     import MainArea from "$lib/components/MainArea.svelte";
+    import {onMount} from "svelte";
+    import {startUserHub} from "$lib/hubs";
+    import {userHub} from "./store";
+
+    onMount(async () => {
+        await createUserHub();
+    });
+
+    async function createUserHub() {
+        const hub = await startUserHub();
+        userHub.set(hub);
+        hub.onreconnected(createUserHub);
+    }
 </script>
 
 <PageLayout>
@@ -17,9 +30,13 @@
             </SidebarEntry>
         </SidebarGroup>
 
-        <Label value="User Settings" />
+        <Label value="Settings" />
         <SidebarGroup>
-            <SidebarEntry src="/user-settings"
+            <SidebarEntry src="/settings/general"
+                          value="General">
+                <Icon src={Cube} />
+            </SidebarEntry>
+            <SidebarEntry src="/settings/account"
                           value="Account">
                 <Icon src={User} />
             </SidebarEntry>

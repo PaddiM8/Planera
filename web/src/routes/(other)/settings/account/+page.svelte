@@ -2,7 +2,7 @@
     import Form from "$lib/components/form/Form.svelte";
     import Input from "$lib/components/form/Input.svelte";
     import Button from "$lib/components/form/Button.svelte";
-    import {AccountDto} from "../../../gen/planeraClient.js";
+    import {AccountDto} from "../../../../gen/planeraClient.js";
     import {toast} from "$lib/toast";
     import FormLabel from "$lib/components/form/FormLabel.svelte";
     import {getAvatarUrl} from "$lib/clients";
@@ -35,7 +35,7 @@
     <title>Account Settings - Planera</title>
 </svelte:head>
 
-<h1>Account Settings</h1>
+<h1>Account</h1>
 
 <h2>Edit Account</h2>
 <section class="update">
@@ -46,7 +46,7 @@
         <div class="avatar-area">
             <FormLabel value="Profile Picture" />
             <AvatarPicker name="avatar"
-                          entityName={data.account.username}
+                          entityName={data.account.username ?? ""}
                           src={getAvatarUrl(data.account.avatarPath, "big")}
                           type="user" />
         </div>

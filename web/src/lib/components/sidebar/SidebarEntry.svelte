@@ -44,7 +44,7 @@
         margin-top: 0.2em
 
         border-radius: var(--radius)
-        color: black
+        color: var(--on-background)
         text-decoration: none
         font-weight: 425
         cursor: pointer

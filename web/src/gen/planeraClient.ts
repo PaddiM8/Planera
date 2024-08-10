@@ -1657,6 +1657,7 @@ export class UserDto implements IUserDto {
     id?: string;
     username?: string;
     avatarPath?: string;
+    theme?: InterfaceTheme;
 
     constructor(data?: IUserDto) {
         if (data) {
@@ -1672,6 +1673,7 @@ export class UserDto implements IUserDto {
             this.id = _data["id"];
             this.username = _data["username"];
             this.avatarPath = _data["avatarPath"];
+            this.theme = _data["theme"];
         }
     }
 
@@ -1687,6 +1689,7 @@ export class UserDto implements IUserDto {
         data["id"] = this.id;
         data["username"] = this.username;
         data["avatarPath"] = this.avatarPath;
+        data["theme"] = this.theme;
         return data;
     }
 }
@@ -1695,6 +1698,12 @@ export interface IUserDto {
     id?: string;
     username?: string;
     avatarPath?: string;
+    theme?: InterfaceTheme;
+}
+
+export enum InterfaceTheme {
+    Light = 0,
+    Dark = 1,
 }
 
 export class LoginModel implements ILoginModel {
@@ -2461,6 +2470,7 @@ export class AccountDto implements IAccountDto {
     username?: string;
     email?: string;
     avatarPath?: string;
+    theme?: InterfaceTheme;
 
     constructor(data?: IAccountDto) {
         if (data) {
@@ -2477,6 +2487,7 @@ export class AccountDto implements IAccountDto {
             this.username = _data["username"];
             this.email = _data["email"];
             this.avatarPath = _data["avatarPath"];
+            this.theme = _data["theme"];
         }
     }
 
@@ -2493,6 +2504,7 @@ export class AccountDto implements IAccountDto {
         data["username"] = this.username;
         data["email"] = this.email;
         data["avatarPath"] = this.avatarPath;
+        data["theme"] = this.theme;
         return data;
     }
 }
@@ -2502,12 +2514,14 @@ export interface IAccountDto {
     username?: string;
     email?: string;
     avatarPath?: string;
+    theme?: InterfaceTheme;
 }
 
 export class EditUserModel implements IEditUserModel {
     username: string;
     email: string;
     avatar?: string;
+    theme?: InterfaceTheme;
 
     constructor(data?: IEditUserModel) {
         if (data) {
@@ -2523,6 +2537,7 @@ export class EditUserModel implements IEditUserModel {
             this.username = _data["username"];
             this.email = _data["email"];
             this.avatar = _data["avatar"];
+            this.theme = _data["theme"];
         }
     }
 
@@ -2538,6 +2553,7 @@ export class EditUserModel implements IEditUserModel {
         data["username"] = this.username;
         data["email"] = this.email;
         data["avatar"] = this.avatar;
+        data["theme"] = this.theme;
         return data;
     }
 }
@@ -2546,6 +2562,7 @@ export interface IEditUserModel {
     username: string;
     email: string;
     avatar?: string;
+    theme?: InterfaceTheme;
 }
 
 export class ChangePasswordModel implements IChangePasswordModel {

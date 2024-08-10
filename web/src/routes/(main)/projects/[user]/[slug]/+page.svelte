@@ -76,10 +76,13 @@
         // Since the keys changed, the currently selected filter value needs to change
         // as well
         if (filter) {
-            filter = filterKeys.find(key =>
-                key.startsWith(filter.split(" ").at(0) ?? "")
-            ) ?? filterKeys[0];
+            setFilter(filter.split(" ").at(0) ?? "");
         }
+    }
+
+    function setFilter(name: string) {
+        filter = filterKeys.find(key => key.startsWith(name))
+            ?? filterKeys[0];
     }
 
     function updateSortingWithoutQuerying(newSorting?: TicketSorting, newFilter?: TicketFilter) {
@@ -255,7 +258,7 @@
 <section class="description">
     <div class="top">
         <div class="icon">
-            <UserIcon name={data.project.name}
+            <UserIcon name={data.project.name ?? ""}
                       image={getAvatarUrl(data.project.iconPath, "big")}
                       type="project" />
         </div>

@@ -44,7 +44,8 @@ public class UserController : ControllerBase
             User.FindFirst("Id")!.Value,
             model.Username,
             model.Email,
-            model.Avatar
+            model.Avatar,
+            model.Theme
         );
 
         return result.ToActionResult();

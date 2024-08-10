@@ -7,6 +7,8 @@ public class User : IdentityUser
 {
     public string? AvatarPath { get; set; }
 
+    public InterfaceTheme Theme { get; set; }
+
     public ICollection<Project> Projects { get; init; } = new List<Project>();
 
     public ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();

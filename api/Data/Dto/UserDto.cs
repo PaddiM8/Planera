@@ -7,4 +7,6 @@ public class UserDto
     public required string Username { get; init; }
 
     public string? AvatarPath { get; init; }
+
+    public InterfaceTheme Theme { get; set; }
 }

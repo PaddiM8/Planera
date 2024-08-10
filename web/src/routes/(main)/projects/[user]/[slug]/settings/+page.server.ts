@@ -1,4 +1,4 @@
-import type {SwaggerException, EditProjectModel} from "../../../../../../gen/planeraClient";
+import {EditProjectModel, type SwaggerException} from "../../../../../../gen/planeraClient";
 import {getProjectClient} from "$lib/clients";
 import type {RequestEvent} from "@sveltejs/kit";
 import {handleProblemForForm} from "$lib/problemDetails";
@@ -10,13 +10,13 @@ export const actions = {
             await getProjectClient(cookies).edit(
                 params.user!,
                 params.slug!,
-                {
-                    name: formData.get("name"),
-                    description: formData.get("description"),
-                    icon: formData.get("icon"),
-                    enableTicketDescriptions: formData.get("enableTicketDescriptions"),
-                    enableTicketAssignees: formData.get("enableTicketAssignees"),
-                } as EditProjectModel
+                new EditProjectModel({
+                    name: formData.get("name")?.toString(),
+                    description: formData.get("description")?.toString(),
+                    icon: formData.get("icon")?.toString(),
+                    enableTicketDescriptions: formData.get("enableTicketDescriptions") == "true",
+                    enableTicketAssignees: formData.get("enableTicketAssignees") == "true",
+                })
             );
         } catch (ex) {
             return handleProblemForForm(ex as SwaggerException);

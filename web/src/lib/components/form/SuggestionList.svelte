@@ -12,11 +12,10 @@
     export let selectedValue: any | undefined = undefined;
     export let ignored: any[] = [];
 
-    let shownItems = [];
-    let previousIndex = 0;
+    let shownItems: any[] = [];
     const dispatch = createEventDispatcher();
 
-    function getValue(obj) {
+    function getValue(obj: any) {
         return key
             ? obj[key]
             : obj;
@@ -29,17 +28,14 @@
     }
 
     $: {
-        //if (previousIndex == selectedIndex) {
-            const indexedItems = items.map((x, i) => {
-                return { ...x, index: i };
-            });
+        const indexedItems = items.map((x, i) => {
+            return { ...x, index: i };
+        });
 
-            shownItems = indexedItems.filter(x =>
-                !ignored.some(y => y[key] === x[key]) && getValue(x).includes(query)
-            );
-            selectedIndex = 0;
-            //previousIndex = selectedIndex;
-        //}
+        shownItems = indexedItems.filter(x =>
+            !ignored.some(y => y[key ?? ""] === x[key ?? ""]) && getValue(x).includes(query)
+        );
+        selectedIndex = 0;
     }
 
     export function selectNext() {
@@ -55,7 +51,7 @@
     // components may want to listen to on:blur to know
     // when the close the suggestion list, but the suggestion
     // list should get a chance to listen for clicks first.
-    function handleItemClick(index) {
+    function handleItemClick(index: number) {
         query = "";
         dispatch("select", {
             value: shownItems[index],

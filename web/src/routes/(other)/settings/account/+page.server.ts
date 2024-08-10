@@ -1,7 +1,7 @@
 import type {RequestEvent, ServerLoadEvent} from "@sveltejs/kit";
 import {getUserClient} from "$lib/clients";
 import {handleProblem, handleProblemForForm} from "$lib/problemDetails";
-import type {EditUserModel, ChangePasswordModel, AccountDto, SwaggerException} from "../../../gen/planeraClient";
+import type {EditUserModel, ChangePasswordModel, AccountDto, SwaggerException} from "../../../../gen/planeraClient";
 
 export async function load({ cookies }: ServerLoadEvent) {
     let response: AccountDto;

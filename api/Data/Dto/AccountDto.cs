@@ -9,4 +9,6 @@ public class AccountDto
     public required string Email { get; set; }
 
     public string? AvatarPath { get; set; }
+
+    public InterfaceTheme Theme { get; set; }
 }

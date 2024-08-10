@@ -41,6 +41,7 @@
             );
 
             toast.info("Added assignee successfully.");
+            ticket.assignees = [...ticket.assignees!];
         } catch {
             toast.error("Failed to add assignee.");
             ticket.assignees = ticket.assignees?.filter(x => x.id !== $user.id);
@@ -157,7 +158,7 @@
         <PriorityLabel bind:priority={ticket.priority}
                        bind:status={ticket.status} />
         <span class="assignees">
-            {#each ticket.assignees ?? [] as assignee}
+            {#each ticket.assignees as assignee}
                 <span class="assignee">
                     <UserIcon name={assignee.username ?? ""}
                               image={getAvatarUrl(assignee.avatarPath, "small")}
@@ -301,7 +302,6 @@
         visibility: collapse
 
     .status-buttons
-        background-color: #ffffff
         display: flex
         gap: 0.4em
         margin-left: auto
@@ -313,6 +313,7 @@
         border-bottom: var(--border)
         border-bottom-left-radius: var(--radius)
         border-top-right-radius: var(--radius)
+        background-color: var(--background)
 
     .id
         margin-top: 0
@@ -373,6 +374,7 @@
             border-radius: 100%
             border: var(--border)
             background-color: var(--background)
+            color: var(--on-backgrkound)
             font-size: 1em
             cursor: pointer
 

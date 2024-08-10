@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {Check, Icon, XMark} from "svelte-hero-icons";
+    import {Check, XMark} from "svelte-hero-icons";
     import type {ProjectDto} from "../../../gen/planeraClient";
     import {toast} from "$lib/toast";
     import {invitations} from "../store";

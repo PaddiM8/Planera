@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Planera.Data;
 
 namespace Planera.Models.User;
 
@@ -17,4 +18,6 @@ public class EditUserModel
     public required string Email { get; init; }
 
     public string? Avatar { get; init; }
+
+    public InterfaceTheme? Theme { get; init; }
 }
