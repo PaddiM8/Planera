@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type {ProjectDto, TicketDto} from "../../../../../gen/planeraClient";
+    import {type ProjectDto, type TicketDto, TicketStatus} from "../../../../../gen/planeraClient";
     import {TicketFilter, TicketSorting} from "../../../../../gen/planeraClient";
     import Form from "$lib/components/form/Form.svelte";
     import Input from "$lib/components/form/Input.svelte";
@@ -39,14 +39,9 @@
     let assigneesInput: BlockInput;
     let priorityInput: MultiButton;
     let searchQuery: string;
-    const filterMap: { [key: string]: TicketFilter } = {
-        "All": TicketFilter.All,
-        "Open": TicketFilter.Open,
-        "Closed": TicketFilter.Closed,
-        "Inactive": TicketFilter.Inactive,
-        "Done": TicketFilter.Done,
-        "Assigned to Me": TicketFilter.AssignedToMe,
-    };
+    const filterMap: { [key: string]: TicketFilter } = {};
+    let filterKeys: string[] = [];
+
     const sortingMap: { [key: string]: TicketSorting } = {
         "Newest": TicketSorting.Newest,
         "Oldest": TicketSorting.Oldest,
@@ -59,10 +54,33 @@
     let isFormLoading = false;
     let reachedEndOfTickets = false;
     let isLoadingMore = false;
+    refreshFilterMap();
 
     $: isSubmitDisabled = titleValue?.length < 2 || isFormLoading;
     $: validFormState = titleValue?.length >= 2;
     $: updateSortingWithoutQuerying(data?.sorting, data?.filter);
+
+    function refreshFilterMap() {
+        for (const key in filterMap) {
+            delete filterMap[key];
+        }
+
+        filterMap[`All (${data.project.allTicketsCount})`] = TicketFilter.All;
+        filterMap[`Open (${data.project.openTicketsCount})`] = TicketFilter.Open;
+        filterMap[`Closed (${data.project.closedTicketsCount})`] = TicketFilter.Closed;
+        filterMap[`Inactive (${data.project.inactiveTicketsCount})`] = TicketFilter.Inactive;
+        filterMap[`Done (${data.project.doneTicketsCount})`] = TicketFilter.Done;
+        filterMap[`Assigned to Me (${data.project.assignedToMeCount})`] = TicketFilter.AssignedToMe;
+        filterKeys = Object.keys(filterMap);
+
+        // Since the keys changed, the currently selected filter value needs to change
+        // as well
+        if (filter) {
+            filter = filterKeys.find(key =>
+                key.startsWith(filter.split(" ").at(0) ?? "")
+            ) ?? filterKeys[0];
+        }
+    }
 
     function updateSortingWithoutQuerying(newSorting?: TicketSorting, newFilter?: TicketFilter) {
         const newSortingString = getKeyFromValue(sortingMap, newSorting ?? TicketSorting.Newest)!;
@@ -120,9 +138,53 @@
         const index = data.tickets.findIndex(x => x.id === ticketId);
         if (index !== -1) {
             for (const [key, value] of Object.entries(newFields)) {
-                (data.tickets as any)[index][key] = value;
+                const ticket = (data.tickets as any)[index];
+                if (key === "status") {
+                    updateTicketCounts(value, ticket.status);
+                }
+
+                if (key === "assignees")
+                    console.log(value);
+
+                ticket[key] = value;
             }
         }
+    }
+
+    function updateTicketCounts(newStatus: TicketStatus, oldStatus: TicketStatus) {
+        if (data.project.openTicketsCount !== undefined) {
+            if (oldStatus === TicketStatus.None) {
+                data.project.openTicketsCount--;
+            } else if (newStatus === TicketStatus.None) {
+                data.project.openTicketsCount++;
+            }
+        }
+
+        if (data.project.closedTicketsCount !== undefined) {
+            if (oldStatus === TicketStatus.Closed) {
+                data.project.closedTicketsCount--;
+            } else if (newStatus === TicketStatus.Closed) {
+                data.project.closedTicketsCount++;
+            }
+        }
+
+        if (data.project.inactiveTicketsCount !== undefined) {
+            if (oldStatus === TicketStatus.Inactive) {
+                data.project.inactiveTicketsCount--;
+            } else if (newStatus === TicketStatus.Inactive) {
+                data.project.inactiveTicketsCount++;
+            }
+        }
+
+        if (data.project.doneTicketsCount !== undefined) {
+            if (oldStatus === TicketStatus.Done) {
+                data.project.doneTicketsCount--;
+            } else if (newStatus === TicketStatus.Done) {
+                data.project.doneTicketsCount++;
+            }
+        }
+
+        refreshFilterMap();
     }
 
     async function beforeSubmit({ formData }: FormSubmitInput) {
@@ -142,6 +204,12 @@
             }, 100);
             searchQuery = "";
             toast.info("Created ticket successfully.");
+
+            if (data.project.allTicketsCount !== undefined && data.project.openTicketsCount !== undefined) {
+                //data.project.allTicketsCount++;
+                //data.project.openTicketsCount++;
+                refreshFilterMap();
+            }
         }
 
         // Wait a little bit before enabling the button again
@@ -260,7 +328,7 @@
                    bind:value={searchQuery}
                    on:input={query} />
         <div class="sorting">
-            <Select choices={Object.keys(filterMap)}
+            <Select bind:choices={filterKeys}
                     bind:selectedValue={filter}
                     on:change={query} />
             <Select choices={Object.keys(sortingMap)}

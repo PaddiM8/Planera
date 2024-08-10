@@ -23,5 +23,20 @@ public class ProjectDto
 
     public required DateTime Timestamp { get; set; }
 
+    public int AllTicketsCount { get; set; }
+
+    public int OpenTicketsCount { get; set; }
+
+    public int ClosedTicketsCount { get; set; }
+
+    public int InactiveTicketsCount { get; set; }
+
+    public int DoneTicketsCount { get; set; }
+
+    /// <summary>
+    /// Manually assigned
+    /// </summary>
+    public int AssignedToMeCount { get; set; }
+
     public ICollection<UserDto> Participants { get; set; } = new List<UserDto>();
 }

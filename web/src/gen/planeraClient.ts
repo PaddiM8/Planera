@@ -1943,6 +1943,12 @@ export class ProjectDto implements IProjectDto {
     enableTicketDescriptions?: boolean;
     enableTicketAssignees?: boolean;
     timestamp?: Date;
+    allTicketsCount?: number;
+    openTicketsCount?: number;
+    closedTicketsCount?: number;
+    inactiveTicketsCount?: number;
+    doneTicketsCount?: number;
+    assignedToMeCount?: number;
     participants?: UserDto[];
 
     constructor(data?: IProjectDto) {
@@ -1965,6 +1971,12 @@ export class ProjectDto implements IProjectDto {
             this.enableTicketDescriptions = _data["enableTicketDescriptions"];
             this.enableTicketAssignees = _data["enableTicketAssignees"];
             this.timestamp = _data["timestamp"] ? new Date(_data["timestamp"].toString()) : <any>undefined;
+            this.allTicketsCount = _data["allTicketsCount"];
+            this.openTicketsCount = _data["openTicketsCount"];
+            this.closedTicketsCount = _data["closedTicketsCount"];
+            this.inactiveTicketsCount = _data["inactiveTicketsCount"];
+            this.doneTicketsCount = _data["doneTicketsCount"];
+            this.assignedToMeCount = _data["assignedToMeCount"];
             if (Array.isArray(_data["participants"])) {
                 this.participants = [] as any;
                 for (let item of _data["participants"])
@@ -1991,6 +2003,12 @@ export class ProjectDto implements IProjectDto {
         data["enableTicketDescriptions"] = this.enableTicketDescriptions;
         data["enableTicketAssignees"] = this.enableTicketAssignees;
         data["timestamp"] = this.timestamp ? this.timestamp.toISOString() : <any>undefined;
+        data["allTicketsCount"] = this.allTicketsCount;
+        data["openTicketsCount"] = this.openTicketsCount;
+        data["closedTicketsCount"] = this.closedTicketsCount;
+        data["inactiveTicketsCount"] = this.inactiveTicketsCount;
+        data["doneTicketsCount"] = this.doneTicketsCount;
+        data["assignedToMeCount"] = this.assignedToMeCount;
         if (Array.isArray(this.participants)) {
             data["participants"] = [];
             for (let item of this.participants)
@@ -2010,6 +2028,12 @@ export interface IProjectDto {
     enableTicketDescriptions?: boolean;
     enableTicketAssignees?: boolean;
     timestamp?: Date;
+    allTicketsCount?: number;
+    openTicketsCount?: number;
+    closedTicketsCount?: number;
+    inactiveTicketsCount?: number;
+    doneTicketsCount?: number;
+    assignedToMeCount?: number;
     participants?: UserDto[];
 }
 

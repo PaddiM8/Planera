@@ -20,8 +20,8 @@ export async function load({ cookies, params }: ServerLoadEvent) {
         return handleProblem(ex as SwaggerException);
     }
 
-    for (const ticket of response.tickets) {
-        ticket.description = sanitizeHtml(makeImagePathsAbsolute(ticket.description));
+    for (const ticket of response.tickets ?? []) {
+        ticket.description = sanitizeHtml(makeImagePathsAbsolute(ticket.description ?? ""));
     }
 
     return {

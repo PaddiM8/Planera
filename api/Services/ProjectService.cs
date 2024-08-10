@@ -78,6 +78,11 @@ public class ProjectService
             );
         }
 
+        project.AssignedToMeCount = _dataContext.Tickets
+            .Count(x =>
+                x.ProjectId == project.Id && x.Assignees.Any(assignee => assignee.Id == userId)
+            );
+
         return project;
     }
 
