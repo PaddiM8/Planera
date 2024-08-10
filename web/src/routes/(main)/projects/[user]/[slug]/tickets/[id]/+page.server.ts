@@ -14,7 +14,7 @@ export async function load({ cookies, params }: ServerLoadEvent) {
         return handleProblem(ex as SwaggerException);
     }
 
-    response.description = sanitizeHtml(makeImagePathsAbsolute(response.description));
+    response.description = sanitizeHtml(makeImagePathsAbsolute(response.description ?? ""));
 
     return {
         ticket: structuredClone(response),

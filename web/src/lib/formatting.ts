@@ -30,6 +30,7 @@ const sanitizerOptions = {
         h4: ["dir"],
         p: ["dir"],
         i: ["dir"],
+        em: ["dir"],
         b: ["dir"],
         u: ["dir"],
         s: ["dir"],
@@ -60,7 +61,7 @@ const sanitizerOptions = {
                 "padding-inline-start",
                 "user-select",
             ];
-            if (allowedStyles.some(value.startsWith)) {
+            if (allowedStyles.some(x => value.startsWith(x))) {
                 return `style="${value.split(";")[0]}"`;
             }
         }
@@ -68,6 +69,6 @@ const sanitizerOptions = {
 };
 const sanitizer = new xss.FilterXSS(sanitizerOptions);
 
-export function sanitizeHtml(html: string) {
+export function sanitizeHtml(html: string): string {
     return sanitizer.process(html);
 }

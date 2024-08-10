@@ -54,10 +54,10 @@
     import TaskEditorTheme from "$lib/components/editor/ticketEditorTheme";
     import {createEventDispatcher, onMount} from "svelte";
     import {browser} from "$app/environment";
-    import lexicalHtml from "@lexical/html";
+    import * as lexicalHtml from "@lexical/html";
     const generateHtmlFromNodes = lexicalHtml.$generateHtmlFromNodes;
     const generateNodesFromDOM = lexicalHtml.$generateNodesFromDOM;
-    import lexical from "lexical";
+    import * as lexical from "lexical";
     const createParagraphNode = lexical.$createParagraphNode;
     const getSelection = lexical.$getSelection;
 
@@ -83,7 +83,7 @@
         },
     };
 
-    let editor;
+    let editor: any;
     let editorShellElement: HTMLElement;
     let editorElement: HTMLElement;
     let composer: Composer;
@@ -106,7 +106,7 @@
             })
             editorShellElement.dispatchEvent(event);
         });
-        observer.observe(editorShellElement.querySelector("[contenteditable]"), config);
+        observer.observe(editorShellElement.querySelector("[contenteditable]")!, config);
 
         const contentEditable = editorElement.querySelector("[contenteditable]") as HTMLElement;
         contentEditable.onfocus = () => hasFocus = true;
@@ -129,7 +129,7 @@
             const root = getRoot();
             root.clear();
             for (const node of nodes) {
-                root.append(node);
+                root.append(node as any);
             }
         });
     }
@@ -143,7 +143,7 @@
             const selection = getSelection();
             const paragraph = createParagraphNode();
             root.clear();
-            root.append(paragraph);
+            root.append(paragraph as any);
 
             if (selection !== null) {
                 paragraph.select();

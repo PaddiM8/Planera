@@ -143,9 +143,6 @@
                     updateTicketCounts(value, ticket.status);
                 }
 
-                if (key === "assignees")
-                    console.log(value);
-
                 ticket[key] = value;
             }
         }
@@ -200,7 +197,7 @@
             priorityInput?.reset();
             assigneesInput?.reset();
             setTimeout(() => {
-                titleInput.focus();
+                titleInput?.focus();
             }, 100);
             searchQuery = "";
             toast.info("Created ticket successfully.");
