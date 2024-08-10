@@ -1,8 +1,12 @@
 import {type HubConnection, HubConnectionBuilder} from "@microsoft/signalr";
 
 async function buildHub(name: string): Promise<HubConnection> {
+    // Make sure the url is absolute
+    const apiUrl = import.meta.env.VITE_PUBLIC_API_URL.match(/^https?:\/\//)
+        ? import.meta.env.VITE_PUBLIC_API_URL
+        : window.location.origin + import.meta.env.VITE_PUBLIC_API_URL
     return new HubConnectionBuilder()
-        .withUrl(`${import.meta.env.VITE_PUBLIC_API_URL}/hubs/${name}`)
+        .withUrl(`${apiUrl}/hubs/${name}`)
         .withAutomaticReconnect()
         .build();
 }
