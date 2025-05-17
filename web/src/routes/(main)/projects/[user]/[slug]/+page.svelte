@@ -54,11 +54,13 @@
     let isFormLoading = false;
     let reachedEndOfTickets = false;
     let isLoadingMore = false;
-    refreshFilterMap();
 
     $: isSubmitDisabled = titleValue?.length < 2 || isFormLoading;
     $: validFormState = titleValue?.length >= 2;
     $: updateSortingWithoutQuerying(data?.sorting, data?.filter);
+    $: if (data.project) {
+        refreshFilterMap();
+    }
 
     function refreshFilterMap() {
         for (const key in filterMap) {
