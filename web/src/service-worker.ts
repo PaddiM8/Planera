@@ -40,6 +40,11 @@ self.addEventListener("fetch", (event: any) => {
         return;
     }
 
+    // Don't cache SignalR stuff
+    if (event.request.url.includes("/api/hubs")) {
+        return;
+    }
+
     async function respond() {
         const url = new URL(event.request.url);
         const cache = await caches.open(CACHE);
