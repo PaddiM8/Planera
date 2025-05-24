@@ -15,31 +15,22 @@ using Planera.Models.Authentication;
 
 namespace Planera.Services;
 
-public class AuthenticationService
+public class PlaneraAuthenticationService(
+    IConfiguration configuration,
+    UserManager<User> userManager,
+    SignInManager<User> signInManager,
+    IMapper mapper,
+    EmailService emailService
+)
 {
-    private readonly SymmetricSecurityKey _secretKey;
-    private readonly IConfiguration _configuration;
-    private readonly UserManager<User> _userManager;
-    private readonly SignInManager<User> _signInManager;
-    private readonly IMapper _mapper;
-    private readonly EmailService _emailService;
-
-    public AuthenticationService(
-        IConfiguration configuration,
-        UserManager<User> userManager,
-        SignInManager<User> signInManager,
-        IMapper mapper,
-        EmailService emailService)
-    {
-        _secretKey = new SymmetricSecurityKey(
-            Encoding.ASCII.GetBytes(configuration["Jwt:Key"] ?? string.Empty)
-        );
-        _configuration = configuration;
-        _userManager = userManager;
-        _signInManager = signInManager;
-        _mapper = mapper;
-        _emailService = emailService;
-    }
+    private readonly SymmetricSecurityKey _secretKey = new(
+        Encoding.ASCII.GetBytes(configuration["Jwt:Key"] ?? string.Empty)
+    );
+    private readonly IConfiguration _configuration = configuration;
+    private readonly UserManager<User> _userManager = userManager;
+    private readonly SignInManager<User> _signInManager = signInManager;
+    private readonly IMapper _mapper = mapper;
+    private readonly EmailService _emailService = emailService;
 
     public async Task<ErrorOr<AuthenticationResult>> LoginAsync(string username, string password)
     {

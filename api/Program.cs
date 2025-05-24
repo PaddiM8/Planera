@@ -1,5 +1,7 @@
 using System.Text;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -48,45 +50,56 @@ var serializerSettings = new JsonSerializerSettings
         },
     },
 };
-builder.Services.AddControllers()
-    .AddNewtonsoftJson(
-    options =>
+builder.Services
+    .AddControllers()
+    .AddNewtonsoftJson(o =>
     {
-        options.SerializerSettings.ReferenceLoopHandling = serializerSettings.ReferenceLoopHandling;
-        options.SerializerSettings.ContractResolver = serializerSettings.ContractResolver;
+        o.SerializerSettings.ReferenceLoopHandling = serializerSettings.ReferenceLoopHandling;
+        o.SerializerSettings.ContractResolver = serializerSettings.ContractResolver;
     });
 
 builder.Services.AddOpenApiDocument();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddAuthorization();
-builder.Services.AddIdentity<User, IdentityRole>()
+builder.Services
+    .AddAuthorizationBuilder()
+    .SetDefaultPolicy(new AuthorizationPolicyBuilder().AddAuthenticationSchemes("JwtOrPatScheme").RequireAuthenticatedUser().Build());
+
+builder.Services
+    .AddIdentity<User, IdentityRole>()
     .AddEntityFrameworkStores<DataContext>()
     .AddDefaultTokenProviders();
-builder.Services.Configure<IdentityOptions>(options =>
+builder.Services.Configure<IdentityOptions>(o =>
 {
-    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-    options.Lockout.MaxFailedAccessAttempts = 5;
-    options.Lockout.AllowedForNewUsers = true;
-    options.Password.RequireDigit = false;
-    options.Password.RequireLowercase = false;
-    options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequireUppercase = false;
-    options.Password.RequiredLength = 8;
-    options.Password.RequiredUniqueChars = 1;
+    o.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+    o.Lockout.MaxFailedAccessAttempts = 5;
+    o.Lockout.AllowedForNewUsers = true;
+    o.Password.RequireDigit = false;
+    o.Password.RequireLowercase = false;
+    o.Password.RequireNonAlphanumeric = false;
+    o.Password.RequireUppercase = false;
+    o.Password.RequiredLength = 8;
+    o.Password.RequiredUniqueChars = 1;
 
 });
+
 builder.Services.AddDbContext<DataContext>();
 builder.Services
-    .AddAuthentication(o =>
+    .AddAuthentication("JwtOrPatScheme")
+    .AddPolicyScheme("JwtOrPatScheme", "JWT or PAT", o =>
     {
-        o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        o.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+        o.ForwardDefaultSelector = context =>
+        {
+            var authHeader = context.Request.Headers.Authorization.FirstOrDefault();
+            if (authHeader?.StartsWith("Pat ", StringComparison.OrdinalIgnoreCase) is true)
+                return "PersonalAccessToken";
+
+            return JwtBearerDefaults.AuthenticationScheme;
+        };
     })
-    .AddJwtBearer(options =>
+    .AddJwtBearer(o =>
     {
-        options.TokenValidationParameters = new TokenValidationParameters
+        o.TokenValidationParameters = new TokenValidationParameters
         {
             IssuerSigningKey = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? string.Empty)
@@ -97,7 +110,7 @@ builder.Services
             ValidateIssuerSigningKey = true,
         };
 
-        options.Events = new JwtBearerEvents
+        o.Events = new JwtBearerEvents
         {
             OnMessageReceived = context =>
             {
@@ -107,14 +120,20 @@ builder.Services
                 return Task.CompletedTask;
             }
         };
-    });
+    })
+    .AddScheme<AuthenticationSchemeOptions, PersonalAccessTokenHandler>(
+        "PersonalAccessToken",
+        o => {}
+    );
+
 builder.Services.AddSignalR()
     .AddNewtonsoftJsonProtocol(options =>
     {
         options.PayloadSerializerSettings = serializerSettings;
     });
 
-builder.Services.AddTransient<AuthenticationService>();
+builder.Services.AddTransient<PlaneraAuthenticationService>();
+builder.Services.AddTransient<PersonalAccessTokenService>();
 builder.Services.AddTransient<UserService>();
 builder.Services.AddTransient<ProjectService>();
 builder.Services.AddTransient<TicketService>();
@@ -124,8 +143,8 @@ builder.Services.AddTransient<EmailService>();
 builder.Services.AddTransient<NoteService>();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
-builder.Services.AddCors(options =>
-    options.AddPolicy("DevelopmentCorsPolicy", cors =>
+builder.Services.AddCors(o =>
+    o.AddPolicy("DevelopmentCorsPolicy", cors =>
     {
         cors.AllowAnyMethod()
             .AllowAnyHeader()
@@ -143,7 +162,8 @@ if (app.Environment.IsDevelopment())
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers()
+app
+    .MapControllers()
     .RequireAuthorization();
 app.MapControllerRoute(
     name: "default",

@@ -4,7 +4,7 @@
     import Sidebar from "$lib/components/sidebar/Sidebar.svelte";
     import Label from "$lib/components/GroupLabel.svelte";
     import SidebarEntry from "$lib/components/sidebar/SidebarEntry.svelte";
-    import {ArrowLeft, Cube, Icon, User} from "svelte-hero-icons";
+    import {ArrowLeft, Cube, Icon, User, Key} from "svelte-hero-icons";
     import MainArea from "$lib/components/MainArea.svelte";
     import {onMount} from "svelte";
     import {startUserHub} from "$lib/hubs";
@@ -39,6 +39,10 @@
             <SidebarEntry src="/settings/account"
                           value="Account">
                 <Icon src={User} />
+            </SidebarEntry>
+            <SidebarEntry src="/settings/tokens"
+                          value="Tokens">
+                <Icon src={Key} />
             </SidebarEntry>
         </SidebarGroup>
     </Sidebar>

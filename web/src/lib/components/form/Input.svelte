@@ -7,9 +7,10 @@
     export let type: HTMLInputTypeAttribute = "text";
     export let value: string = "";
     export let name: string = "";
-    export let placeholder: string;
+    export let placeholder: string | undefined = undefined;
     export let label: string | undefined = undefined;
     export let submitButton: Button | undefined = undefined;
+    export let readonly = false;
 
     let wrapperElement: HTMLElement;
 
@@ -17,7 +18,7 @@
         (wrapperElement.firstElementChild as HTMLInputElement).focus();
     }
 
-    function handleKeyDown(e) {
+    function handleKeyDown(e: KeyboardEvent) {
         if (e.key === "Enter" && submitButton) {
             submitButton.click();
         }
@@ -35,6 +36,7 @@
                bind:value={value}
                placeholder={placeholder}
                {name}
+               readonly={readonly}
                on:input
                on:keydown={handleKeyDown} />
     {:else if type === "password"}
@@ -43,6 +45,7 @@
                bind:value={value}
                {placeholder}
                {name}
+               readonly={readonly}
                on:input
                on:keydown={handleKeyDown} />
     {:else if type === "email"}
@@ -51,6 +54,7 @@
                bind:value={value}
                placeholder={placeholder}
                {name}
+               readonly={readonly}
                on:input
                on:keydown={handleKeyDown} />
     {/if}

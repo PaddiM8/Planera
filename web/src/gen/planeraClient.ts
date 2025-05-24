@@ -1067,7 +1067,7 @@ export class TicketClient extends AuthorizedApiBase {
         return Promise.resolve<TicketQueryResult>(null as any);
     }
 
-    getAll2(username: string, slug: string, startIndex?: number, amount?: number, sorting?: TicketSorting, filter?: TicketFilter): Promise<TicketQueryResult> {
+    getAll2(username: string, slug: string, startIndex?: number, sorting?: TicketSorting, filter?: TicketFilter, amount?: number): Promise<TicketQueryResult> {
         let url_ = this.baseUrl + "/tickets/{username}/{slug}/query?";
         if (username === undefined || username === null)
             throw new Error("The parameter 'username' must be defined.");
@@ -1079,16 +1079,16 @@ export class TicketClient extends AuthorizedApiBase {
             throw new Error("The parameter 'startIndex' cannot be null.");
         else if (startIndex !== undefined)
             url_ += "startIndex=" + encodeURIComponent("" + startIndex) + "&";
-        if (amount === null)
-            throw new Error("The parameter 'amount' cannot be null.");
-        else if (amount !== undefined)
-            url_ += "amount=" + encodeURIComponent("" + amount) + "&";
         if (sorting === null)
             throw new Error("The parameter 'sorting' cannot be null.");
         else if (sorting !== undefined)
             url_ += "sorting=" + encodeURIComponent("" + sorting) + "&";
         if (filter !== undefined && filter !== null)
             url_ += "filter=" + encodeURIComponent("" + filter) + "&";
+        if (amount === null)
+            throw new Error("The parameter 'amount' cannot be null.");
+        else if (amount !== undefined)
+            url_ += "amount=" + encodeURIComponent("" + amount) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
@@ -1408,7 +1408,7 @@ export class UserClient extends AuthorizedApiBase {
     }
 
     getAccount(): Promise<AccountDto> {
-        let url_ = this.baseUrl + "/account";
+        let url_ = this.baseUrl + "/user/account";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
@@ -1444,7 +1444,7 @@ export class UserClient extends AuthorizedApiBase {
     }
 
     changePassword(model: ChangePasswordModel): Promise<FileResponse> {
-        let url_ = this.baseUrl + "/changePassword";
+        let url_ = this.baseUrl + "/user/changePassword";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(model);
@@ -1591,6 +1591,119 @@ export class UserClient extends AuthorizedApiBase {
     }
 
     protected processDeclineInvitation(response: Response): Promise<FileResponse> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse>(null as any);
+    }
+
+    getPersonalAccessTokenMetadata(): Promise<PersonalAccessTokenMetadataDto> {
+        let url_ = this.baseUrl + "/user/tokens/personal-access-token";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.processGetPersonalAccessTokenMetadata(_response);
+        });
+    }
+
+    protected processGetPersonalAccessTokenMetadata(response: Response): Promise<PersonalAccessTokenMetadataDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PersonalAccessTokenMetadataDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<PersonalAccessTokenMetadataDto>(null as any);
+    }
+
+    createPersonalAccessToken(): Promise<string> {
+        let url_ = this.baseUrl + "/user/tokens/personal-access-token";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "POST",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.processCreatePersonalAccessToken(_response);
+        });
+    }
+
+    protected processCreatePersonalAccessToken(response: Response): Promise<string> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<string>(null as any);
+    }
+
+    revokePersonalAccessToken(): Promise<FileResponse> {
+        let url_ = this.baseUrl + "/user/tokens/personal-access-token";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "DELETE",
+            headers: {
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.processRevokePersonalAccessToken(_response);
+        });
+    }
+
+    protected processRevokePersonalAccessToken(response: Response): Promise<FileResponse> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
@@ -2647,6 +2760,46 @@ export class InvitationDto implements IInvitationDto {
 export interface IInvitationDto {
     project?: ProjectDto;
     user?: UserDto;
+}
+
+export class PersonalAccessTokenMetadataDto implements IPersonalAccessTokenMetadataDto {
+    userId?: string;
+    createdAtUtc?: Date;
+
+    constructor(data?: IPersonalAccessTokenMetadataDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.userId = _data["userId"];
+            this.createdAtUtc = _data["createdAtUtc"] ? new Date(_data["createdAtUtc"].toString()) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): PersonalAccessTokenMetadataDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PersonalAccessTokenMetadataDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["userId"] = this.userId;
+        data["createdAtUtc"] = this.createdAtUtc ? this.createdAtUtc.toISOString() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IPersonalAccessTokenMetadataDto {
+    userId?: string;
+    createdAtUtc?: Date;
 }
 
 export interface FileResponse {

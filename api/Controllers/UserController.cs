@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Planera.Data.Dto;
 using Planera.Extensions;
@@ -9,14 +10,10 @@ namespace Planera.Controllers;
 
 [ApiController]
 [Route("user")]
-public class UserController : ControllerBase
+public class UserController(UserService userService, PersonalAccessTokenService personalAccessTokenService) : ControllerBase
 {
-    private readonly UserService _userService;
-
-    public UserController(UserService userService)
-    {
-        _userService = userService;
-    }
+    private readonly UserService _userService = userService;
+    private readonly PersonalAccessTokenService _personalAccessTokenService = personalAccessTokenService;
 
     [HttpGet]
     [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
@@ -27,7 +24,7 @@ public class UserController : ControllerBase
         return result.ToActionResult();
     }
 
-    [HttpGet("/account")]
+    [HttpGet("account")]
     [ProducesResponseType(typeof(AccountDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAccount()
     {
@@ -51,7 +48,7 @@ public class UserController : ControllerBase
         return result.ToActionResult();
     }
 
-    [HttpPut("/changePassword")]
+    [HttpPut("changePassword")]
     public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordModel model)
     {
         var result = await _userService.ChangePasswordAsync(
@@ -77,7 +74,8 @@ public class UserController : ControllerBase
     public async Task<IActionResult> AcceptInvitation(string projectId)
     {
         var result = await _userService.AcceptInvitation(
-            User.FindFirst("Id")!.Value, projectId
+            User.FindFirst("Id")!.Value,
+            projectId
         );
 
         return result.ToActionResult();
@@ -87,8 +85,35 @@ public class UserController : ControllerBase
     public async Task<IActionResult> DeclineInvitation(string projectId)
     {
         var result = await _userService.DeclineInvitation(
-            User.FindFirst("Id")!.Value, projectId
+            User.FindFirst("Id")!.Value,
+            projectId
         );
+
+        return result.ToActionResult();
+    }
+
+    [HttpGet("tokens/personal-access-token")]
+    [ProducesResponseType(typeof(PersonalAccessTokenMetadataDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetPersonalAccessTokenMetadata()
+    {
+        var result = await _personalAccessTokenService.GetMetadata(User.FindFirst("Id")!.Value);
+
+        return result.ToActionResult();
+    }
+
+    [HttpPost("tokens/personal-access-token")]
+    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+    public async Task<IActionResult> CreatePersonalAccessToken()
+    {
+        var result = await _personalAccessTokenService.CreateAsync(User.FindFirst("Id")!.Value);
+
+        return result.ToActionResult();
+    }
+
+    [HttpDelete("tokens/personal-access-token")]
+    public async Task<IActionResult> RevokePersonalAccessToken()
+    {
+        var result = await _personalAccessTokenService.RevokeAsync(User.FindFirst("Id")!.Value);
 
         return result.ToActionResult();
     }

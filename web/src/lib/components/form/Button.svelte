@@ -64,6 +64,7 @@
 
         &.danger
             background-color: var(--red)
+            color: var(--on-primary)
 
             &:hover
                 background-color: var(--red-hover)

@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Planera.Data;
 using Planera.Data.Dto;
@@ -9,16 +10,11 @@ namespace Planera.Controllers;
 
 [ApiController]
 [Route("tickets")]
-public class TicketController : ControllerBase
+public class TicketController(TicketService ticketService) : ControllerBase
 {
     private const long TICKET_SIZE_LIMIT = 10000000;
 
-    private readonly TicketService _ticketService;
-
-    public TicketController(TicketService ticketService)
-    {
-        _ticketService = ticketService;
-    }
+    private readonly TicketService _ticketService = ticketService;
 
     [HttpGet("{username}/{slug}/{ticketId}")]
     [ProducesResponseType(typeof(TicketDto), StatusCodes.Status200OK)]
@@ -36,7 +32,8 @@ public class TicketController : ControllerBase
 
     [HttpGet("{username}/{slug}")]
     [ProducesResponseType(typeof(TicketQueryResult), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAll(string username, string slug, int startIndex, int amount) {
+    public async Task<IActionResult> GetAll(string username, string slug, int startIndex, int amount = 10_000)
+    {
         var result = await _ticketService.GetAllAsync(
             User.FindFirst("Id")!.Value,
             username,
@@ -54,9 +51,9 @@ public class TicketController : ControllerBase
         string username,
         string slug,
         int startIndex,
-        int amount,
         TicketSorting sorting,
-        TicketFilter? filter)
+        TicketFilter? filter,
+        int amount = 10_000)
     {
         var result = await _ticketService.GetAllAsync(
             User.FindFirst("Id")!.Value,

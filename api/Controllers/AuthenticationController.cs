@@ -12,11 +12,11 @@ namespace Planera.Controllers;
 [Route("auth")]
 public class AuthenticationController : ControllerBase
 {
-    private readonly AuthenticationService _authenticationService;
+    private readonly PlaneraAuthenticationService _authenticationService;
     private readonly IConfiguration _configuration;
 
     public AuthenticationController(
-        AuthenticationService authenticationService,
+        PlaneraAuthenticationService authenticationService,
         IConfiguration configuration)
     {
         _authenticationService = authenticationService;

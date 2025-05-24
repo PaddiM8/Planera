@@ -10,4 +10,6 @@ public interface IUserHubContext
     public Task OnAddInvitation(ProjectDto project);
 
     public Task SetTheme(InterfaceTheme theme);
+
+    public Task RevokePersonalAccessToken();
 }

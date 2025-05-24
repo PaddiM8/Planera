@@ -3,27 +3,23 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Planera.Data;
 
-public class DataContext : IdentityDbContext<User>
+public class DataContext(DbContextOptions<DataContext> context, IConfiguration configuration) : IdentityDbContext<User>(context)
 {
-    private readonly IConfiguration _configuration;
-    public DbSet<Project> Projects { get; set; } = null!;
+    private readonly IConfiguration _configuration = configuration;
 
+    public DbSet<Project> Projects { get; set; }
 
-    public DbSet<TicketAssignee> TicketAssignees { get; set; } = null!;
+    public DbSet<TicketAssignee> TicketAssignees { get; set; }
 
-    public DbSet<ProjectParticipant> ProjectParticipants { get; set; } = null!;
+    public DbSet<ProjectParticipant> ProjectParticipants { get; set; }
 
-    public DbSet<Invitation> Invitations { get; set; } = null!;
+    public DbSet<Invitation> Invitations { get; set; }
 
-    public DbSet<Ticket> Tickets { get; set; } = null!;
+    public DbSet<Ticket> Tickets { get; set; }
 
-    public DbSet<Note> Notes { get; set; } = null!;
+    public DbSet<Note> Notes { get; set; }
 
-    public DataContext(DbContextOptions<DataContext> context, IConfiguration configuration)
-        : base(context)
-    {
-        _configuration = configuration;
-    }
+    public DbSet<PersonalAccessToken> PersonalAccessTokens { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
