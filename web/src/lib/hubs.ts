@@ -1,5 +1,8 @@
 import {type HubConnection, HubConnectionBuilder} from "@microsoft/signalr";
 
+let userHub: HubConnection | null = null;
+let projectHub: HubConnection | null = null;
+
 async function buildHub(name: string): Promise<HubConnection> {
     // Make sure the url is absolute
     const apiUrl = import.meta.env.VITE_PUBLIC_API_URL.match(/^https?:\/\//)
@@ -12,24 +15,19 @@ async function buildHub(name: string): Promise<HubConnection> {
 }
 
 export async function startUserHub(): Promise<HubConnection> {
-    const hub = await buildHub("user");
-    await startHub(hub);
+    if (!projectHub) {
+        projectHub = await buildHub("user");
+        await projectHub.start();
+    }
 
-    return hub;
+    return projectHub;
 }
 
 export async function startProjectHub(): Promise<HubConnection> {
-    const hub = await buildHub("project");
-    await startHub(hub);
-
-    return hub;
-}
-
-async function startHub(hub: HubConnection) {
-    try {
-        await hub.start();
-    } catch (err) {
-        console.log(err);
-        setTimeout(() => startHub(hub), 5000);
+    if (!projectHub) {
+        projectHub = await buildHub("project");
+        await projectHub.start();
     }
+
+    return projectHub;
 }
