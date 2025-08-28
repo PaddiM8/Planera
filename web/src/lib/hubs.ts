@@ -15,12 +15,12 @@ async function buildHub(name: string): Promise<HubConnection> {
 }
 
 export async function startUserHub(): Promise<HubConnection> {
-    if (!projectHub) {
-        projectHub = await buildHub("user");
-        await projectHub.start();
+    if (!userHub) {
+        userHub = await buildHub("user");
+        await userHub.start();
     }
 
-    return projectHub;
+    return userHub;
 }
 
 export async function startProjectHub(): Promise<HubConnection> {
