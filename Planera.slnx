@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/apphost/">
+    <Project Path="apphost/Planera.AppHost/Planera.AppHost.csproj" />
+    <Project Path="apphost/Planera.ServiceDefaults/Planera.ServiceDefaults.csproj" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path=".github/workflows/publish-tauri.yml" />
+    <File Path=".github/workflows/publish.yml" />
+    <File Path="Caddyfile" />
+    <File Path="docker-compose.dev.yml" />
+    <File Path="docker-compose.yml" />
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="api\Planera.Api\Planera.Api.csproj" />
+</Solution>
