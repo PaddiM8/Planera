@@ -24,6 +24,9 @@
   planera-api:
     image: planera-api
     privileged: true
+    build:
+      context: ./api
+      dockerfile: Dockerfile
     depends_on:
       db:
         condition: service_healthy
@@ -46,6 +49,9 @@
       - ./data/api:/app/data
   planera-web:
     image: planera-web
+    build:
+      context: ./api
+      dockerfile: Dockerfile
     environment:
       ORIGIN: https://localhost:2000
       VITE_PUBLIC_API_URL: https://localhost:2000/api

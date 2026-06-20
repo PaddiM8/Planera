@@ -1,9 +1,8 @@
 FROM node:20.12
 WORKDIR /app
-COPY ["web/package.json", "web/package-lock.json", "web/"]
-WORKDIR /app/web
+COPY ["./package.json", "./package-lock.json", "./"]
 RUN npm ci --legacy-peer-deps
-COPY . ..
+COPY . ./
 ENV VITE_INTERNAL_API_URL http://planera-api:5065
 ENV VITE_PUBLIC_API_URL /api
 RUN npm run build

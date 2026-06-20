@@ -26,6 +26,9 @@
     depends_on:
       db:
         condition: service_healthy
+    build:
+      context: .
+      dockerfile: api/Planera.Api/Dockerfile
     environment:
       PLANERA_FRONTENDURL: http://localhost:2000
       PLANERA_EMAILCONFIRMATION: "false"
@@ -44,6 +47,9 @@
   planera-web:
     image: ghcr.io/paddim8/planera-web:latest
     restart: always
+    build:
+      context: ./web
+      dockerfile: Dockerfile
     environment:
       ORIGIN: http://localhost:2000
       VITE_PUBLIC_API_URL: https://localhost:2000/api
