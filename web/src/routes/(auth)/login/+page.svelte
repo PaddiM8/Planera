@@ -44,26 +44,30 @@
     <title>Sign In - Planera</title>
 </svelte:head>
 
-<CenteredLayout>
+<CenteredLayout fitToContent={data.authenticationInfo?.passwordAuthenticationDisabled}>
     <div>
         <h1>Sign In</h1>
 
-        <Form problem={form?.problem}>
-            {#if isEmailConfirmationFailure}
-                <a href="./"
-                   class="resend-confirmation-email"
-                   on:click={sendConfirmationMail}>Resend Confirmation Email</a>
-            {/if}
-            <Input name="username" placeholder="Username..." bind:value={usernameValue} />
-            <Input type="password" name="password" placeholder="Password..." />
-            <div class="buttons">
-                <a href="/forgot-password">Forgot password?</a>
-                <Button value="Sign In" primary submit />
-            </div>
-        </Form>
+        {#if !data.authenticationInfo?.passwordAuthenticationDisabled}
+            <Form problem={form?.problem}>
+                {#if isEmailConfirmationFailure}
+                    <a href="./"
+                       class="resend-confirmation-email"
+                       on:click={sendConfirmationMail}>Resend Confirmation Email</a>
+                {/if}
+                <Input name="username" placeholder="Username..." bind:value={usernameValue} />
+                <Input type="password" name="password" placeholder="Password..." />
+                <div class="buttons">
+                    <a href="/forgot-password">Forgot password?</a>
+                    <Button value="Sign In" primary submit />
+                </div>
+            </Form>
+        {/if}
     </div>
     {#if data?.authenticationInfo?.oidc}
-        <hr>
+        {#if !data.authenticationInfo?.passwordAuthenticationDisabled}
+            <hr>
+        {/if}
         <div class="oidc">
             <a class="oidc-link" href={import.meta.env.VITE_PUBLIC_API_URL.trimEnd("/") + "/auth/login/oidc"}>
                 <button class="oidc-button">

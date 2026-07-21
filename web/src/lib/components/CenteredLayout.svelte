@@ -1,10 +1,13 @@
-<div id="content">
+<script lang="ts">
+    export let fitToContent: boolean = false;
+</script>
+
+<div id="content" style="width: {fitToContent ? 'auto' : '100%'}">
     <slot />
 </div>
 
 <style lang="sass">
     #content
-        width: 100%
         max-width: 25rem
         padding: 1.5em 2em
         margin: auto
