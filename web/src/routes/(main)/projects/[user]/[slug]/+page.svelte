@@ -130,7 +130,12 @@
             ticket.description = sanitizeHtml(makeImagePathsAbsolute(ticket.description));
         }
 
-        data.tickets = [...data.tickets, ...queryResult.tickets];
+        let combinedTickets = [...data.tickets, ...queryResult.tickets];
+        // Re-duplicate
+        combinedTickets = Array.from(
+            new Map(combinedTickets.map(x => [x.Id, x])).values()
+        );
+        data.tickets = combinedTickets;
 
         if (queryResult.tickets.length === 0) {
             reachedEndOfTickets = true;

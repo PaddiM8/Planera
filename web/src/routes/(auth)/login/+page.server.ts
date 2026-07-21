@@ -32,7 +32,7 @@ export const actions = {
             path: "/",
             maxAge: 60 * 60 * 24 * 365
         };
-        cookies.set("token", response.token, cookieOptions);
+        cookies.set("token", response.token!, cookieOptions);
 
         throw redirect(302, "/");
     }

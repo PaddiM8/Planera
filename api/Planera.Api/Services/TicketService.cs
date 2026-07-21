@@ -193,38 +193,41 @@ public class TicketService(
         TicketPriority priority,
         IEnumerable<string> assigneeIds)
     {
-        await using var transaction = await _dataContext.Database.BeginTransactionAsync();
-
-        var project = await _projectService
-            .QueryById(userId, projectId)
-            .SingleOrDefaultAsync();
-        if (project == null)
-            return ProjectService.ProjectNotFoundError<TicketDto>();
-
-        var lastTicket = await _dataContext.Tickets
-            .Where(x => x.ProjectId == project.Id)
-            .OrderByDescending(x => x.Id)
-            .FirstOrDefaultAsync();
-        int id = lastTicket?.Id + 1 ?? 1;
-        var assignees = await _dataContext.Users
-            .Where(x => assigneeIds.Contains(x.Id))
-            .ToListAsync();
-        var ticket = new Ticket
+        var strategy = _dataContext.Database.CreateExecutionStrategy();
+        return await strategy.ExecuteAsync(async () =>
         {
-            Id = id,
-            ProjectId = project.Id,
-            Title = title,
-            Description = await SaveImagesAndReplaceUrls(project.Id, description),
-            Priority = priority,
-            Assignees = assignees,
-            AuthorId = userId,
-            Timestamp = DateTime.UtcNow,
-        };
-        await _dataContext.Tickets.AddAsync(ticket);
-        await _dataContext.SaveChangesAsync();
-        await transaction.CommitAsync();
+            await using var transaction = await _dataContext.Database.BeginTransactionAsync();
+            var project = await _projectService
+                .QueryById(userId, projectId)
+                .SingleOrDefaultAsync();
+            if (project == null)
+                return ProjectService.ProjectNotFoundError<TicketDto>();
 
-        return _mapper.Map<TicketDto>(ticket);
+            var lastTicket = await _dataContext.Tickets
+                .Where(x => x.ProjectId == project.Id)
+                .OrderByDescending(x => x.Id)
+                .FirstOrDefaultAsync();
+            var id = lastTicket?.Id + 1 ?? 1;
+            var assignees = await _dataContext.Users
+                .Where(x => assigneeIds.Contains(x.Id))
+                .ToListAsync();
+            var ticket = new Ticket
+            {
+                Id = id,
+                ProjectId = project.Id,
+                Title = title,
+                Description = await SaveImagesAndReplaceUrls(project.Id, description),
+                Priority = priority,
+                Assignees = assignees,
+                AuthorId = userId,
+                Timestamp = DateTime.UtcNow,
+            };
+            await _dataContext.Tickets.AddAsync(ticket);
+            await _dataContext.SaveChangesAsync();
+            await transaction.CommitAsync();
+
+            return _mapper.Map<TicketDto>(ticket);
+        });
     }
 
     public async Task<ErrorOr<Updated>> EditTicketAsync(

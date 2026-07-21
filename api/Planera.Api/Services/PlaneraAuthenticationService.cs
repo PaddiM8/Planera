@@ -6,6 +6,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using ErrorOr;
+using Microsoft.Extensions.Options;
 using MimeKit;
 using MimeKit.Text;
 using Planera.Api.Data;
@@ -17,6 +18,7 @@ namespace Planera.Api.Services;
 
 public class PlaneraAuthenticationService(
     IConfiguration configuration,
+    IOptions<OidcOptions> oidcOptions,
     UserManager<User> userManager,
     SignInManager<User> signInManager,
     IMapper mapper,
@@ -27,6 +29,7 @@ public class PlaneraAuthenticationService(
         Encoding.ASCII.GetBytes(configuration["Jwt:Key"] ?? string.Empty)
     );
     private readonly IConfiguration _configuration = configuration;
+    private readonly IOptions<OidcOptions> _oidcOptions = oidcOptions;
     private readonly UserManager<User> _userManager = userManager;
     private readonly SignInManager<User> _signInManager = signInManager;
     private readonly IMapper _mapper = mapper;
@@ -70,21 +73,27 @@ public class PlaneraAuthenticationService(
 
         return Error.Failure("Password.Invalid", "Could not login. Is the password correct?");
     }
-
+    
     public async Task<ErrorOr<AuthenticationResult?>> RegisterAsync(
         string username,
         string email,
-        string password)
+        string password
+    )
     {
-        var userResult = await CreateUserAsync(
-            username,
-            email,
-            password
-        );
-        if (userResult.IsError)
-            return userResult.Errors;
+        var user = new User
+        {
+            UserName = username,
+            Email = email,
+        };
 
-        var user = userResult.Value;
+        var result = await _userManager.CreateAsync(user, password);
+        if (!result.Succeeded)
+        {
+            return result.Errors
+                .Select(x => Error.Failure(x.Code, x.Description))
+                .ToList();
+        }
+
         if (_configuration.GetValue<bool>("EmailConfirmation"))
         {
             await SendConfirmationEmailAsync(user);
@@ -96,21 +105,26 @@ public class PlaneraAuthenticationService(
 
         return new AuthenticationResult(loginToken, _mapper.Map<UserDto>(user));
     }
-
-    private async Task<ErrorOr<User>> CreateUserAsync(
-        string username,
-        string email,
-        string password)
+    
+    public async Task<bool> RegisterOidcAsync(string username, string email, string externalId, string? avatarUrl)
     {
-        var user = new User { UserName = username, Email = email };
-        var result = await _userManager.CreateAsync(user, password);
+        var user = new User
+        {
+            AvatarPath = avatarUrl,
+            UserName = username,
+            Email = email,
+        };
 
-        if (result.Succeeded)
-            return user;
+        var creationResult = await _userManager.CreateAsync(user);
 
-        return result.Errors
-            .Select(x => Error.Failure(x.Code, x.Description))
-            .ToList();
+        var userLoginInfo = new UserLoginInfo(
+            _oidcOptions.Value.ProviderId!,
+            externalId,
+            _oidcOptions.Value.ProviderName
+        );
+        var linkResult = await _userManager.AddLoginAsync(user, userLoginInfo);
+
+        return creationResult.Succeeded && linkResult.Succeeded;
     }
 
     public async Task LogoutAsync()
@@ -118,7 +132,7 @@ public class PlaneraAuthenticationService(
         await _signInManager.SignOutAsync();
     }
 
-    private string GenerateToken(string id, string username, string email)
+    public string GenerateToken(string id, string username, string email)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var tokenDescriptor = new SecurityTokenDescriptor

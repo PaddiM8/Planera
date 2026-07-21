@@ -117,7 +117,7 @@
             "enumNameGeneratorType": null,
             "serviceHost": null,
             "serviceSchemes": null,
-            "output": "../web/src/gen/planeraClient.ts",
+            "output": "../../web/src/gen/planeraClient.ts",
             "newLineBehavior": "Auto"
         }
     }

@@ -10,7 +10,15 @@ async function buildHub(name: string): Promise<HubConnection> {
         : window.location.origin + import.meta.env.VITE_PUBLIC_API_URL
     return new HubConnectionBuilder()
         .withUrl(`${apiUrl}/hubs/${name}`)
-        .withAutomaticReconnect()
+        .withAutomaticReconnect({
+            nextRetryDelayInMilliseconds: retryContext => {
+                // If we've been reconnecting for less than 60 seconds in total,
+                // wait 1 second between attempts, otherwise 5.
+                return retryContext.elapsedMilliseconds < 60000
+                    ? 1000
+                    : 5000;
+            }
+        })
         .build();
 }
 

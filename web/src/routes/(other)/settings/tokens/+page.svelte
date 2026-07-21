@@ -82,8 +82,6 @@
 </section>
 
 <style lang="sass">
-    section
-
     .pat
         display: flex
         align-items: center

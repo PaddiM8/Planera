@@ -107,51 +107,57 @@ public class ProjectService(
             Participants = new List<User> { author },
         };
 
-        await using var transaction = await _dataContext.Database.BeginTransactionAsync();
-        await _dataContext.Projects.AddAsync(project);
-        await _dataContext.SaveChangesAsync();
-        _fileStorage.CreateDirectory(project.Id);
+        var strategy = _dataContext.Database.CreateExecutionStrategy();
 
-        if (icon?.StartsWith("data:") is not true)
+        return await strategy.ExecuteAsync<ErrorOr<string>>(async () =>
         {
-            await transaction.CommitAsync();
-
-            return project.Id;
-        }
-
-        // Expected format of icon: `data:image/png;base64,BASE64STRING==`
-        var bytes = Convert.FromBase64String(icon.Split(",")[1]);
-        var avatar256 = ImagePreparer.Resize(bytes, 256, 256);
-        var avatar32 = ImagePreparer.Resize(bytes, 32, 32);
-        project.IconPath = await _fileStorage.WriteManyAsync(
-            project.Id,
-            (avatar256, "256"),
-            (avatar32, "32")
-        );
-
-        try
-        {
-            _dataContext.Update(project);
+            
+            await using var transaction = await _dataContext.Database.BeginTransactionAsync();
+            await _dataContext.Projects.AddAsync(project);
             await _dataContext.SaveChangesAsync();
-        }
-        catch
-        {
-            // If it didn't update, remove the newly created files, since
-            // they won't be used.
-            if (!string.IsNullOrEmpty(project.IconPath))
+            _fileStorage.CreateDirectory(project.Id);
+
+            if (icon?.StartsWith("data:") is not true)
             {
-                _fileStorage.Delete(project.IconPath, "32");
-                _fileStorage.Delete(project.IconPath, "256");
+                await transaction.CommitAsync();
+
+                return project.Id;
+            }
+
+            // Expected format of icon: `data:image/png;base64,BASE64STRING==`
+            var bytes = Convert.FromBase64String(icon.Split(",")[1]);
+            var avatar256 = ImagePreparer.Resize(bytes, 256, 256);
+            var avatar32 = ImagePreparer.Resize(bytes, 32, 32);
+            project.IconPath = await _fileStorage.WriteManyAsync(
+                project.Id,
+                (avatar256, "256"),
+                (avatar32, "32")
+            );
+
+            try
+            {
+                _dataContext.Update(project);
+                await _dataContext.SaveChangesAsync();
+            }
+            catch
+            {
+                // If it didn't update, remove the newly created files, since
+                // they won't be used.
+                if (!string.IsNullOrEmpty(project.IconPath))
+                {
+                    _fileStorage.Delete(project.IconPath, "32");
+                    _fileStorage.Delete(project.IconPath, "256");
+                }
+
+                await transaction.CommitAsync();
+
+                return Error.Unexpected("Unknown", "Failed to create project.");
             }
 
             await transaction.CommitAsync();
 
-            return Error.Unexpected("Unknown", "Failed to create project.");
-        }
-
-        await transaction.CommitAsync();
-
-        return project.Id;
+            return project.Id;
+        });
     }
 
     public async Task<ErrorOr<Updated>> EditAsync(

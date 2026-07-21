@@ -6,16 +6,16 @@
     import Label from "$lib/components/GroupLabel.svelte";
     import Toast from "$lib/components/Toast.svelte";
     import YesNoDialog from "$lib/components/dialogs/YesNoDialog.svelte";
-    import {InterfaceTheme, UserDto} from "../gen/planeraClient";
+    import {InterfaceTheme, UserDto, AuthenticationInfo} from "../gen/planeraClient";
     import {getAvatarUrl} from "$lib/clients";
     import {user} from "./(main)/store";
     import {page} from "$app/stores";
     import {theme} from "./store"
     import {browser} from "$app/environment";
-    import {onMount} from "svelte";
 
     export let data = {
         user: UserDto,
+        authenticationInfo: AuthenticationInfo,
     };
 
     theme.subscribe(loadTheme);
@@ -93,7 +93,7 @@
                 </div>
             {:else if $page.url.pathname === "/register"}
                 <a href="/login" class="item">Sign In</a>
-            {:else}
+            {:else if !data.authenticationInfo?.registrationDisabled}
                 <a href="/register" class="item">Register</a>
             {/if}
         </div>
@@ -169,6 +169,7 @@
             width: 1.5em
             height: 1.5em
             background-color: transparent
+            color: var(--on-background)
             border: 0
             padding: 0
             cursor: pointer

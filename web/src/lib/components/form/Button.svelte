@@ -10,7 +10,7 @@
     const dispatch = createEventDispatcher();
     let element: HTMLElement;
 
-    function handleClick(e) {
+    function handleClick(e: any) {
         dispatch("click", e.details);
     }
 

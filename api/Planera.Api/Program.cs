@@ -1,9 +1,15 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -11,6 +17,7 @@ using Planera.Api;
 using Planera.Api.Data;
 using Planera.Api.Data.Files;
 using Planera.Api.Hubs;
+using Planera.Api.Models;
 using Planera.Api.Services;
 using Planera.Api.Utility;
 
@@ -63,7 +70,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services
     .AddAuthorizationBuilder()
-    .SetDefaultPolicy(new AuthorizationPolicyBuilder().AddAuthenticationSchemes("JwtOrPatScheme").RequireAuthenticatedUser().Build());
+    .SetDefaultPolicy(new AuthorizationPolicyBuilder().AddAuthenticationSchemes("DynamicScheme").RequireAuthenticatedUser().Build());
 
 builder.Services
     .AddIdentity<User, IdentityRole>()
@@ -84,9 +91,15 @@ builder.Services.Configure<IdentityOptions>(o =>
 });
 
 builder.AddNpgsqlDbContext<DataContext>("PlaneraDatabase");
-builder.Services
-    .AddAuthentication("JwtOrPatScheme")
-    .AddPolicyScheme("JwtOrPatScheme", "JWT or PAT", o =>
+
+var oidcConfig = builder.Configuration.GetSection("Oidc");
+if (oidcConfig.Exists())
+    builder.Services.Configure<OidcOptions>(oidcConfig);
+
+var authenticationBuilder = builder
+    .Services
+    .AddAuthentication("DynamicScheme")
+    .AddPolicyScheme("DynamicScheme", "JWT or PAT", o =>
     {
         o.ForwardDefaultSelector = context =>
         {
@@ -126,6 +139,53 @@ builder.Services
         _ => {}
     );
 
+if (oidcConfig.Exists())
+{
+    builder.Services.Configure<ForwardedHeadersOptions>(options =>
+    {
+        options.ForwardedHeaders = ForwardedHeaders.XForwardedHost | ForwardedHeaders.XForwardedProto;
+        options.KnownIPNetworks.Clear();
+        options.KnownProxies.Clear();
+    });
+    
+    var callbackPath = string.IsNullOrEmpty(oidcConfig["CallbackPath"])
+        ? "/api/signin-oidc"
+        : oidcConfig["CallbackPath"]!;
+    authenticationBuilder
+        .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
+        {
+            options.Authority = oidcConfig["ProviderUrl"];
+            options.ClientId = oidcConfig["ClientId"];
+            options.ClientSecret = oidcConfig["ClientSecret"];
+
+            foreach (var scope in oidcConfig["Scopes"]?.Split(' ') ?? [])
+                options.Scope.Add(scope);
+
+            options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            options.ResponseType = OpenIdConnectResponseType.Code;
+
+            options.SaveTokens = true;
+            options.GetClaimsFromUserInfoEndpoint = true;
+
+            options.MapInboundClaims = false;
+            options.TokenValidationParameters.NameClaimType = JwtRegisteredClaimNames.Name;
+            options.TokenValidationParameters.RoleClaimType = "roles";
+            
+            options.CorrelationCookie.Path = callbackPath;
+            options.NonceCookie.Path = callbackPath;
+            
+            options.Events = new OpenIdConnectEvents
+            {
+                OnTokenValidated = context => OpenIdEventHandler.OnTokenValidatedAsync(
+                    context,
+                    builder.Configuration.GetValue<bool>("DisableRegistration")
+                ),
+                OnTicketReceived = OpenIdEventHandler.OnTicketReceivedAsync,
+                OnRedirectToIdentityProvider = context => OpenIdEventHandler.OnRedirectToIdentityProvider(context, callbackPath),
+            };
+        });
+}
+
 builder.Services.AddSignalR()
     .AddNewtonsoftJsonProtocol(options =>
     {
@@ -159,6 +219,7 @@ app.UseHttpsRedirection();
 if (app.Environment.IsDevelopment())
     app.UseCors("DevelopmentCorsPolicy");
 
+app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -171,6 +232,11 @@ app.MapControllerRoute(
 
 app.MapHub<ProjectHub>("hubs/project");
 app.MapHub<UserHub>("hubs/user");
+
+if (oidcConfig.Exists())
+{
+    app.UseForwardedHeaders();
+}
 
 app.Services.GetService<IFileStorage>()?.CreateDirectory("avatars");
 

@@ -14,6 +14,10 @@ export function getAvatarUrl(path: string | undefined, size: "small" | "big") {
     if (!path) {
         return undefined;
     }
+    
+    if (path.startsWith("http://") || path.startsWith("https://") || path.startsWith("data:")) {
+        return path;
+    }
 
     return getFileUrl(
         path,
