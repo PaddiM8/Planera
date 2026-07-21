@@ -33,15 +33,25 @@
       PLANERA_FRONTENDURL: http://localhost:2000
       PLANERA_EMAILCONFIRMATION: "false"
       PLANERA_DISABLEREGISTRATION: "false"
+      # Postgres (required)
       PLANERA_POSTGRES__HOST: "db:5432"
       PLANERA_POSTGRES__USER: planera
       PLANERA_POSTGRES__PASSWORD: planera
       PLANERA_POSTGRES__DB: planera
+      # SMTP (optional)
       PLANERA_SMTP__HOST: ""
       PLANERA_SMTP__PORT: ""
       PLANERA_SMTP__USER: ""
       PLANERA_SMTP__PASSWORD: ""
       PLANERA_SMTP__SENDER: ""
+      # OIDC (optional)
+      PLANERA_OIDC__PROVIDERID: ""
+      PLANERA_OIDC__PROVIDERNAME: ""
+      PLANERA_OIDC__PROVIDERURL: ""
+      PLANERA_OIDC__PROVIDERICONURL: ""
+      PLANERA_OIDC__CLIENTID: ""
+      PLANERA_OIDC__CLIENTSECRET: ""
+      PLANERA_OIDC__SCOPES: "openid profile email"
     volumes:
       - ./data/api:/app/data
   planera-web:

@@ -90,10 +90,27 @@ builder.Services.Configure<IdentityOptions>(o =>
 
 });
 
+var connectionString = builder.Configuration.GetConnectionString("PlaneraDatabase");
+if (string.IsNullOrEmpty(connectionString))
+{
+    var host = builder.Configuration["Postgres:Host"];
+    var user = builder.Configuration["Postgres:User"];
+    var pass = builder.Configuration["Postgres:Password"];
+    var db = builder.Configuration["Postgres:Db"];
+
+    if (host != null)
+    {
+        var hostParts = host.Split(':');
+        var server = hostParts[0];
+        var port = hostParts.Length > 1 ? hostParts[1] : "5432";
+        builder.Configuration["ConnectionStrings:PlaneraDatabase"] = $"Host={server};Port={port};Database={db};Username={user};Password={pass};";
+    }
+}
+
 builder.AddNpgsqlDbContext<DataContext>("PlaneraDatabase");
 
 var oidcConfig = builder.Configuration.GetSection("Oidc");
-if (oidcConfig.Exists())
+if (oidcConfig.Exists() && !string.IsNullOrWhiteSpace(oidcConfig["ProviderId"]))
     builder.Services.Configure<OidcOptions>(oidcConfig);
 
 var authenticationBuilder = builder
@@ -139,7 +156,7 @@ var authenticationBuilder = builder
         _ => {}
     );
 
-if (oidcConfig.Exists())
+if (oidcConfig.Exists() && !string.IsNullOrWhiteSpace(oidcConfig["ProviderId"]))
 {
     builder.Services.Configure<ForwardedHeadersOptions>(options =>
     {

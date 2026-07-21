@@ -25,7 +25,7 @@
     image: planera-api
     privileged: true
     build:
-      context: ./api
+      context: ./api/Planera.Api
       dockerfile: Dockerfile
     depends_on:
       db:
@@ -42,19 +42,13 @@
       PLANERA_SMTP__USER: user
       PLANERA_SMTP__PASSWORD: password
       PLANERA_SMTP__SENDER: noreply@example.org
-    build:
-      context: .
-      dockerfile: api/Dockerfile
     volumes:
       - ./data/api:/app/data
   planera-web:
     image: planera-web
     build:
-      context: ./api
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: web/Dockerfile
     environment:
       ORIGIN: https://localhost:2000
       VITE_PUBLIC_API_URL: https://localhost:2000/api
-    build:
-      context: .
-      dockerfile: web/Dockerfile

@@ -18,5 +18,5 @@ FROM base AS final
 WORKDIR /app/data
 COPY --from=publish /app/publish /app
 COPY --from=publish /app/publish/appsettings.json /app/data
-RUN echo "cp -n ../appsettings.json .; dotnet ../Planera.dll" >> ../start.sh
+RUN echo "cp -n ../appsettings.json .; dotnet ../Planera.Api.dll" >> ../start.sh
 ENTRYPOINT ["sh", "../start.sh"]
