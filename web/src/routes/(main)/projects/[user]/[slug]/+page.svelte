@@ -131,7 +131,7 @@
         }
 
         let combinedTickets = [...data.tickets, ...queryResult.tickets];
-        // Re-duplicate
+        // De-duplicate
         combinedTickets = Array.from(
             new Map(combinedTickets.map(x => [x.Id, x])).values()
         );

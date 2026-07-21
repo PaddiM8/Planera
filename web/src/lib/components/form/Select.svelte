@@ -57,6 +57,7 @@
     .select
         position: relative
         display: flex
+        caret-color: transparent
 
         &.open input
             background-color: var(--background-hover)
