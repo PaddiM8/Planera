@@ -110,7 +110,7 @@
     });
 
     async function loadMore() {
-        if (reachedEndOfTickets || !$projectHub) {
+        if (reachedEndOfTickets || !$projectHub || $projectHub.state !== "Connected") {
             return;
         }
 
@@ -126,6 +126,7 @@
             filterMap[filter],
         );
 
+        console.log(queryResult.tickets.length);
         for (const ticket of queryResult.tickets) {
             ticket.description = sanitizeHtml(makeImagePathsAbsolute(ticket.description));
         }
@@ -133,7 +134,7 @@
         let combinedTickets = [...data.tickets, ...queryResult.tickets];
         // De-duplicate
         combinedTickets = Array.from(
-            new Map(combinedTickets.map(x => [x.Id, x])).values()
+            new Map(combinedTickets.map(x => [x.id, x])).values()
         );
         data.tickets = combinedTickets;
 
