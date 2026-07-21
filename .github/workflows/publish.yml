@@ -14,7 +14,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - dockerfile: ./api/Dockerfile
+          - dockerfile: ./api/Planera.Api/Dockerfile
             image: ghcr.io/${{ github.actor }}/planera-api
           - dockerfile: ./web/Dockerfile
             image: ghcr.io/${{ github.actor }}/planera-web
