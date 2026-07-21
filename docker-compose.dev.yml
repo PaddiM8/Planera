@@ -47,8 +47,8 @@
   planera-web:
     image: planera-web
     build:
-      context: .
-      dockerfile: web/Dockerfile
+      context: ./web
+      dockerfile: Dockerfile
     environment:
       ORIGIN: https://localhost:2000
       VITE_PUBLIC_API_URL: https://localhost:2000/api

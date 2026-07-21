@@ -14,9 +14,11 @@ jobs:
     strategy:
       matrix:
         include:
-          - dockerfile: ./api/Planera.Api/Dockerfile
+          - context: .
+            dockerfile: ./api/Planera.Api/Dockerfile
             image: ghcr.io/${{ github.actor }}/planera-api
-          - dockerfile: ./web/Dockerfile
+          - context: ./web
+            dockerfile: ./web/Dockerfile
             image: ghcr.io/${{ github.actor }}/planera-web
     steps:
       - name: Checkout repository
@@ -35,7 +37,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
         with:
-          context: .
+          context: ${{ matrix.context }}
           file: ${{ matrix.dockerfile }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}

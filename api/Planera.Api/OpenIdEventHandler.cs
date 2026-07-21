@@ -107,8 +107,12 @@ public static class OpenIdEventHandler
 
     public static Task OnRedirectToIdentityProvider(RedirectContext context, string callbackPath)
     {
-        var uri = new Uri(context.ProtocolMessage.RedirectUri);
-        context.ProtocolMessage.RedirectUri = uri.GetLeftPart(UriPartial.Authority) + callbackPath;
+        var uriBuilder = new UriBuilder(context.ProtocolMessage.RedirectUri)
+        {
+            Scheme = "https",
+            Port = -1,
+        };
+        context.ProtocolMessage.RedirectUri = uriBuilder.Uri.GetLeftPart(UriPartial.Authority) + callbackPath;
                     
         return Task.FromResult(0);
     }
