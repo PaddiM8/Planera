@@ -1,18 +1,21 @@
 let timeoutId: NodeJS.Timeout;
 
 export const toast = {
-    info: (text: string, timeout = 2750) => {
-        show("info", text, timeout);
+    info: (text: string, timeout: number | null = 2750) => {
+        return show("info", text, timeout);
     },
-    error: (text: string, timeout = 2750) => {
-        show("error", text, timeout);
+    error: (text: string, timeout: number | null = 2750) => {
+        return show("error", text, timeout);
     },
+    clear: (element: HTMLElement) => {
+        element.classList.remove("shown");
+    }
 };
 
-function show(type: string, text: string, timeout: number) {
+function show(type: string, text: string, timeout: number | null): HTMLElement | null {
     const element = document.getElementById("toast");
     if (!element) {
-        return;
+        return null;
     }
 
     element.querySelector(".text")!.textContent = text;
@@ -24,7 +27,12 @@ function show(type: string, text: string, timeout: number) {
     element.classList.add("shown");
 
     clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => {
-        element.classList.remove("shown");
-    }, timeout);
+    
+    if (timeout) {
+        timeoutId = setTimeout(() => {
+            element.classList.remove("shown");
+        }, timeout);
+    }
+    
+    return element;
 }

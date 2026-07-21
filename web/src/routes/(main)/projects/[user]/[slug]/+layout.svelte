@@ -13,6 +13,7 @@
     };
 
     let previousProjectId: string | undefined = undefined;
+    let reconnectingToast: HTMLElement | null = null;
 
     async function connectToProject(projectId: string) {
         if (!browser || !$projectHub || $projectHub.state !== HubConnectionState.Connected) {
@@ -56,9 +57,25 @@
     });
 
     async function createProjectHub() {
+        reconnectingToast = toast.info("Reconnecting...", null);
         const hub = await startProjectHub();
         projectHub.set(hub);
-        hub.onreconnected(createProjectHub);
+        toast.clear(reconnectingToast);
+        reconnectingToast = null;
+        
+        hub.onreconnecting(_ => {
+            reconnectingToast = toast.info("Reconnecting...", null);
+        });
+        
+        hub.onreconnected(_ => {
+            if (reconnectingToast) {
+                console.log("Reconnected");
+                toast.clear(reconnectingToast);
+                reconnectingToast = null;
+            }
+
+            createProjectHub();
+        });
         hub.on("onAddParticipant", onAddParticipant);
         hub.on("onRemoveParticipant", onRemoveParticipant);
         previousProjectId = undefined;

@@ -25,7 +25,7 @@ async function buildHub(name: string): Promise<HubConnection> {
 export async function startUserHub(): Promise<HubConnection> {
     if (!userHub) {
         userHub = await buildHub("user");
-        await userHub.start();
+        await startHub(userHub);
     }
 
     return userHub;
@@ -34,8 +34,22 @@ export async function startUserHub(): Promise<HubConnection> {
 export async function startProjectHub(): Promise<HubConnection> {
     if (!projectHub) {
         projectHub = await buildHub("project");
-        await projectHub.start();
+        await startHub(projectHub);
     }
 
     return projectHub;
+}
+
+async function startHub(hub: HubConnection) {
+    let interval = setInterval(async () => {
+        if (hub?.state === "Disconnected") {
+            try {
+                await hub?.start();
+            } catch {
+                return;
+            }
+        }
+
+        clearInterval(interval);
+    }, 2500);
 }
