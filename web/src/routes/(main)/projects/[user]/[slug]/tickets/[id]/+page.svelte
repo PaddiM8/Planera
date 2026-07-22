@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type {TicketDto} from "../../../../../../../gen/planeraClient";
+    import {ProjectDto, type TicketDto} from "../../../../../../../gen/planeraClient";
     import {getAvatarUrl} from "$lib/clients";
     import UserIcon from "$lib/components/UserIcon.svelte";
     import {participants} from "../../../../../store";
@@ -24,6 +24,7 @@
     import type {ProblemDetails} from "$lib/problemDetails";
     import type {FormSubmitInput} from "../../../../../../types";
     import {truncate} from "$lib/util";
+    import DateInput from "$lib/components/form/DateInput.svelte";
 
     export let form: {
         problem: ProblemDetails,
@@ -31,6 +32,7 @@
         editNoteProblem: ProblemDetails,
     };
     export let data: {
+        project: ProjectDto,
         ticket: TicketDto,
     };
 
@@ -154,6 +156,29 @@
             data.ticket.assignees = [...data.ticket.assignees, assignee];
         }
     }
+    
+    async function handleDeadlineInput(e: Event) {
+        const target = e.target as HTMLInputElement;
+        let deadline = target.value;
+        if (!deadline.includes("T")) {
+            deadline += "T00:00";
+        }
+
+        try {
+            await $projectHub!.invoke(
+                "setTicketDeadline",
+                data.ticket.projectId,
+                data.ticket.id,
+                deadline
+            );
+
+            toast.info("Deadline updated successfully.");
+        } catch (ex) {
+            toast.error("Failed to update deadline.");
+            console.log(ex);
+            target.value = "";
+        }
+    }
 </script>
 
 <svelte:head>
@@ -192,7 +217,11 @@
         <input type="hidden" name="ticketId" value={data.ticket.id} />
 
         <Input type="text" name="title" placeholder="Title..." value={data.ticket.title} />
-        <Editor placeholder="Describe the ticket..." bind:this={editor} />
+
+        {#if data.project.enableTicketDescriptions}
+            <Editor placeholder="Describe the ticket..." bind:this={editor} />
+        {/if}
+
         <div class="buttons">
             <Button value="Cancel" on:click={handleCancel} />
             <Button value="Edit" primary submit />
@@ -247,20 +276,32 @@
                      bind:selectedValue={selectedPriorityName}
                      on:change={handlePriorityChange}/>
     </span>
-    <span class="group">
-        <span class="label">
-            <Label value="Assigned To" />
+
+    {#if data.project.enableTicketAssignees}
+        <span class="group assignee">
+            <span class="label">
+                <Label value="Assigned To" />
+            </span>
+            <BlockInput placeholder="Assignee..."
+                        options={$participants}
+                        key="username"
+                        outputKey="id"
+                        name="assignee"
+                        showUserIcons={true}
+                        bind:values={data.ticket.assignees}
+                        on:add={handleAddAssignee}
+                        on:remove={handleRemoveAssignee} />
         </span>
-        <BlockInput placeholder="Assignee..."
-                    options={$participants}
-                    key="username"
-                    outputKey="id"
-                    name="assignee"
-                    showUserIcons={true}
-                    bind:values={data.ticket.assignees}
-                    on:add={handleAddAssignee}
-                    on:remove={handleRemoveAssignee} />
-    </span>
+    {/if}
+
+    {#if data.project.enableTicketDeadlines}
+        <span class="group deadline">
+            <span class="label">
+                <Label value="Deadline" />
+            </span>
+            <DateInput name="deadline" on:input={handleDeadlineInput} time/>
+        </span>
+    {/if}
 </div>
 
 <hr>
@@ -400,8 +441,17 @@
 
     .bottom-row
         display: flex
-        align-items: center
+        align-items: flex-start
+        flex-wrap: wrap
         gap: 0.8em
+        
+        .group.assignee
+            min-width: 12em
+            flex-grow: 2
+        
+        .group.deadline
+            min-width: 12em
+            flex-grow: 1
 
     .notes
         display: flex

@@ -28,4 +28,6 @@ public class Ticket
     public TicketStatus Status { get; set; }
 
     public required DateTime Timestamp { get; set; }
+    
+    public DateTime? Deadline { get; set; }
 }

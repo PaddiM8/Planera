@@ -8,7 +8,7 @@ export const toast = {
         return show("error", text, timeout);
     },
     clear: (element: HTMLElement) => {
-        element.classList.remove("shown");
+        element?.classList.remove("shown");
     }
 };
 

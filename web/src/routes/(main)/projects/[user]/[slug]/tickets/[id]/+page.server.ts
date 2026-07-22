@@ -1,23 +1,34 @@
 import type {ServerLoadEvent} from "@sveltejs/kit";
 import {handleProblem, handleProblemForForm} from "$lib/problemDetails";
-import type {TicketDto, SwaggerException, CreateTicketModel, CreateNoteModel, EditNoteModel} from "../../../../../../../gen/planeraClient";
-import {getNoteClient, getTicketClient} from "$lib/clients";
+import {
+    type TicketDto, type SwaggerException, type CreateTicketModel, type CreateNoteModel, type EditNoteModel,
+    ProjectDto
+} from "../../../../../../../gen/planeraClient";
+import {getNoteClient, getProjectClient, getTicketClient} from "$lib/clients";
 import type {RequestEvent} from "@sveltejs/kit";
 import {makeImagePathsAbsolute, makeImagePathsRelative} from "$lib/paths";
 import {sanitizeHtml} from "$lib/formatting";
 
 export async function load({ cookies, params }: ServerLoadEvent) {
-    let response: TicketDto;
+    let projectResponse: ProjectDto;
     try {
-        response = await getTicketClient(cookies).get(params.user!, params.slug!, Number(params.id!));
+        projectResponse = await getProjectClient(cookies).get(params.user!, params.slug!);
     } catch (ex) {
         return handleProblem(ex as SwaggerException);
     }
 
-    response.description = sanitizeHtml(makeImagePathsAbsolute(response.description ?? ""));
+    let ticketResponse: TicketDto;
+    try {
+        ticketResponse = await getTicketClient(cookies).get(params.user!, params.slug!, Number(params.id!));
+    } catch (ex) {
+        return handleProblem(ex as SwaggerException);
+    }
+    
+    ticketResponse.description = sanitizeHtml(makeImagePathsAbsolute(ticketResponse.description ?? ""));
 
     return {
-        ticket: structuredClone(response),
+        project: structuredClone(projectResponse),
+        ticket: structuredClone(ticketResponse),
     };
 }
 

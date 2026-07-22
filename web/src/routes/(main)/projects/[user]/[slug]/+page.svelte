@@ -16,6 +16,7 @@
     import type {FormSubmitInput} from "../../../../types";
     import type {ProblemDetails} from "$lib/problemDetails";
     import TicketList from "$lib/components/ticket/TicketList.svelte";
+    import DateInput from "$lib/components/form/DateInput.svelte";
 
     export let data: {
         project: ProjectDto,
@@ -33,6 +34,7 @@
     let titleInput: Input;
     let assigneesInput: BlockInput;
     let priorityInput: MultiButton;
+    let deadlineValue: string = "";
     let isFormLoading = false;
     let ticketListElement: TicketList | undefined;
 
@@ -55,6 +57,7 @@
             editor?.reset();
             priorityInput?.reset();
             assigneesInput?.reset();
+            deadlineValue = "";
             setTimeout(() => {
                 titleInput?.focus();
             }, 100);
@@ -107,18 +110,18 @@
                     bind:this={editor} />
         {/if}
 
-        <div class="bottom-row">
-            <span class="group">
-                <span class="label">
-                    <Label value="Priority" />
+        <div class="bottom-row {data.project.enableTicketAssignees && data.project.enableTicketDeadlines ? '' : 'single-line'}">
+            <div class="fields">
+                <span class="group">
+                    <span class="label">
+                        <Label value="Priority" />
+                    </span>
+                    <MultiButton name="priority"
+                                 choices={["None", "Low", "Normal", "High", "Severe"]}
+                                 defaultValue="Normal"
+                                 bind:this={priorityInput} />
                 </span>
-                <MultiButton name="priority"
-                             choices={["None", "Low", "Normal", "High", "Severe"]}
-                             defaultValue="Normal"
-                             bind:this={priorityInput} />
-            </span>
-
-            {#if data.project.enableTicketAssignees}
+                {#if data.project.enableTicketAssignees}
                 <span class="group">
                     <span class="label">
                         <Label value="Assigned To" />
@@ -131,8 +134,17 @@
                                 bind:this={assigneesInput}
                                 showUserIcons={true} />
                 </span>
-            {/if}
+                {/if}
 
+                {#if data.project.enableTicketDeadlines}
+                <span class="group">
+                    <span class="label">
+                        <Label value="Deadline" />
+                    </span>
+                    <DateInput bind:value={deadlineValue} name="deadline" time/>
+                </span>
+                {/if}
+            </div>
             <Button value="Create"
                     primary
                     submit
@@ -178,14 +190,31 @@
 
     .label
         font-size: 0.9em
-
+        
     .bottom-row
+        display: flex
+        flex-direction: column
+        justify-content: flex-end
+        gap: 0.8em
+        
+        &.single-line
+            flex-direction: row
+
+    .fields
         display: flex
         align-items: center
         gap: 0.8em
-
-    @media screen and (max-width: 980px)
-        .bottom-row
+        width: 100%
+        
+        .group
+            width: 100%
+        
+    @media screen and (max-width: 1024px)
+        .fields
             align-items: normal
+            flex-direction: column
+
+    @media screen and (max-width: 900px)
+        .bottom-row.single-line
             flex-direction: column
 </style>

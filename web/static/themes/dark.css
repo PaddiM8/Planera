@@ -1,4 +1,5 @@
 :root {
+    --color-scheme: dark;
     --background: #212121;
     --on-background: white;
     --on-background-inactive: #d9d9d9;

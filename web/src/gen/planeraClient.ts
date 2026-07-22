@@ -2237,6 +2237,7 @@ export class TicketDto implements ITicketDto {
     author!: UserDto;
     status?: TicketStatus;
     timestamp?: Date;
+    deadline?: Date | undefined;
     noteCount?: number | undefined;
 
     constructor(data?: ITicketDto) {
@@ -2275,6 +2276,7 @@ export class TicketDto implements ITicketDto {
             this.author = _data["author"] ? UserDto.fromJS(_data["author"]) : new UserDto();
             this.status = _data["status"];
             this.timestamp = _data["timestamp"] ? new Date(_data["timestamp"].toString()) : undefined as any;
+            this.deadline = _data["deadline"] ? new Date(_data["deadline"].toString()) : undefined as any;
             this.noteCount = _data["noteCount"];
         }
     }
@@ -2308,6 +2310,7 @@ export class TicketDto implements ITicketDto {
         data["author"] = this.author ? this.author.toJSON() : undefined as any;
         data["status"] = this.status;
         data["timestamp"] = this.timestamp ? this.timestamp.toISOString() : undefined as any;
+        data["deadline"] = this.deadline ? this.deadline.toISOString() : undefined as any;
         data["noteCount"] = this.noteCount;
         return data;
     }
@@ -2326,6 +2329,7 @@ export interface ITicketDto {
     author: UserDto;
     status?: TicketStatus;
     timestamp?: Date;
+    deadline?: Date | undefined;
     noteCount?: number | undefined;
 }
 
@@ -2338,9 +2342,11 @@ export class ProjectDto implements IProjectDto {
     iconPath?: string | undefined;
     enableTicketDescriptions?: boolean;
     enableTicketAssignees?: boolean;
+    enableTicketDeadlines?: boolean;
     timestamp!: Date;
     allTicketsCount?: number;
     openTicketsCount?: number;
+    openTicketsWithDeadlineCount?: number;
     closedTicketsCount?: number;
     inactiveTicketsCount?: number;
     doneTicketsCount?: number;
@@ -2366,9 +2372,11 @@ export class ProjectDto implements IProjectDto {
             this.iconPath = _data["iconPath"];
             this.enableTicketDescriptions = _data["enableTicketDescriptions"];
             this.enableTicketAssignees = _data["enableTicketAssignees"];
+            this.enableTicketDeadlines = _data["enableTicketDeadlines"];
             this.timestamp = _data["timestamp"] ? new Date(_data["timestamp"].toString()) : undefined as any;
             this.allTicketsCount = _data["allTicketsCount"];
             this.openTicketsCount = _data["openTicketsCount"];
+            this.openTicketsWithDeadlineCount = _data["openTicketsWithDeadlineCount"];
             this.closedTicketsCount = _data["closedTicketsCount"];
             this.inactiveTicketsCount = _data["inactiveTicketsCount"];
             this.doneTicketsCount = _data["doneTicketsCount"];
@@ -2398,9 +2406,11 @@ export class ProjectDto implements IProjectDto {
         data["iconPath"] = this.iconPath;
         data["enableTicketDescriptions"] = this.enableTicketDescriptions;
         data["enableTicketAssignees"] = this.enableTicketAssignees;
+        data["enableTicketDeadlines"] = this.enableTicketDeadlines;
         data["timestamp"] = this.timestamp ? this.timestamp.toISOString() : undefined as any;
         data["allTicketsCount"] = this.allTicketsCount;
         data["openTicketsCount"] = this.openTicketsCount;
+        data["openTicketsWithDeadlineCount"] = this.openTicketsWithDeadlineCount;
         data["closedTicketsCount"] = this.closedTicketsCount;
         data["inactiveTicketsCount"] = this.inactiveTicketsCount;
         data["doneTicketsCount"] = this.doneTicketsCount;
@@ -2423,9 +2433,11 @@ export interface IProjectDto {
     iconPath?: string | undefined;
     enableTicketDescriptions?: boolean;
     enableTicketAssignees?: boolean;
+    enableTicketDeadlines?: boolean;
     timestamp: Date;
     allTicketsCount?: number;
     openTicketsCount?: number;
+    openTicketsWithDeadlineCount?: number;
     closedTicketsCount?: number;
     inactiveTicketsCount?: number;
     doneTicketsCount?: number;
@@ -2642,6 +2654,7 @@ export class EditProjectModel implements IEditProjectModel {
     icon?: string | undefined;
     enableTicketDescriptions?: boolean | undefined;
     enableTicketAssignees?: boolean | undefined;
+    enableTicketDeadlines?: boolean | undefined;
 
     constructor(data?: IEditProjectModel) {
         if (data) {
@@ -2659,6 +2672,7 @@ export class EditProjectModel implements IEditProjectModel {
             this.icon = _data["icon"];
             this.enableTicketDescriptions = _data["enableTicketDescriptions"];
             this.enableTicketAssignees = _data["enableTicketAssignees"];
+            this.enableTicketDeadlines = _data["enableTicketDeadlines"];
         }
     }
 
@@ -2676,6 +2690,7 @@ export class EditProjectModel implements IEditProjectModel {
         data["icon"] = this.icon;
         data["enableTicketDescriptions"] = this.enableTicketDescriptions;
         data["enableTicketAssignees"] = this.enableTicketAssignees;
+        data["enableTicketDeadlines"] = this.enableTicketDeadlines;
         return data;
     }
 }
@@ -2686,6 +2701,7 @@ export interface IEditProjectModel {
     icon?: string | undefined;
     enableTicketDescriptions?: boolean | undefined;
     enableTicketAssignees?: boolean | undefined;
+    enableTicketDeadlines?: boolean | undefined;
 }
 
 export class TicketQueryResult implements ITicketQueryResult {
@@ -2750,10 +2766,11 @@ export enum TicketSorting {
 export enum TicketFilter {
     All = 0,
     Open = 1,
-    Closed = 2,
-    Inactive = 3,
-    Done = 4,
-    AssignedToMe = 5,
+    OpenWithDeadline = 2,
+    Closed = 3,
+    Inactive = 4,
+    Done = 5,
+    AssignedToMe = 6,
 }
 
 export class CreateTicketModel implements ICreateTicketModel {
@@ -2761,6 +2778,7 @@ export class CreateTicketModel implements ICreateTicketModel {
     description!: string;
     priority!: TicketPriority;
     assigneeIds!: string[];
+    deadline?: Date | undefined;
 
     constructor(data?: ICreateTicketModel) {
         if (data) {
@@ -2784,6 +2802,7 @@ export class CreateTicketModel implements ICreateTicketModel {
                 for (let item of _data["assigneeIds"])
                     this.assigneeIds!.push(item);
             }
+            this.deadline = _data["deadline"] ? new Date(_data["deadline"].toString()) : undefined as any;
         }
     }
 
@@ -2804,6 +2823,7 @@ export class CreateTicketModel implements ICreateTicketModel {
             for (let item of this.assigneeIds)
                 data["assigneeIds"].push(item);
         }
+        data["deadline"] = this.deadline ? this.deadline.toISOString() : undefined as any;
         return data;
     }
 }
@@ -2813,11 +2833,13 @@ export interface ICreateTicketModel {
     description: string;
     priority: TicketPriority;
     assigneeIds: string[];
+    deadline?: Date | undefined;
 }
 
 export class EditTicketModel implements IEditTicketModel {
     title!: string;
     description!: string;
+    deadline?: Date | undefined;
 
     constructor(data?: IEditTicketModel) {
         if (data) {
@@ -2832,6 +2854,7 @@ export class EditTicketModel implements IEditTicketModel {
         if (_data) {
             this.title = _data["title"];
             this.description = _data["description"];
+            this.deadline = _data["deadline"] ? new Date(_data["deadline"].toString()) : undefined as any;
         }
     }
 
@@ -2846,6 +2869,7 @@ export class EditTicketModel implements IEditTicketModel {
         data = typeof data === 'object' ? data : {};
         data["title"] = this.title;
         data["description"] = this.description;
+        data["deadline"] = this.deadline ? this.deadline.toISOString() : undefined as any;
         return data;
     }
 }
@@ -2853,6 +2877,7 @@ export class EditTicketModel implements IEditTicketModel {
 export interface IEditTicketModel {
     title: string;
     description: string;
+    deadline?: Date | undefined;
 }
 
 export class AccountDto implements IAccountDto {

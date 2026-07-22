@@ -11,11 +11,12 @@ export const actions = {
                 params.user!,
                 params.slug!,
                 new EditProjectModel({
-                    name: formData.get("name")?.toString(),
-                    description: formData.get("description")?.toString(),
+                    name: formData.get("name")?.toString() ?? "-",
+                    description: formData.get("description")?.toString() ?? "",
                     icon: formData.get("icon")?.toString(),
                     enableTicketDescriptions: formData.get("enableTicketDescriptions") == "true",
                     enableTicketAssignees: formData.get("enableTicketAssignees") == "true",
+                    enableTicketDeadlines: formData.get("enableTicketDeadlines") == "true",
                 })
             );
         } catch (ex) {

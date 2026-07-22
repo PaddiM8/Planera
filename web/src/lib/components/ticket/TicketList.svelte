@@ -59,6 +59,7 @@
         if (project) {
             filterMap[`All (${project.allTicketsCount})`] = TicketFilter.All;
             filterMap[`Open (${project.openTicketsCount})`] = TicketFilter.Open;
+            filterMap[`Open with Deadline (${project.openTicketsWithDeadlineCount})`] = TicketFilter.OpenWithDeadline;
             filterMap[`Closed (${project.closedTicketsCount})`] = TicketFilter.Closed;
             filterMap[`Inactive (${project.inactiveTicketsCount})`] = TicketFilter.Inactive;
             filterMap[`Done (${project.doneTicketsCount})`] = TicketFilter.Done;
@@ -66,6 +67,7 @@
         } else {
             filterMap[`All`] = TicketFilter.All;
             filterMap[`Open`] = TicketFilter.Open;
+            filterMap[`Open with Deadline`] = TicketFilter.OpenWithDeadline;
             filterMap[`Closed`] = TicketFilter.Closed;
             filterMap[`Inactive`] = TicketFilter.Inactive;
             filterMap[`Done`] = TicketFilter.Done;

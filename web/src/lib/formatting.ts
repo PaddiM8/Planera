@@ -22,10 +22,12 @@ function zeroPad(value: number) {
         : string;
 }
 
-export function formatDate(date: Date | undefined) {
+export function formatDate(date: Date | string | undefined, forceTime: boolean = false) {
     if (!date) {
         return "";
     }
+    
+    date = new Date(date);
     
     let locale: string = getContext("locale");
     if (isToday(date)) {
@@ -39,11 +41,19 @@ export function formatDate(date: Date | undefined) {
         day: "numeric",
         month: "short",
     };
+
+    if (forceTime) {
+        dateFormat.hour = "2-digit";
+        dateFormat.minute = "2-digit";
+    }
+
     if (!isCurrentYear(date)) {
         dateFormat.year = "numeric";
     }
 
-    return new Intl.DateTimeFormat(locale, dateFormat).format(date);
+    return new Intl.DateTimeFormat(locale, dateFormat)
+        .format(date)
+        .replace(",", "");
 }
 
 const sanitizerOptions = {

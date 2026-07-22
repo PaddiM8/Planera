@@ -26,6 +26,8 @@ public class Project
     public bool EnableTicketDescriptions { get; set; } = true;
 
     public bool EnableTicketAssignees { get; set; } = true;
+    
+    public bool EnableTicketDeadlines { get; set; } = true;
 
     public ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
 

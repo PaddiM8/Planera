@@ -16,4 +16,6 @@ public class EditProjectModel
     public bool? EnableTicketDescriptions { get; init; }
 
     public bool? EnableTicketAssignees { get; init; }
+    
+    public bool? EnableTicketDeadlines { get; init; }
 }

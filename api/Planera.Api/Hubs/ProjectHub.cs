@@ -135,6 +135,25 @@ public class ProjectHub(
         result.Unwrap();
     }
 
+    public async Task SetTicketDeadline(string projectId, int ticketId, DateTime? deadline)
+    {
+        var result = await _ticketService.SetDeadlineAsync(
+            Context.User!.FindFirst("Id")!.Value,
+            projectId,
+            ticketId,
+            deadline
+        );
+        result.Unwrap();
+
+        var updatedFields = new Dictionary<string, object>
+        {
+            { nameof(TicketDto.Deadline), deadline! },
+        };
+        await Clients
+            .Group(projectId)
+            .OnUpdateTicket(projectId, ticketId, updatedFields);
+    }
+
     public async Task Invite(string projectId, string username)
     {
         var result = await _projectService.InviteParticipantAsync(

@@ -25,6 +25,12 @@ public class MappingProfile : Profile
                 )
             )
             .ForMember(
+                dest => dest.OpenTicketsWithDeadlineCount,
+                opt => opt.MapFrom(src =>
+                    src.Tickets.Count(ticket => ticket.Status == TicketStatus.None && ticket.Deadline != null)
+                )
+            )
+            .ForMember(
                 dest => dest.ClosedTicketsCount,
                 opt => opt.MapFrom(src =>
                     src.Tickets.Count(ticket => ticket.Status == TicketStatus.Closed)

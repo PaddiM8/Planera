@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Mvc;
 using Planera.Api.Data;
 
 namespace Planera.Api.Models.Ticket;
@@ -15,4 +14,6 @@ public class CreateTicketModel
     public required TicketPriority Priority { get; init; }
 
     public required IEnumerable<string> AssigneeIds { get; init; } = new List<string>();
+    
+    public DateTime? Deadline { get; set; }
 }

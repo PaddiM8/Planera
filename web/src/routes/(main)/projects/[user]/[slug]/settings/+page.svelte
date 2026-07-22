@@ -87,16 +87,31 @@
                label="Description"
                name="description"
                placeholder="Project description..." />
-        <FormLabel value="Project Descriptions" />
-        <MultiButton choices={["Enable", "Disable"]}
-                     choiceValues={["true", "false"]}
-                     selectedValue={data.project.enableTicketDescriptions ? "true" : "false"}
-                     name="enableTicketDescriptions" />
-        <FormLabel value="Project Assignees" />
-        <MultiButton choices={["Enable", "Disable"]}
-                     choiceValues={["true", "false"]}
-                     selectedValue={data.project.enableTicketAssignees ? "true" : "false"}
-                     name="enableTicketAssignees" />
+
+        <div class="group">
+            <FormLabel value="Project Descriptions" />
+            <MultiButton choices={["Enable", "Disable"]}
+                         choiceValues={["true", "false"]}
+                         selectedValue={data.project.enableTicketDescriptions ? "true" : "false"}
+                         name="enableTicketDescriptions" />
+        </div>
+
+        <div class="group">
+            <FormLabel value="Project Assignees" />
+            <MultiButton choices={["Enable", "Disable"]}
+                         choiceValues={["true", "false"]}
+                         selectedValue={data.project.enableTicketAssignees ? "true" : "false"}
+                         name="enableTicketAssignees" />
+        </div>
+
+        <div class="group">
+            <FormLabel value="Deadlines" />
+            <MultiButton choices={["Enable", "Disable"]}
+                         choiceValues={["true", "false"]}
+                         selectedValue={data.project.enableTicketDeadlines ? "true" : "false"}
+                         name="enableTicketDeadlines" />
+        </div>
+
         <div class="buttons">
             <a href="/projects/{data.project.author?.username}/{data.project.slug}">
                 <Button value="Cancel" />

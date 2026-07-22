@@ -84,7 +84,8 @@ public class ProjectController(
             model.Description,
             model.Icon,
             model.EnableTicketDescriptions,
-            model.EnableTicketAssignees
+            model.EnableTicketAssignees,
+            model.EnableTicketDeadlines
         );
 
         return result.ToActionResult();

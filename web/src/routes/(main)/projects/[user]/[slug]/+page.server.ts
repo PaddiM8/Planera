@@ -47,6 +47,7 @@ export const actions = {
                     description: (formData.get("description") as string).trim(),
                     priority: parsePriority(formData.get("priority") as string),
                     assigneeIds: formData.getAll("assignee").map(x => x as string),
+                    deadline: formData.get("deadline") as string,
                 } as CreateTicketModel);
         } catch (ex) {
             return handleProblemForForm(ex as SwaggerException);

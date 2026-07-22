@@ -172,6 +172,9 @@ public class TicketService(
             query = filter switch
             {
                 TicketFilter.Open => query.Where(x => x.Status == TicketStatus.None),
+                TicketFilter.OpenWithDeadline => query
+                    .Where(x => x.Status == TicketStatus.None)
+                    .Where(x => x.Deadline != null),
                 TicketFilter.Closed => query.Where(x => x.Status == TicketStatus.Closed),
                 TicketFilter.Inactive => query.Where(x => x.Status == TicketStatus.Inactive),
                 TicketFilter.Done => query.Where(x => x.Status == TicketStatus.Done),
@@ -187,12 +190,22 @@ public class TicketService(
             filter = TicketFilter.All;
         }
 
+        var now = DateTime.UtcNow;
         if (string.IsNullOrEmpty(searchQuery))
         {
             query = sorting switch
             {
                 TicketSorting.Oldest => query.OrderBy(x => x.Timestamp),
-                TicketSorting.HighestPriority => query.OrderByDescending(x => x.Priority),
+                TicketSorting.HighestPriority => query
+                    .Select(t => new 
+                    {
+                        Ticket = t,
+                        UrgencyScore = t.Deadline == null
+                            ? (int)t.Priority * 25
+                            : (int)t.Priority * 25 + Math.Max(15, 100 - (t.Deadline.Value - now).TotalHours),
+                    })
+                    .OrderByDescending(x => x.UrgencyScore)
+                    .Select(x => x.Ticket),
                 TicketSorting.LowestPriority => query.OrderBy(x => x.Priority),
                 _ => query.OrderByDescending(x => x.Timestamp),
             };
@@ -217,7 +230,8 @@ public class TicketService(
         string title,
         string description,
         TicketPriority priority,
-        IEnumerable<string> assigneeIds)
+        IEnumerable<string> assigneeIds,
+        DateTime? deadline)
     {
         var strategy = _dataContext.Database.CreateExecutionStrategy();
         return await strategy.ExecuteAsync(async () =>
@@ -247,6 +261,7 @@ public class TicketService(
                 Assignees = assignees,
                 AuthorId = userId,
                 Timestamp = DateTime.UtcNow,
+                Deadline = deadline?.ToUniversalTime(),
             };
             await _dataContext.Tickets.AddAsync(ticket);
             await _dataContext.SaveChangesAsync();
@@ -261,7 +276,8 @@ public class TicketService(
         string projectId,
         int ticketId,
         string title,
-        string description)
+        string description,
+        DateTime? deadline)
     {
         var ticketResult = await FindAsync(userId, projectId, ticketId);
         if (ticketResult.IsError)
@@ -274,6 +290,8 @@ public class TicketService(
             description,
             ticket.Description
         );
+        ticket.Deadline = deadline?.ToUniversalTime();
+
         _dataContext.Tickets.Update(ticket);
         await _dataContext.SaveChangesAsync();
 
@@ -388,6 +406,19 @@ public class TicketService(
         await _dataContext.SaveChangesAsync();
 
         return new ErrorOr<Deleted>();
+    }
+
+    public async Task<ErrorOr<Updated>> SetDeadlineAsync(string userId, string projectId, int ticketId, DateTime? deadline)
+    {
+        var ticketResult = await FindAsync(userId, projectId, ticketId);
+        if (ticketResult.IsError)
+            return ticketResult.Errors;
+        
+        ticketResult.Value.Deadline = deadline?.ToUniversalTime();
+        _dataContext.Update(ticketResult.Value);
+        await _dataContext.SaveChangesAsync();
+        
+        return new ErrorOr<Updated>();
     }
 
     private async Task<string> SaveImagesAndReplaceUrls(string projectId, string ticketBody, string? oldBody = null)

@@ -17,12 +17,16 @@ public class ProjectDto
     public bool EnableTicketDescriptions { get; set; } = true;
 
     public bool EnableTicketAssignees { get; set; } = true;
+    
+    public bool EnableTicketDeadlines { get; set; } = true;
 
     public required DateTime Timestamp { get; set; }
 
     public int AllTicketsCount { get; set; }
 
     public int OpenTicketsCount { get; set; }
+    
+    public int OpenTicketsWithDeadlineCount { get; set; }
 
     public int ClosedTicketsCount { get; set; }
 

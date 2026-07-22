@@ -1,6 +1,6 @@
 <script lang="ts">
     import UserIcon from "$lib/components/UserIcon.svelte";
-    import {ChatBubbleBottomCenterText, Check, Icon, Minus, Plus, XMark} from "svelte-hero-icons";
+    import {ChatBubbleBottomCenterText, Check, Clock, Icon, Minus, Plus, XMark} from "svelte-hero-icons";
     import {TicketStatus, TicketDto} from "../../../gen/planeraClient";
     import {projectHub} from "../../../routes/(main)/projects/[user]/[slug]/store";
     import {getAvatarUrl} from "$lib/clients";
@@ -9,6 +9,7 @@
     import {goto} from "$app/navigation";
     import {toast} from "$lib/toast";
     import {closeTouchOverlay, user} from "../../../routes/(main)/store";
+	import { formatDate } from "$lib/formatting";
 
     export let ticket: TicketDto;
     export let isOverview: boolean = false;
@@ -76,6 +77,24 @@
         setTimeout(() => {
             preventTouch = false;
         }, 175);
+    }
+    
+    function getDeadlineClockClass() {
+        if (!ticket.deadline) {
+            return "";
+        }
+        
+        const now = new Date();
+        if (ticket.deadline < now) {
+            return "passed";
+        }
+
+        const millisecondsPerDay = 1000 * 60 * 60 * 24 * 2;
+        if (ticket.deadline.getTime() - now.getTime() < millisecondsPerDay * 2) {
+            return "soon";
+        }
+        
+        return "";
     }
 </script>
 
@@ -189,12 +208,20 @@
                 </button>
             {/if}
         </span>
-        {#if ticket.noteCount}
-            <span class="note-count">
-                <Icon src={ChatBubbleBottomCenterText} />
-                <span class="count">{ticket.noteCount}</span>
-            </span>
-        {/if}
+        <div class="right">
+            {#if ticket.deadline}
+                <span class="deadline {getDeadlineClockClass()}">
+                    <Icon src={Clock} />
+                    <time>{formatDate(ticket.deadline, true)}</time>
+                </span>
+            {/if}
+            {#if ticket.noteCount}
+                <span class="note-count">
+                    <Icon src={ChatBubbleBottomCenterText} />
+                    <span class="count">{ticket.noteCount}</span>
+                </span>
+            {/if}
+        </div>
     </div>
 </div>
 
@@ -413,17 +440,42 @@
         :global(.add-button > *)
             width: 0.75em
             height: 0.75em
+            
+    .right
+        display: flex
+        gap: 0.8em
+        align-items: center
+        margin-left: auto
+            
+    .deadline
+        display: flex
+        align-items: center
+        gap: 0.3em
+
+        time
+            font-weight: 500
+            font-size: 0.9em
+            
+    .passed
+        :global(svg)
+            color: var(--severe)
+
+    .soon
+        :global(svg)
+            color: var(--high)
 
     .note-count
         display: flex
         align-items: center
         gap: 0.3em
-        margin-left: auto
-        align-self: flex-end
 
         .count
             font-weight: 500
             font-size: 0.9em
+
+    :global(.deadline > *:first-child)
+        width: 1em
+        height: 1em
 
     :global(.note-count > *:first-child)
         width: 1em

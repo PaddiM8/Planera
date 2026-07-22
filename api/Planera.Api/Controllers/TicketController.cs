@@ -129,7 +129,8 @@ public class TicketController(TicketService ticketService) : ControllerBase
             model.Title,
             model.Description,
             model.Priority,
-            model.AssigneeIds
+            model.AssigneeIds,
+            model.Deadline
         );
 
         return result.ToActionResult();
@@ -143,7 +144,8 @@ public class TicketController(TicketService ticketService) : ControllerBase
             projectId,
             ticketId,
             model.Title,
-            model.Description
+            model.Description,
+            model.Deadline
         );
 
         return result.ToActionResult();
