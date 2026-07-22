@@ -1,4 +1,6 @@
 import * as xss from "xss";
+import {browser} from "$app/environment";
+import {getContext} from "svelte";
 
 function isToday(date: Date) {
     const now = new Date();
@@ -6,6 +8,10 @@ function isToday(date: Date) {
     return date.getFullYear() == now.getFullYear()
         && date.getMonth() == now.getMonth()
         && date.getDate() == now.getDate();
+}
+
+function isCurrentYear(date: Date) {
+    return date.getFullYear() == new Date().getFullYear();
 }
 
 function zeroPad(value: number) {
@@ -16,10 +22,28 @@ function zeroPad(value: number) {
         : string;
 }
 
-export function formatDate(date: Date) {
-    return isToday(date)
-        ? `${zeroPad(date.getHours())}:${zeroPad(date.getMinutes())}`
-        : `${zeroPad(date.getDate())}/${zeroPad(date.getMonth() + 1)}`;
+export function formatDate(date: Date | undefined) {
+    if (!date) {
+        return "";
+    }
+    
+    let locale: string = getContext("locale");
+    if (isToday(date)) {
+        return date.toLocaleTimeString(locale, {
+            hour: "2-digit",
+            minute: "2-digit",
+        });
+    }
+
+    const dateFormat: Intl.DateTimeFormatOptions = {
+        day: "numeric",
+        month: "short",
+    };
+    if (!isCurrentYear(date)) {
+        dateFormat.year = "numeric";
+    }
+
+    return new Intl.DateTimeFormat(locale, dateFormat).format(date);
 }
 
 const sanitizerOptions = {

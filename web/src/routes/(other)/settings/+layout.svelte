@@ -4,7 +4,7 @@
     import Sidebar from "$lib/components/sidebar/Sidebar.svelte";
     import Label from "$lib/components/GroupLabel.svelte";
     import SidebarEntry from "$lib/components/sidebar/SidebarEntry.svelte";
-    import {ArrowLeft, Cube, Icon, User, Key} from "svelte-hero-icons";
+    import {ArrowLongLeft, Cube, Icon, User, Key} from "svelte-hero-icons";
     import MainArea from "$lib/components/MainArea.svelte";
     import {onMount} from "svelte";
     import {startUserHub} from "$lib/hubs";
@@ -26,7 +26,7 @@
         <SidebarGroup>
             <SidebarEntry src="/"
                           value="Back to Projects">
-                <Icon src={ArrowLeft} />
+                <Icon src={ArrowLongLeft} />
             </SidebarEntry>
         </SidebarGroup>
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {type ProjectDto, type TicketDto, TicketStatus} from "../../../../../gen/planeraClient";
+    import {type ProjectDto, type TicketDto} from "../../../../../gen/planeraClient";
     import {TicketFilter, TicketSorting} from "../../../../../gen/planeraClient";
     import Form from "$lib/components/form/Form.svelte";
     import Input from "$lib/components/form/Input.svelte";
@@ -8,19 +8,14 @@
     import MultiButton from "$lib/components/form/MultiButton.svelte";
     import Label from "$lib/components/GroupLabel.svelte";
     import BlockInput from "$lib/components/form/BlockInput.svelte";
-    import TicketEntry from "$lib/components/ticket/TicketEntry.svelte";
     import {onMount} from "svelte";
     import {participants} from "../../../store";
-    import {projectHub, ticketsPerPage} from "./store";
     import {getAvatarUrl} from "$lib/clients";
     import UserIcon from "$lib/components/UserIcon.svelte";
     import {toast} from "$lib/toast";
-    import Select from "$lib/components/form/Select.svelte";
-    import {makeImagePathsAbsolute} from "$lib/paths";
-    import {sanitizeHtml} from "$lib/formatting";
-    import {getKeyFromValue} from "$lib/util.js";
     import type {FormSubmitInput} from "../../../../types";
     import type {ProblemDetails} from "$lib/problemDetails";
+    import TicketList from "$lib/components/ticket/TicketList.svelte";
 
     export let data: {
         project: ProjectDto,
@@ -38,162 +33,15 @@
     let titleInput: Input;
     let assigneesInput: BlockInput;
     let priorityInput: MultiButton;
-    let searchQuery: string;
-    const filterMap: { [key: string]: TicketFilter } = {};
-    let filterKeys: string[] = [];
-
-    const sortingMap: { [key: string]: TicketSorting } = {
-        "Newest": TicketSorting.Newest,
-        "Oldest": TicketSorting.Oldest,
-        "Highest Priority": TicketSorting.HighestPriority,
-        "Lowest Priority": TicketSorting.LowestPriority,
-    };
-    let sorting: string;
-    let filter: string;
-    let queryTimeout: NodeJS.Timeout;
     let isFormLoading = false;
-    let reachedEndOfTickets = false;
-    let isLoadingMore = false;
+    let ticketListElement: TicketList | undefined;
 
     $: isSubmitDisabled = titleValue?.length < 2 || isFormLoading;
     $: validFormState = titleValue?.length >= 2;
-    $: updateSortingWithoutQuerying(data?.sorting, data?.filter);
-    $: if (data.project) {
-        refreshFilterMap();
-    }
-
-    function refreshFilterMap() {
-        for (const key in filterMap) {
-            delete filterMap[key];
-        }
-
-        filterMap[`All (${data.project.allTicketsCount})`] = TicketFilter.All;
-        filterMap[`Open (${data.project.openTicketsCount})`] = TicketFilter.Open;
-        filterMap[`Closed (${data.project.closedTicketsCount})`] = TicketFilter.Closed;
-        filterMap[`Inactive (${data.project.inactiveTicketsCount})`] = TicketFilter.Inactive;
-        filterMap[`Done (${data.project.doneTicketsCount})`] = TicketFilter.Done;
-        filterMap[`Assigned to Me (${data.project.assignedToMeCount})`] = TicketFilter.AssignedToMe;
-        filterKeys = Object.keys(filterMap);
-
-        // Since the keys changed, the currently selected filter value needs to change
-        // as well
-        if (filter) {
-            setFilter(filter.split(" ").at(0) ?? "");
-        }
-    }
-
-    function setFilter(name: string) {
-        filter = filterKeys.find(key => key.startsWith(name))
-            ?? filterKeys[0];
-    }
-
-    function updateSortingWithoutQuerying(newSorting?: TicketSorting, newFilter?: TicketFilter) {
-        const newSortingString = getKeyFromValue(sortingMap, newSorting ?? TicketSorting.Newest)!;
-        const newFilterString = getKeyFromValue(filterMap, newFilter ?? TicketFilter.All)!;
-        if (sorting  == undefined || newSortingString !== sorting || filter == undefined || newFilterString !== filter) {
-            sorting = newSortingString;
-            filter = newFilterString;
-        }
-    }
 
     onMount(async () => {
         localStorage.setItem("lastVisited", window.location.pathname);
-        const mainArea = document.getElementById("main-area") as HTMLElement;
-        mainArea.onscroll = e => {
-            const target = e.target as HTMLElement;
-            if (!isLoadingMore && target.scrollTop + target.clientHeight >= target.scrollHeight - 100) {
-                loadMore();
-            }
-        }
-
-        projectHub.subscribe(hub => hub?.on("onUpdateTicket", onUpdateTicket));
     });
-
-    async function loadMore() {
-        if (reachedEndOfTickets || !$projectHub || $projectHub.state !== "Connected") {
-            return;
-        }
-
-        isLoadingMore = true;
-        const queryResult = await $projectHub!.invoke(
-            "queryTickets",
-            data.project.author?.username,
-            data.project.slug,
-            data.tickets.length,
-            ticketsPerPage,
-            searchQuery,
-            sortingMap[sorting],
-            filterMap[filter],
-        );
-
-        console.log(queryResult.tickets.length);
-        for (const ticket of queryResult.tickets) {
-            ticket.description = sanitizeHtml(makeImagePathsAbsolute(ticket.description));
-        }
-
-        let combinedTickets = [...data.tickets, ...queryResult.tickets];
-        // De-duplicate
-        combinedTickets = Array.from(
-            new Map(combinedTickets.map(x => [x.id, x])).values()
-        );
-        data.tickets = combinedTickets;
-
-        if (queryResult.tickets.length === 0) {
-            reachedEndOfTickets = true;
-        }
-
-        isLoadingMore = false;
-    }
-
-    function onUpdateTicket(projectId: string, ticketId: number, newFields: TicketDto) {
-        const index = data.tickets.findIndex(x => x.id === ticketId);
-        if (index !== -1) {
-            for (const [key, value] of Object.entries(newFields)) {
-                const ticket = (data.tickets as any)[index];
-                if (key === "status") {
-                    updateTicketCounts(value, ticket.status);
-                }
-
-                ticket[key] = value;
-            }
-        }
-    }
-
-    function updateTicketCounts(newStatus: TicketStatus, oldStatus: TicketStatus) {
-        if (data.project.openTicketsCount !== undefined) {
-            if (oldStatus === TicketStatus.None) {
-                data.project.openTicketsCount--;
-            } else if (newStatus === TicketStatus.None) {
-                data.project.openTicketsCount++;
-            }
-        }
-
-        if (data.project.closedTicketsCount !== undefined) {
-            if (oldStatus === TicketStatus.Closed) {
-                data.project.closedTicketsCount--;
-            } else if (newStatus === TicketStatus.Closed) {
-                data.project.closedTicketsCount++;
-            }
-        }
-
-        if (data.project.inactiveTicketsCount !== undefined) {
-            if (oldStatus === TicketStatus.Inactive) {
-                data.project.inactiveTicketsCount--;
-            } else if (newStatus === TicketStatus.Inactive) {
-                data.project.inactiveTicketsCount++;
-            }
-        }
-
-        if (data.project.doneTicketsCount !== undefined) {
-            if (oldStatus === TicketStatus.Done) {
-                data.project.doneTicketsCount--;
-            } else if (newStatus === TicketStatus.Done) {
-                data.project.doneTicketsCount++;
-            }
-        }
-
-        refreshFilterMap();
-    }
 
     async function beforeSubmit({ formData }: FormSubmitInput) {
         isFormLoading = true;
@@ -210,49 +58,15 @@
             setTimeout(() => {
                 titleInput?.focus();
             }, 100);
-            searchQuery = "";
+            
             toast.info("Created ticket successfully.");
-
-            if (data.project.allTicketsCount !== undefined && data.project.openTicketsCount !== undefined) {
-                refreshFilterMap();
-            }
+            ticketListElement?.partialReset();
         }
 
         // Wait a little bit before enabling the button again
         // to prevent ugly flickering.
         setTimeout(() => {
             isFormLoading = false;
-        }, 500);
-    }
-
-    function query() {
-        reachedEndOfTickets = false;
-        const newTimeout = setTimeout(async () => {
-            clearTimeout(queryTimeout);
-            queryTimeout = newTimeout;
-
-            try {
-                const queryResult = await $projectHub!.invoke(
-                    "queryTickets",
-                    data.project.author?.username,
-                    data.project.slug,
-                    0,
-                    ticketsPerPage,
-                    searchQuery,
-                    sortingMap[sorting],
-                    filterMap[filter],
-                );
-
-                for (const ticket of queryResult.tickets) {
-                    ticket.description = sanitizeHtml(makeImagePathsAbsolute(ticket.description));
-                }
-
-                data.sorting = queryResult.sorting;
-                data.filter = queryResult.filter;
-                data.tickets = queryResult.tickets;
-            } catch {
-                toast.error("Failed to fetch tickets.");
-            }
         }, 500);
     }
 </script>
@@ -327,25 +141,11 @@
     </Form>
 </section>
 
-<section class="tickets">
-    <h2>Tickets</h2>
-    <div class="search-area">
-            <Input placeholder="Search..."
-                   bind:value={searchQuery}
-                   on:input={query} />
-        <div class="sorting">
-            <Select bind:choices={filterKeys}
-                    bind:selectedValue={filter}
-                    on:change={query} />
-            <Select choices={Object.keys(sortingMap)}
-                    bind:selectedValue={sorting}
-                    on:change={query} />
-        </div>
-    </div>
-    {#each data.tickets as ticket}
-        <TicketEntry bind:ticket={ticket} />
-    {/each}
-</section>
+<TicketList bind:this={ticketListElement}
+            bind:project={data.project}
+            bind:sorting={data.sorting}
+            bind:filter={data.filter}
+            bind:tickets={data.tickets} />
 
 <style lang="sass">
     section
@@ -384,23 +184,8 @@
         align-items: center
         gap: 0.8em
 
-    .search-area
-        display: flex
-        gap: 0.8em
-        margin-bottom: 0.8em
-
-        .sorting
-            display: flex
-            gap: var(--spacing)
-            width: 100%
-            max-width: 37em
-
     @media screen and (max-width: 980px)
         .bottom-row
             align-items: normal
-            flex-direction: column
-
-    @media screen and (max-width: 790px)
-        .search-area
             flex-direction: column
 </style>

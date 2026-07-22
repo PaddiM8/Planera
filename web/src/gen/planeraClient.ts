@@ -1092,14 +1092,8 @@ export class TicketClient extends AuthorizedApiBase {
         return Promise.resolve<TicketDto>(null as any);
     }
 
-    getAll(username: string, slug: string, startIndex?: number | undefined, amount?: number | undefined): Promise<TicketQueryResult> {
-        let url_ = this.baseUrl + "/tickets/{username}/{slug}?";
-        if (username === undefined || username === null)
-            throw new globalThis.Error("The parameter 'username' must be defined.");
-        url_ = url_.replace("{username}", encodeURIComponent("" + username));
-        if (slug === undefined || slug === null)
-            throw new globalThis.Error("The parameter 'slug' must be defined.");
-        url_ = url_.replace("{slug}", encodeURIComponent("" + slug));
+    getAll(startIndex?: number | undefined, amount?: number | undefined, sorting?: TicketSorting | null | undefined, filter?: TicketFilter | null | undefined): Promise<TicketQueryResult> {
+        let url_ = this.baseUrl + "/tickets?";
         if (startIndex === null)
             throw new globalThis.Error("The parameter 'startIndex' cannot be null.");
         else if (startIndex !== undefined)
@@ -1108,6 +1102,10 @@ export class TicketClient extends AuthorizedApiBase {
             throw new globalThis.Error("The parameter 'amount' cannot be null.");
         else if (amount !== undefined)
             url_ += "amount=" + encodeURIComponent("" + amount) + "&";
+        if (sorting !== undefined && sorting !== null)
+            url_ += "sorting=" + encodeURIComponent("" + sorting) + "&";
+        if (filter !== undefined && filter !== null)
+            url_ += "filter=" + encodeURIComponent("" + filter) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
@@ -1142,7 +1140,111 @@ export class TicketClient extends AuthorizedApiBase {
         return Promise.resolve<TicketQueryResult>(null as any);
     }
 
-    getAll2(username: string, slug: string, startIndex?: number | undefined, sorting?: TicketSorting | undefined, filter?: TicketFilter | null | undefined, amount?: number | undefined): Promise<TicketQueryResult> {
+    getAllInProject(username: string, slug: string, startIndex?: number | undefined, amount?: number | undefined, sorting?: TicketSorting | null | undefined, filter?: TicketFilter | null | undefined): Promise<TicketQueryResult> {
+        let url_ = this.baseUrl + "/tickets/{username}/{slug}?";
+        if (username === undefined || username === null)
+            throw new globalThis.Error("The parameter 'username' must be defined.");
+        url_ = url_.replace("{username}", encodeURIComponent("" + username));
+        if (slug === undefined || slug === null)
+            throw new globalThis.Error("The parameter 'slug' must be defined.");
+        url_ = url_.replace("{slug}", encodeURIComponent("" + slug));
+        if (startIndex === null)
+            throw new globalThis.Error("The parameter 'startIndex' cannot be null.");
+        else if (startIndex !== undefined)
+            url_ += "startIndex=" + encodeURIComponent("" + startIndex) + "&";
+        if (amount === null)
+            throw new globalThis.Error("The parameter 'amount' cannot be null.");
+        else if (amount !== undefined)
+            url_ += "amount=" + encodeURIComponent("" + amount) + "&";
+        if (sorting !== undefined && sorting !== null)
+            url_ += "sorting=" + encodeURIComponent("" + sorting) + "&";
+        if (filter !== undefined && filter !== null)
+            url_ += "filter=" + encodeURIComponent("" + filter) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.processGetAllInProject(_response);
+        });
+    }
+
+    protected processGetAllInProject(response: Response): Promise<TicketQueryResult> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = TicketQueryResult.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<TicketQueryResult>(null as any);
+    }
+
+    query(startIndex?: number | undefined, sorting?: TicketSorting | undefined, filter?: TicketFilter | null | undefined, amount?: number | undefined): Promise<TicketQueryResult> {
+        let url_ = this.baseUrl + "/tickets/query?";
+        if (startIndex === null)
+            throw new globalThis.Error("The parameter 'startIndex' cannot be null.");
+        else if (startIndex !== undefined)
+            url_ += "startIndex=" + encodeURIComponent("" + startIndex) + "&";
+        if (sorting === null)
+            throw new globalThis.Error("The parameter 'sorting' cannot be null.");
+        else if (sorting !== undefined)
+            url_ += "sorting=" + encodeURIComponent("" + sorting) + "&";
+        if (filter !== undefined && filter !== null)
+            url_ += "filter=" + encodeURIComponent("" + filter) + "&";
+        if (amount === null)
+            throw new globalThis.Error("The parameter 'amount' cannot be null.");
+        else if (amount !== undefined)
+            url_ += "amount=" + encodeURIComponent("" + amount) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.processQuery(_response);
+        });
+    }
+
+    protected processQuery(response: Response): Promise<TicketQueryResult> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = TicketQueryResult.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<TicketQueryResult>(null as any);
+    }
+
+    queryInProject(username: string, slug: string, startIndex?: number | undefined, sorting?: TicketSorting | undefined, filter?: TicketFilter | null | undefined, amount?: number | undefined): Promise<TicketQueryResult> {
         let url_ = this.baseUrl + "/tickets/{username}/{slug}/query?";
         if (username === undefined || username === null)
             throw new globalThis.Error("The parameter 'username' must be defined.");
@@ -1176,11 +1278,11 @@ export class TicketClient extends AuthorizedApiBase {
         return this.transformOptions(options_).then(transformedOptions_ => {
             return this.http.fetch(url_, transformedOptions_);
         }).then((_response: Response) => {
-            return this.processGetAll2(_response);
+            return this.processQueryInProject(_response);
         });
     }
 
-    protected processGetAll2(response: Response): Promise<TicketQueryResult> {
+    protected processQueryInProject(response: Response): Promise<TicketQueryResult> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -2589,7 +2691,7 @@ export interface IEditProjectModel {
 export class TicketQueryResult implements ITicketQueryResult {
     tickets?: TicketDto[];
     sorting?: TicketSorting;
-    filter?: TicketFilter | undefined;
+    filter?: TicketFilter;
 
     constructor(data?: ITicketQueryResult) {
         if (data) {
@@ -2635,7 +2737,7 @@ export class TicketQueryResult implements ITicketQueryResult {
 export interface ITicketQueryResult {
     tickets?: TicketDto[];
     sorting?: TicketSorting;
-    filter?: TicketFilter | undefined;
+    filter?: TicketFilter;
 }
 
 export enum TicketSorting {

@@ -1,5 +1,10 @@
 import type {RequestEvent, ServerLoadEvent} from "@sveltejs/kit";
-import type {CreateTicketModel, SwaggerException, TicketQueryResult} from "../../../../../gen/planeraClient";
+import {
+    type CreateTicketModel,
+    type SwaggerException,
+    TicketFilter,
+    type TicketQueryResult, TicketSorting
+} from "../../../../../gen/planeraClient";
 import {getTicketClient} from "$lib/clients";
 import {parsePriority} from "$lib/priority";
 import {handleProblem, handleProblemForForm} from "$lib/problemDetails";
@@ -10,7 +15,7 @@ import {sanitizeHtml} from "$lib/formatting";
 export async function load({ cookies, params }: ServerLoadEvent) {
     let response: TicketQueryResult;
     try {
-        response = await getTicketClient(cookies).getAll(
+        response = await getTicketClient(cookies).getAllInProject(
             params.user!,
             params.slug!,
             0,
@@ -30,6 +35,7 @@ export async function load({ cookies, params }: ServerLoadEvent) {
         tickets: structuredClone(response.tickets),
     };
 }
+
 export const actions = {
     default: async ({ request, cookies }: RequestEvent) => {
         const formData = await request.formData();

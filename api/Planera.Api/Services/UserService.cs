@@ -13,7 +13,8 @@ public class UserService(
     DataContext dataContext,
     IMapper mapper,
     UserManager<User> userManager,
-    IFileStorage fileStorage)
+    IFileStorage fileStorage
+)
 {
     public async Task<ErrorOr<UserDto>> GetAsync(string userId)
     {

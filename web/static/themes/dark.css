@@ -8,6 +8,7 @@
     --background-secondary-hover: #d4d4d8;
     --component-background-rgb: 38, 38, 38;
     --component-background: rgb(var(--component-background-rgb));
+    --sidebar-icon-color: #bdbdbd;
     --primary: #1d4ed8;
     --on-primary: #fafafa;
     --primary-hover: #1e3a8a;

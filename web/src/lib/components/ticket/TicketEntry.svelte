@@ -11,6 +11,7 @@
     import {closeTouchOverlay, user} from "../../../routes/(main)/store";
 
     export let ticket: TicketDto;
+    export let isOverview: boolean = false;
 
     let showTouchOverlay = false;
     let preventTouch = false;
@@ -138,22 +139,39 @@
         </a>
         <h3 class="id">{ticket.id}</h3>
 
-        <div class="status-buttons">
-            <IconButton value="Close"
-                        icon={XMark}
-                        color="red"
-                        on:click={() => setStatus(TicketStatus.Closed)} />
-            <IconButton value="Inactive"
-                        icon={Minus}
-                        color="blue"
-                        on:click={() => setStatus(TicketStatus.Inactive)} />
-            <IconButton value="Done"
-                        icon={Check}
-                        color="green"
-                        on:click={() => setStatus(TicketStatus.Done)} />
-        </div>
+        {#if !isOverview}
+            <div class="status-buttons">
+                <IconButton value="Close"
+                            icon={XMark}
+                            color="red"
+                            on:click={() => setStatus(TicketStatus.Closed)} />
+                <IconButton value="Inactive"
+                            icon={Minus}
+                            color="blue"
+                            on:click={() => setStatus(TicketStatus.Inactive)} />
+                <IconButton value="Done"
+                            icon={Check}
+                            color="green"
+                            on:click={() => setStatus(TicketStatus.Done)} />
+            </div>
+        {/if}
+        
+        {#if isOverview}
+            <div class="project">
+                <div class="project-icon">
+                    <UserIcon name={ticket.project?.name ?? "?"}
+                              image={ticket.project?.iconPath}
+                              type="project" />
+                </div>
+                <span class="project-name">{ticket.project?.name ?? "?"}</span>
+            </div>
+        {/if}
     </div>
-    <span class="description">{@html ticket.description}</span>
+    <span class="description">
+        {#if !isOverview}
+            {@html ticket.description}
+        {/if}
+    </span>
     <div class="bottom">
         <PriorityLabel bind:priority={ticket.priority}
                        bind:status={ticket.status} />
@@ -165,7 +183,7 @@
                               type="user" />
                 </span>
             {/each}
-            {#if !ticket.assignees?.some(x => x.username === $user.username)}
+            {#if !ticket.assignees?.some(x => x.username === $user.username) && !isOverview}
                 <button class="assignee add-button" on:click={assignToMe}>
                     <Icon src={Plus} />
                 </button>
@@ -267,6 +285,12 @@
             color: var(--on-background)
             text-decoration: none
             overflow: hidden
+            
+    .project-icon
+        margin-top: 0.1em
+        height: 1.2em
+        min-width: 1.2em
+        margin-right: -0.2em
 
     .status
         display: block
@@ -300,6 +324,11 @@
 
     .ticket.has-status .status-buttons
         visibility: collapse
+        
+    .project
+        display: flex
+        margin-left: auto
+        gap: 0.6em
 
     .status-buttons
         display: flex

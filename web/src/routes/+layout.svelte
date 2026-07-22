@@ -1,4 +1,5 @@
 <script lang="ts">
+    import "@fontsource-variable/inter";
     import UserIcon from "$lib/components/UserIcon.svelte";
     import ContextMenu from "$lib/components/ContextMenu.svelte";
     import ContextMenuEntry from "$lib/components/ContextMenuEntry.svelte";
@@ -12,11 +13,15 @@
     import {page} from "$app/stores";
     import {theme} from "./store"
     import {browser} from "$app/environment";
+    import {setContext} from "svelte";
 
-    export let data = {
+    export let data: {
         user: UserDto,
         authenticationInfo: AuthenticationInfo,
+        locale: string,
     };
+    
+    setContext("locale", data.locale);
 
     theme.subscribe(loadTheme);
 
@@ -50,10 +55,10 @@
         sidebar?.classList.add("open");
     }
 
-    function handleUserClick(e) {
+    function handleUserClick(e: MouseEvent) {
         contextMenuTarget = contextMenuTarget
             ? undefined
-            : e.target;
+            : e.target as HTMLElement;
     }
 </script>
 
@@ -86,7 +91,7 @@
         <div class="items">
             {#if data?.user}
                 <!-- svelte-ignore a11y-click-events-have-key-events -->
-                <div class="user" on:click={handleUserClick}>
+                <div class="user" on:click={handleUserClick} role="button" tabindex="0">
                     <UserIcon type="user"
                               name={data.user.username}
                               image={getAvatarUrl(data.user.avatarPath, "big")} />
@@ -105,7 +110,6 @@
 </div>
 
 <style lang="sass">
-    @use "@fontsource-variable/inter"
     @use "../values"
 
     :global(*)

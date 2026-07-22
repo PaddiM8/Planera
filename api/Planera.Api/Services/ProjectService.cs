@@ -39,6 +39,13 @@ public class ProjectService(
             .Where(x => x.Slug == slug)
             .Where(x => x.Participants.Any(user => user.Id == userId));
     }
+    
+    public IQueryable<Project> QueryByUserId(string userId)
+    {
+        return _dataContext.Projects
+            .Where(x => x.Participants.Any(user => user.Id == userId));
+        
+    }
 
     public async Task<ErrorOr<ICollection<ProjectDto>>> GetAllAsync(string username)
     {

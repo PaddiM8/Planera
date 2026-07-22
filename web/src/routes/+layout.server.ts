@@ -5,11 +5,12 @@ import {UserDto} from "../gen/planeraClient";
 import {getUserClient, getAuthenticationClient} from "$lib/clients";
 import {pathRequiresAuthentication} from "$lib/paths";
 
-export const load = (async ({ cookies, url }) => {
+export const load = (async ({ cookies, url, locals }) => {
     if (!cookies.get("token") || !pathRequiresAuthentication(url)) {
         const authenticationInfo = await getAuthenticationClient(cookies).getInfo();
         return {
             authenticationInfo: structuredClone(authenticationInfo),
+            locale: locals.locale,
         };
     }
 
@@ -29,5 +30,6 @@ export const load = (async ({ cookies, url }) => {
 
     return {
         user: structuredClone(response),
+        locale: locals.locale,
     };
 }) satisfies LayoutServerLoad;

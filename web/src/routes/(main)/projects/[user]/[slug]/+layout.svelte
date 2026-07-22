@@ -16,7 +16,7 @@
     let reconnectingToast: HTMLElement | null = null;
 
     async function connectToProject(projectId: string) {
-        if (!browser || !$projectHub || $projectHub.state !== HubConnectionState.Connected) {
+        if (!browser || !$projectHub) {
             return;
         }
 
@@ -31,24 +31,41 @@
             }
         }
 
-        try {
-            await $projectHub.invoke("join", projectId);
-        } catch (ex) {
-            console.log(ex);
-            toast.error("Failed to connect to project.");
+        previousProjectId = projectId;
+        
+        let tryJoin = async () => {
+            try {
+                await $projectHub.invoke("join", projectId);
+
+                return true;
+            } catch (ex) {
+                console.log(ex);
+                toast.error("Failed to connect to project.");
+
+                return false;
+            }
+        }
+        
+        if (await tryJoin()) {
+            return;
         }
 
-        previousProjectId = projectId;
+        let reconnectInterval = setInterval(async () => {
+            if (await tryJoin()) {
+                clearInterval(reconnectInterval);
+            }
+        }, 1000);
+
     }
 
     $: connectToProject(data?.project.id);
     $: if (data) {
-        $participants = data.project.participants;
+        $participants = data.project.participants ?? [];
     }
 
     onMount(async () => {
-        for (const participant of data.project.participants) {
-            if (participant.id === data.project.author.id) {
+        for (const participant of data.project.participants ?? []) {
+            if (participant.id === data.project.author?.id) {
                 (participant as any).removable = false;
             }
         }
@@ -60,7 +77,7 @@
         reconnectingToast = toast.info("Reconnecting...", null);
         const hub = await startProjectHub();
         projectHub.set(hub);
-        toast.clear(reconnectingToast);
+        toast.clear(reconnectingToast!);
         reconnectingToast = null;
         
         hub.onreconnecting(_ => {

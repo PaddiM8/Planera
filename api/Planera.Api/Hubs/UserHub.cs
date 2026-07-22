@@ -1,20 +1,24 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Planera.Api.Data;
+using Planera.Api.Data.Dto;
 using Planera.Api.Services;
 using Planera.Api.Extensions;
+using Planera.Api.Models.Ticket;
 
 namespace Planera.Api.Hubs;
 
 [Authorize]
 public class UserHub(
     UserService userService,
+    TicketService ticketService,
     PersonalAccessTokenService personalAccessTokenService,
     IHubContext<ProjectHub, IProjectHubContext> projectHub
 )
     : Hub<IUserHubContext>
 {
     private readonly UserService _userService = userService;
+    private readonly TicketService _ticketService = ticketService;
     private readonly PersonalAccessTokenService _personalAccessTokenService = personalAccessTokenService;
 
     public async Task AcceptInvitation(string projectId)
@@ -55,5 +59,26 @@ public class UserHub(
     {
         var result = await _personalAccessTokenService.RevokeAsync(Context.User!.FindFirst("Id")!.Value);
         result.Unwrap();
+    }
+
+    public async Task<TicketQueryResult> QueryTickets(
+        int startIndex,
+        int amount,
+        string? query = null,
+        TicketSorting sorting = TicketSorting.Newest,
+        TicketFilter? filter = null)
+    {
+        var result = await _ticketService.GetAllAsync(
+            Context.User!.FindFirst("Id")!.Value,
+            username: null,
+            slug: null,
+            startIndex,
+            amount,
+            query,
+            sorting,
+            filter
+        );
+
+        return result.Unwrap();
     }
 }

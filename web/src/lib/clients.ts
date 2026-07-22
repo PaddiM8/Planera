@@ -1,4 +1,11 @@
-import {AuthenticationClient, UserClient, ProjectClient, TicketClient, IConfig, NoteClient} from "../gen/planeraClient";
+import {
+    AuthenticationClient,
+    UserClient,
+    ProjectClient,
+    TicketClient,
+    IConfig,
+    NoteClient
+} from "../gen/planeraClient";
 
 const serverUrl = import.meta.env.VITE_INTERNAL_API_URL;
 

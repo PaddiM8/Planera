@@ -68,9 +68,9 @@
                 <ErrorText value="Error loading projects." />
             {/if}
             {#each data?.projects ?? [] as project}
-                <SidebarEntry src="/projects/{project.author.username}/{project.slug}"
+                <SidebarEntry src="/projects/{project.author?.username}/{project.slug}"
                               value={project.name}
-                              settingsSrc="/projects/{project.author.username}/{project.slug}/settings">
+                              settingsSrc="/projects/{project.author?.username}/{project.slug}/settings">
                     <UserIcon type="project"
                               name="{project.name}"
                               image={getAvatarUrl(project.iconPath, "small")} />

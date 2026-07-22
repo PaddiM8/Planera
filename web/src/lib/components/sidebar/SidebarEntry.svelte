@@ -59,6 +59,7 @@
         .icon
             width: 1.5em
             height: 1.5em
+            color: var(--sidebar-icon-color)
 
         .unread-count
             $size: 1.3em

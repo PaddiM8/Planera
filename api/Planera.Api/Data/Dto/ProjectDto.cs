@@ -1,6 +1,3 @@
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
-
 namespace Planera.Api.Data.Dto;
 
 public class ProjectDto
