@@ -99,7 +99,7 @@
     }
 </script>
 
-<div class="ticket" class:has-status={ticket.status}>
+<div class="ticket {isOverview ? 'is-overview' : ''}" class:has-status={ticket.status}>
     <button class="touch-overlay" on:click={openTouchOverlay}>
         {#if showTouchOverlay}
             <span class="menu">
@@ -278,6 +278,7 @@
                 flex-grow: 1
                 flex-basis: 50%
                 background-color: var(--component-background)
+                color: var(--on-background)
                 border: 0
                 border-right: var(--border)
                 font-weight: 500
@@ -486,7 +487,7 @@
         .status-buttons
             display: none
 
-        .id
+        .ticket:not(.is-overview) .id
             margin-left: auto
 
         .touch-overlay
