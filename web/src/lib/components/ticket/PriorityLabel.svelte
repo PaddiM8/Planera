@@ -28,15 +28,19 @@
 
         &.active
             &:global(.priority-Low)
+                color: var(--on-low)
                 background-color: var(--low)
 
             &:global(.priority-Normal)
+                color: var(--on-normal)
                 background-color: var(--normal)
 
             &:global(.priority-High)
+                color: var(--on-high)
                 background-color: var(--high)
 
             &:global(.priority-Severe)
+                color: var(--on-severe)
                 background-color: var(--severe)
 
 </style>

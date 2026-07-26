@@ -26,13 +26,20 @@
     --vertical-padding: 0.55rem;
     --horizontal-padding: 0.7rem;
     --radius: 0.375rem;
-    --none: #a3a3a3;
-    --low: #2563eb;
-    --normal: #059669;
-    --high: #f97316;
-    --severe: #ef4444;
+    --none: oklch(70.8% 0 none);
+    --on-none: var(--on-background);
+    --low: oklch(93.2% 0.032 255.585);
+    --on-low: oklch(37.9% 0.146 265.522);
+    --normal: oklch(95% 0.052 163.051);
+    --on-normal: oklch(37.8% 0.077 168.94);
+    --high: oklch(96.2% 0.059 95.617);
+    --on-high: oklch(41.4% 0.112 45.904);
+    --severe: oklch(93.6% 0.032 17.717);
+    --on-severe: oklch(39.6% 0.141 25.723);
     --green: #16a34a;
     --blue: #2563eb;
     --red: #e11d48;
     --red-hover: #ef4444;
+    --deadline-passed: oklch(63.7% 0.237 25.331);
+    --deadline-soon: oklch(66.6% 0.179 58.318);
 }

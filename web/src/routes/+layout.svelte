@@ -7,7 +7,7 @@
     import Label from "$lib/components/GroupLabel.svelte";
     import Toast from "$lib/components/Toast.svelte";
     import YesNoDialog from "$lib/components/dialogs/YesNoDialog.svelte";
-    import {InterfaceTheme, UserDto, AuthenticationInfo} from "../gen/planeraClient";
+    import {AuthenticationInfo, InterfaceTheme, UserDto} from "../gen/planeraClient";
     import {getAvatarUrl} from "$lib/clients";
     import {user} from "./(main)/store";
     import {page} from "$app/stores";

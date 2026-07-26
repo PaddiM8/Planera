@@ -460,11 +460,11 @@
             
     .passed
         :global(svg)
-            color: var(--severe)
+            color: var(--deadline-passed)
 
     .soon
         :global(svg)
-            color: var(--high)
+            color: var(--deadline-soon)
 
     .note-count
         display: flex

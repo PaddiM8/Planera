@@ -3,7 +3,8 @@
 
     export let choices: string[] = [];
     export let choiceValues: string[] | undefined = undefined;
-    export let colors: string[] | undefined = undefined;
+    export let backgroundColors: string[] | undefined = undefined;
+    export let foregroundColors: string[] | undefined = undefined;
     export let selectedValue: string | undefined = undefined;
     export let defaultValue: string | undefined = undefined;
     export let name: string | undefined = undefined;
@@ -13,7 +14,8 @@
 
     if (yesNo) {
         choices = ["No", "Yes"];
-        colors = ["var(--severe)", "var(--normal)"]
+        backgroundColors = ["var(--severe)", "var(--normal)"]
+        foregroundColors = ["var(--on-severe)", "var(--on-normal)"]
         choiceValues = ["false", "true"]
     }
 
@@ -42,7 +44,8 @@
 <span class="multi-button">
     {#each choices as choice, i}
         {@const value = choiceValues ? choiceValues[i] : choice}
-        {@const color = colors ? colors[i] : undefined}
+        {@const backgroundColor = backgroundColors ? backgroundColors[i] : undefined}
+        {@const foregroundColor = foregroundColors ? foregroundColors[i] : undefined}
         <span class="button">
             <input type="radio"
                    id="choice-{name}-{value.replace(' ', '-')}"
@@ -51,7 +54,7 @@
                    bind:group={selectedValue}
                    on:change={e => handleChange(e, value)} />
             <label for="choice-{name}-{value.replace(' ', '-')}"
-                   style="{color ? `background-color: ${color};` : ''}">
+                   style="{backgroundColor ? `background-color: ${backgroundColor};` : ''} {foregroundColor ? `color: ${foregroundColor};` : ''}">
                 {choice}
             </label>
         </span>
@@ -84,9 +87,11 @@
         z-index: -1
       
     input[type="radio"]:checked + label
+      color: var(--on-background)
       background-color: var(--background-selected)
       
     input[type="radio"]:not(:checked) + label
+      color: var(--on-background) !important
       background-color: var(--component-background) !important
 
     input[type="radio"]:focus-visible + label
@@ -111,5 +116,5 @@
         -webkit-tap-highlight-color: transparent
 
         &:hover:not(input[type="radio"]:checked + label)
-            background-color: var(--background-hover)
+            background-color: var(--background-hover) !important
 </style>
