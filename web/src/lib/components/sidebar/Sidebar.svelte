@@ -14,9 +14,13 @@
 				return;
 			}
 
+			if (touchEventIsOnSidebarButton(e)) {
+				return;
+			}
+
 			let offsetX = Math.min(e.touches[0].clientX - startTouchX, sidebarElement.clientWidth);
 			const offsetY = Math.abs(e.touches[0].clientY - startTouchY);
-			const isOpen = sidebarElement.classList.contains("open");
+			const isOpen = sidebarElement.classList.contains("open")
 			if (!isOpen) {
 				if (offsetX < 50 || offsetY > 150 || Math.abs(offsetY) > Math.abs(offsetX)) {
 					return;
@@ -35,7 +39,11 @@
 			if (e.touches.length !== 1) {
 				return;
 			}
-
+			
+			if (touchEventIsOnSidebarButton(e)) {
+				return;
+			}
+			
 			startDrag();
 			startTouchX = e.touches[0].clientX;
 			startTouchY = e.touches[0].clientY;
@@ -50,8 +58,12 @@
 		sidebarElement.style.transition = "none";
 	}
 
-	function endDrag() {
+	function endDrag(e: TouchEvent) {
 		if (!dragging) {
+			return;
+		}
+		
+		if (touchEventIsOnSidebarButton(e)) {
 			return;
 		}
 
@@ -60,13 +72,31 @@
 		document.body.style.userSelect = "";
 
 		const rect = sidebarElement.getBoundingClientRect();
-		if (rect.left < -rect.width / 2) {
+		const isOpen = sidebarElement.classList.contains("open");
+		if (!isOpen && rect.left + rect.width < rect.width / 4) {
+			close();
+		} else if(isOpen && rect.left < -rect.width / 5) {
 			close();
 		} else {
 			sidebarElement.classList.add("open");
 		}
 
 		sidebarElement.style.transform = "";
+	}
+	
+	function touchEventIsOnSidebarButton(event: TouchEvent) {
+		for (const touched of event.touches) {
+			let target: any = touched.target;
+			while (target && !target.classList.contains("sidebar-button")) {
+				target = target.parentElement;
+			}
+
+			if (target) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 
 	function close() {

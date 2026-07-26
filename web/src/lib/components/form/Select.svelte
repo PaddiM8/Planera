@@ -1,3 +1,8 @@
+<script context="module">
+    import { writable } from "svelte/store";
+    let lastMenuId = writable(0);
+</script>
+
 <script lang="ts">
     import {Icon, ChevronDown} from "svelte-hero-icons";
     import {createEventDispatcher, onMount} from "svelte";
@@ -8,7 +13,7 @@
     export let width: string | undefined = undefined;
     export let name: string | undefined = undefined;
 
-    const menuId = `menu-${crypto.randomUUID()}`;
+    const menuId = `menu-${$lastMenuId++}`;
     let menuElement: HTMLElement;
     const dispatcher = createEventDispatcher();
 
@@ -50,13 +55,13 @@
 </script>
 
 <div class="select">
-    <input type="text"
-           {name}
+    <input {name}
+           inputmode="none"
            bind:value={selectedValue}
            on:pointerdown={() => menuElement.showPopover()}
            on:blur={() => menuElement.hidePopover()}
            on:keydown={handleKeyDown}
-           style="anchor-name: --anchor-{menuId}; width: {width ?? ''}"/>
+           style="anchor-name: --anchor-{menuId}; {width ? `width: ${width};` : ''}" />
     <span class="icon">
         <Icon src={ChevronDown} />
     </span>
@@ -73,6 +78,7 @@
     .select
         position: relative
         display: flex
+        align-items: stretch
         caret-color: transparent
 
     input
@@ -83,13 +89,19 @@
         padding: var(--vertical-padding) var(--horizontal-padding)
         padding-right: 2em
         border-radius: var(--radius)
-        color: var(--on-background)
         font-weight: 500
         border: 0
+        color: var(--on-background)
         background-color: var(--component-background)
         outline: var(--border)
         box-sizing: border-box
         cursor: pointer
+
+        caret-color: transparent
+        user-select: none
+        -webkit-user-select: none
+        -webkit-touch-callout: none
+        -moz-user-select: none
 
         &::selection, &::-moz-selection
             background-color: transparent
