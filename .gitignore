@@ -1,4 +1,5 @@
 .idea/
+.user
 data/
 bin/
 obj/
