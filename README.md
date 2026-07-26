@@ -3,6 +3,20 @@ A simple ticket-based project management web application.
 
 ![preview](preview.png)
 
+## Features
+
+* Collaborative projects
+* Tickets
+  * Rich text editing
+  * Priority
+  * Assign to users
+  * Set deadlines
+  * Notes/comments
+* Push notifications
+  * Get notified when a deadline is coming up
+* Progressive web app (at it to your phone's home screen)
+* OIDC login
+
 ## Getting Started
 
 ### Docker Compose

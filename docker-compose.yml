@@ -4,8 +4,18 @@
     restart: always
     ports:
       - 2000:2000
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile
+    environment:
+      CADDYFILE_CONTENT: |
+        :2000 {
+          handle_path /api/* {
+            reverse_proxy http://planera-api:5065
+          }
+          
+          reverse_proxy http://planera-web:3000
+        }
+    command: >
+      sh -c "echo \"$$CADDYFILE_CONTENT\" > /etc/caddy/Caddyfile &&
+      caddy run --config /etc/caddy/Caddyfile"
   db:
     image: postgres:15
     restart: always
