@@ -11,6 +11,7 @@ export const load = (async ({ cookies, url, locals }) => {
         return {
             authenticationInfo: structuredClone(authenticationInfo),
             locale: locals.locale,
+            systemTheme: cookies.get("systemTheme"),
         };
     }
 
@@ -32,5 +33,6 @@ export const load = (async ({ cookies, url, locals }) => {
         user: structuredClone(response),
         authenticationInfo: structuredClone(authenticationInfo),
         locale: locals.locale,
+        systemTheme: cookies.get("systemTheme"),
     };
 }) satisfies LayoutServerLoad;

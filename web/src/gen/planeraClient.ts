@@ -2235,8 +2235,9 @@ export interface IUserDto {
 }
 
 export enum InterfaceTheme {
-    Light = 0,
-    Dark = 1,
+    System = 0,
+    Light = 1,
+    Dark = 2,
 }
 
 export class LoginModel implements ILoginModel {

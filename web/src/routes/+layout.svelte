@@ -1,5 +1,5 @@
 <script lang="ts">
-    import "@fontsource-variable/inter";
+    import "@fontsource-variable/inter/standard.css";
     import UserIcon from "$lib/components/UserIcon.svelte";
     import ContextMenu from "$lib/components/ContextMenu.svelte";
     import ContextMenuEntry from "$lib/components/ContextMenuEntry.svelte";
@@ -19,6 +19,7 @@
         user: UserDto,
         authenticationInfo: AuthenticationInfo,
         locale: string,
+        systemTheme: string | undefined,
     };
     
     setContext("locale", data.locale);
@@ -26,16 +27,21 @@
     theme.subscribe(loadTheme);
 
     function loadTheme(interfaceTheme: InterfaceTheme | undefined) {
-        if (interfaceTheme == undefined || !browser) {
-            return;
+        if (browser) {
+            const isDarkTheme = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)")?.matches;
+            data.systemTheme = isDarkTheme ? "dark" : "light";
+            document.cookie = `systemTheme=${data.systemTheme}; path=/; SameSite=Lax`;
+            document.head.insertAdjacentHTML("beforeend", getThemeLinkHtml(interfaceTheme ?? InterfaceTheme.System));
         }
-
-        document.head.insertAdjacentHTML("beforeend", getThemeLinkHtml(interfaceTheme));
     }
 
     function getThemeLinkHtml(interfaceTheme: InterfaceTheme) {
         let themeName = "light";
-        if (interfaceTheme === InterfaceTheme.Dark) {
+        if (interfaceTheme === InterfaceTheme.System) {
+            themeName = data.systemTheme ?? "light";
+        } else if (interfaceTheme == InterfaceTheme.Light) {
+            themeName = "light";
+        } else if (interfaceTheme === InterfaceTheme.Dark) {
             themeName = "dark";
         }
 
@@ -63,7 +69,7 @@
 </script>
 
 <svelte:head>
-    {@html getThemeLinkHtml(data.user?.theme ?? InterfaceTheme.Light)}
+    {@html getThemeLinkHtml(data.user?.theme ?? InterfaceTheme.System)}
 </svelte:head>
 
 <Toast />

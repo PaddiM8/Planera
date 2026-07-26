@@ -14,7 +14,7 @@
         transform: translateY(-5em)
         border: var(--border)
         border-radius: var(--radius)
-        background-color: var(--component-background)
+        background-color: var(--background)
 
     @media screen and (max-width: 580px)
         :global(.page)

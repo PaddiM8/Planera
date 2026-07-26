@@ -2,6 +2,7 @@ namespace Planera.Api.Data;
 
 public enum InterfaceTheme
 {
-    Light,
-    Dark,
+    System = 0,
+    Light = 1,
+    Dark = 2,
 }

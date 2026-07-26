@@ -10,6 +10,7 @@ export let data: {
 };
 
 const themeMap : { [key: string]: InterfaceTheme }= {
+    "System": InterfaceTheme.System,
     "Light": InterfaceTheme.Light,
     "Dark": InterfaceTheme.Dark,
 };
@@ -31,7 +32,7 @@ async function updateTheme() {
 <h2>Appearance</h2>
 <div class="theme-selection">
     <FormLabel value="Theme" />
-    <Select choices={["Light", "Dark"]}
+    <Select choices={["System", "Light", "Dark"]}
             bind:selectedValue={themeName}
             on:change={updateTheme} />
 </div>
