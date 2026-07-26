@@ -314,6 +314,7 @@ public class TicketService(
                 ticket.Description
             );
             ticket.Deadline = deadline?.ToUniversalTime();
+            ticket.ModifiedTimestamp = DateTime.UtcNow;
 
             await using var transaction = await _dataContext.Database.BeginTransactionAsync();
             _dataContext.Tickets.Update(ticket);
@@ -395,6 +396,7 @@ public class TicketService(
             await using var transaction = await _dataContext.Database.BeginTransactionAsync();
 
             ticket.Status = status;
+            ticket.ModifiedTimestamp = DateTime.UtcNow;
             _dataContext.Tickets.Update(ticket);
             await _dataContext.SaveChangesAsync();
 
@@ -423,6 +425,7 @@ public class TicketService(
 
         var ticket = ticketResult.Value;
         ticket.Priority = priority;
+        ticket.ModifiedTimestamp = DateTime.UtcNow;
         _dataContext.Tickets.Update(ticket);
         await _dataContext.SaveChangesAsync();
 
@@ -508,6 +511,7 @@ public class TicketService(
             await using var transaction = await _dataContext.Database.BeginTransactionAsync();
 
             ticket.Deadline = deadline?.ToUniversalTime();
+            ticket.ModifiedTimestamp = DateTime.UtcNow;
             _dataContext.Update(ticket);
             await _dataContext.SaveChangesAsync();
 

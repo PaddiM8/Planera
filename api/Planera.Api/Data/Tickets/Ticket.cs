@@ -39,5 +39,7 @@ public class Ticket
 
     public required DateTime Timestamp { get; set; }
     
+    public DateTime? ModifiedTimestamp { get; set; }
+    
     public DateTime? Deadline { get; set; }
 }

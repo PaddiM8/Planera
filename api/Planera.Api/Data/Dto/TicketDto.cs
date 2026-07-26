@@ -28,6 +28,8 @@ public class TicketDto
 
     public DateTime Timestamp { get; set; }
     
+    public DateTime? ModifiedTimestamp { get; set; }
+    
     public DateTime? Deadline { get; set; }
 
     public int? NoteCount { get; set; }

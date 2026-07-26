@@ -2389,6 +2389,7 @@ export class TicketDto implements ITicketDto {
     author!: UserDto;
     status?: TicketStatus;
     timestamp?: Date;
+    modifiedTimestamp?: Date | undefined;
     deadline?: Date | undefined;
     noteCount?: number | undefined;
 
@@ -2428,6 +2429,7 @@ export class TicketDto implements ITicketDto {
             this.author = _data["author"] ? UserDto.fromJS(_data["author"]) : new UserDto();
             this.status = _data["status"];
             this.timestamp = _data["timestamp"] ? new Date(_data["timestamp"].toString()) : undefined as any;
+            this.modifiedTimestamp = _data["modifiedTimestamp"] ? new Date(_data["modifiedTimestamp"].toString()) : undefined as any;
             this.deadline = _data["deadline"] ? new Date(_data["deadline"].toString()) : undefined as any;
             this.noteCount = _data["noteCount"];
         }
@@ -2462,6 +2464,7 @@ export class TicketDto implements ITicketDto {
         data["author"] = this.author ? this.author.toJSON() : undefined as any;
         data["status"] = this.status;
         data["timestamp"] = this.timestamp ? this.timestamp.toISOString() : undefined as any;
+        data["modifiedTimestamp"] = this.modifiedTimestamp ? this.modifiedTimestamp.toISOString() : undefined as any;
         data["deadline"] = this.deadline ? this.deadline.toISOString() : undefined as any;
         data["noteCount"] = this.noteCount;
         return data;
@@ -2481,6 +2484,7 @@ export interface ITicketDto {
     author: UserDto;
     status?: TicketStatus;
     timestamp?: Date;
+    modifiedTimestamp?: Date | undefined;
     deadline?: Date | undefined;
     noteCount?: number | undefined;
 }

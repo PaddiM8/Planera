@@ -25,6 +25,7 @@
     import type {FormSubmitInput} from "../../../../../../types";
     import {truncate} from "$lib/util";
     import DateInput from "$lib/components/form/DateInput.svelte";
+	import { formatDate, isToday } from "$lib/formatting";
 
     export let form: {
         problem: ProblemDetails,
@@ -304,6 +305,28 @@
             <DateInput name="deadline" value={data.ticket.deadline} on:input={handleDeadlineInput} time/>
         </span>
     {/if}
+
+    <div class="dates">
+        {#if data.ticket.timestamp}
+            <time class="creation-date">
+                {#if isToday(data.ticket.timestamp)}
+                    Created today at {formatDate(data.ticket.timestamp)}
+                {:else}
+                    Created on {formatDate(data.ticket.timestamp)}
+                {/if}
+            </time>
+        {/if}
+        {#if data.ticket.modifiedTimestamp}
+            <time class="modification-date">
+                {#if isToday(data.ticket.modifiedTimestamp)}
+                    (modified: today at {formatDate(data.ticket.timestamp)})
+                {:else}
+                    (modified: {formatDate(data.ticket.timestamp)})
+                {/if}
+            </time>
+        {/if}
+        
+    </div>
 </div>
 
 <hr>
@@ -454,6 +477,13 @@
         .group.deadline
             min-width: 12em
             flex-grow: 1
+          
+    .dates
+      display: flex
+      gap: 0.4em
+      
+    .creation-date, .modification-date
+      color: var(--text-gray)
 
     .notes
         display: flex

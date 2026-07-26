@@ -1,9 +1,10 @@
 import * as xss from "xss";
 import {getContext} from "svelte";
 
-function isToday(date: Date) {
+export function isToday(date: Date | string) {
     const now = new Date();
 
+    date = new Date(date);
     return date.getFullYear() == now.getFullYear()
         && date.getMonth() == now.getMonth()
         && date.getDate() == now.getDate();
