@@ -7,25 +7,27 @@
 	let dragging = false;
 
 	onMount(() => {
+		let startTouchX = 0;
 		document.ontouchmove = (e) => {
+			if (!dragging) {
+				return;
+			}
+
+			const offset = Math.min(e.touches[0].clientX - startTouchX, sidebarElement.clientWidth);
+			if (sidebarElement.classList.contains("open")) {
+				sidebarElement.style.transform = `translateX(${offset}px)`;
+			} else {
+				sidebarElement.style.transform = `translateX(calc(-100% + ${offset}px))`;
+			}
+		};
+		document.ontouchend = endDrag;
+		document.ontouchstart = e => {
 			if (e.touches.length !== 1) {
 				return;
 			}
 
-			const touchX = e.touches[0].clientX;
-			if (!dragging || touchX <= draggerWidth) {
-				return;
-			}
-
-			const offset = Math.min(touchX, sidebarElement.clientWidth);
-			sidebarElement.style.transform = `translateX(calc(-100% + ${offset}px))`;
-			sidebarElement.classList.add("open");
-		};
-		document.ontouchend = endDrag;
-		document.ontouchstart = () => {
-			if (sidebarElement.classList.contains("open")) {
-				startDrag();
-			}
+			startDrag();
+			startTouchX = e.touches[0].clientX;
 		};
 	});
 
@@ -49,6 +51,8 @@
 		const rect = sidebarElement.getBoundingClientRect();
 		if (rect.left < -rect.width / 2) {
 			close();
+		} else {
+			sidebarElement.classList.add("open");
 		}
 
 		sidebarElement.style.transform = "";
@@ -106,7 +110,7 @@
             position: absolute
             top: 0
             left: 0
-            width: 60%
+            width: 60vw
             max-width: 300px
             height: 100vh
             transform: translateX(-100%)
