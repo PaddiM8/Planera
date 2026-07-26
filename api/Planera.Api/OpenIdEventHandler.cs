@@ -100,6 +100,7 @@ public static class OpenIdEventHandler
             Secure = true,
             SameSite = SameSiteMode.Lax,
             Path = "/",
+            MaxAge = TimeSpan.FromDays(365),
         });
 
         context.HandleResponse();
