@@ -324,8 +324,8 @@
     .status
         display: block
         margin-top: 0.1em
-        height: 1.2em
-        min-width: 1.2em
+        height: 1.5em
+        min-width: 1.5em
         margin-right: -0.2em
         cursor: pointer
 

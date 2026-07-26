@@ -38,10 +38,8 @@ api.WithEnvironment("PLANERA_FRONTEND_URL", gateway.GetEndpoint("https"));
 frontend
     .WithReference(api)
     .WaitFor(api)
-    //.WithEnvironment("ORIGIN", gateway.GetEndpoint("https"))
-    //.WithEnvironment("VITE_PUBLIC_API_URL", $"{gateway.GetEndpoint("https")}/api");
-    .WithEnvironment("ORIGIN", "http://laptop")
-    .WithEnvironment("VITE_PUBLIC_API_URL", "http://laptop/api");
+    .WithEnvironment("ORIGIN", gateway.GetEndpoint("https"))
+    .WithEnvironment("VITE_PUBLIC_API_URL", $"{gateway.GetEndpoint("https")}/api");
 
 
 builder.Build().Run();
