@@ -180,7 +180,7 @@
             <div class="project">
                 <div class="project-icon">
                     <UserIcon name={ticket.project?.name ?? "?"}
-                              image={ticket.project?.iconPath}
+                              image={getAvatarUrl(ticket.project?.iconPath, "small")}
                               type="project" />
                 </div>
                 <span class="project-name">{ticket.project?.name ?? "?"}</span>
@@ -318,7 +318,7 @@
     .project-icon
         margin-top: 0.1em
         height: 1.2em
-        min-width: 1.2em
+        width: 1.2em
         margin-right: -0.2em
 
     .status
