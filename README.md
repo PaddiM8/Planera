@@ -21,41 +21,32 @@ A simple ticket-based project management web application.
 
 ### Docker Compose
 
-1. Clone the repository:
+1. Download the docker-compose.yml file into an empty directory:
     ```shell
-    git clone https://github.com/PaddiM8/Planera
+    curl -o docker-compose.yml https://raw.githubusercontent.com/PaddiM8/Planera/refs/heads/main/docker-compose.yml
     ```
 
-2. Modify `/docker-compose.yml` and replace both instances of
+2. Modify `docker-compose.yml` and replace both instances of
    `http://localhost:2000` with your domain. Additionally,
-   it is also possible configure email sending here.
+   it is also possible configure email sending and OIDC here.
 
 3. Start docker compose:
     ```shell
     docker-compose up -d
     ```
 
-Planera should now be running and listening at localhost:2000.
+Planera should now be running and accessible at localhost:2000.
 
 ## Development
 
 ### Dependencies
 
-* .NET 8
+* .NET 10
 * Node
 * NPM
+* Aspire
 
-### Setup
+### Getting Started
 
-Start the backend:
-```shell
-cd api
-dotnet run
-```
-
-Start the frontend:
-```shell
-cd web
-npm install
-npm run dev
-```
+1. Install [Aspire](https://aspire.dev/get-started/install-cli/). You may also want to install an extension for your editor/IDE.
+2. Run `aspire run`
