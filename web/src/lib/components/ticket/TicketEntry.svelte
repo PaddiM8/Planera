@@ -91,7 +91,6 @@
         }
 
         const millisecondsPerDay = 1000 * 60 * 60 * 24;
-        console.log(deadline, now)
         if (deadline.getTime() - now.getTime() < millisecondsPerDay * 2) {
             return "soon";
         }
