@@ -1,3 +1,4 @@
+using Planera.Api.Data.Tickets;
 using Planera.Api.Models.Ticket;
 
 namespace Planera.Api.Data.Dto;

@@ -16,10 +16,12 @@ using Newtonsoft.Json.Serialization;
 using Planera.Api;
 using Planera.Api.Data;
 using Planera.Api.Data.Files;
+using Planera.Api.Data.Users;
 using Planera.Api.Hubs;
 using Planera.Api.Models;
 using Planera.Api.Services;
 using Planera.Api.Utility;
+using WebPush;
 
 Directory.CreateDirectory("./store");
 Directory.CreateDirectory("./wwwroot");
@@ -35,8 +37,7 @@ if (string.IsNullOrEmpty(builder.Configuration["Jwt:Key"]))
     const string jwtKeyPath = "./store/jwt.key";
     if (File.Exists(jwtKeyPath))
     {
-        var jwtKey = File.ReadAllText(jwtKeyPath);
-        builder.Configuration["Jwt:Key"] = jwtKey;
+        builder.Configuration["Jwt:Key"] = File.ReadAllText(jwtKeyPath);
     }
     else
     {
@@ -45,6 +46,23 @@ if (string.IsNullOrEmpty(builder.Configuration["Jwt:Key"]))
         File.WriteAllText(jwtKeyPath, jwtKey);
     }
 }
+
+// Read/generate VAPID keys for web push notifications
+const string vapidConfigPath = "./store/vapid.json";
+VapidDetails vapidDetails;
+if (File.Exists(vapidConfigPath))
+{
+    vapidDetails = JsonConvert.DeserializeObject<VapidDetails>(File.ReadAllText(vapidConfigPath))!;
+}
+else
+{
+    var vapidKeys = VapidHelper.GenerateVapidKeys();
+    var vapidEmail = builder.Configuration["Vapid:ContactEmail"] ?? "dev@localhost";
+    vapidDetails = new VapidDetails($"mailto:{vapidEmail}", vapidKeys.PublicKey, vapidKeys.PrivateKey);
+    File.WriteAllText(vapidConfigPath, JsonConvert.SerializeObject(vapidDetails));
+}
+
+builder.Services.AddSingleton(vapidDetails);
 
 var serializerSettings = new JsonSerializerSettings
 {
@@ -209,6 +227,8 @@ builder.Services.AddSignalR()
         options.PayloadSerializerSettings = serializerSettings;
     });
 
+builder.Services.AddHttpClient();
+builder.Services.AddSingleton(serializerSettings);
 builder.Services.AddTransient<PlaneraAuthenticationService>();
 builder.Services.AddTransient<PersonalAccessTokenService>();
 builder.Services.AddTransient<UserService>();
@@ -218,6 +238,10 @@ builder.Services.AddTransient<IFileStorage, FileStorage>();
 builder.Services.AddTransient<ImagePreparer>();
 builder.Services.AddTransient<EmailService>();
 builder.Services.AddTransient<NoteService>();
+builder.Services.AddTransient<NotificationService>();
+builder.Services.AddTransient<NotificationScheduler>();
+builder.Services.AddHostedService<NotificationSendingBackgroundService>();
+
 builder.Services.AddAutoMapper(_ => { }, typeof(MappingProfile));
 
 builder.Services.AddCors(o =>

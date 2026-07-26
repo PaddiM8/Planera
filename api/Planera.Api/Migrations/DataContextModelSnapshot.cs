@@ -155,13 +155,49 @@ namespace Planera.Api.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Planera.Api.Data.Invitation", b =>
+            modelBuilder.Entity("Planera.Api.Data.Notifications.PushNotificationSubscription", b =>
                 {
-                    b.Property<string>("ProjectId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Auth")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<string>("Endpoint")
+                        .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("P256Dh")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
                     b.Property<string>("UserId")
-                        .HasColumnType("text");
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("PushNotificationSubscriptions");
+                });
+
+            modelBuilder.Entity("Planera.Api.Data.Projects.Invitation", b =>
+                {
+                    b.Property<string>("ProjectId")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<string>("UserId")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
 
                     b.HasKey("ProjectId", "UserId");
 
@@ -170,7 +206,160 @@ namespace Planera.Api.Migrations
                     b.ToTable("Invitations");
                 });
 
-            modelBuilder.Entity("Planera.Api.Data.Note", b =>
+            modelBuilder.Entity("Planera.Api.Data.Projects.NotificationQueueEntry", b =>
+                {
+                    b.Property<string>("TargetId")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<int>("TargetKind")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("NotificationTriggerId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ObjectId")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<int>("ActionKind")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<DateTime>("ScheduledTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<int>("TriggerKind")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Url")
+                        .HasColumnType("text");
+
+                    b.HasKey("TargetId", "TargetKind", "NotificationTriggerId", "ObjectId");
+
+                    b.HasIndex("NotificationTriggerId");
+
+                    b.HasIndex("ScheduledTime");
+
+                    b.ToTable("NotificationQueue");
+                });
+
+            modelBuilder.Entity("Planera.Api.Data.Projects.NotificationTrigger", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Action")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ProjectId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<string>("Threshold")
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<int?>("ThresholdUnit")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Trigger")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("NotificationTriggers");
+                });
+
+            modelBuilder.Entity("Planera.Api.Data.Projects.Project", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<string>("AuthorId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)");
+
+                    b.Property<bool>("EnableTicketAssignees")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("EnableTicketDeadlines")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("EnableTicketDescriptions")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("IconPath")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorId", "Slug")
+                        .IsUnique();
+
+                    b.ToTable("Projects");
+                });
+
+            modelBuilder.Entity("Planera.Api.Data.Projects.ProjectParticipant", b =>
+                {
+                    b.Property<string>("ProjectId")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<string>("UserId")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<int?>("Filter")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Sorting")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ProjectId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ProjectParticipants");
+                });
+
+            modelBuilder.Entity("Planera.Api.Data.Tickets.Note", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -188,7 +377,7 @@ namespace Planera.Api.Migrations
 
                     b.Property<string>("ProjectId")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("character varying(64)");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
@@ -208,99 +397,19 @@ namespace Planera.Api.Migrations
                     b.ToTable("Notes");
                 });
 
-            modelBuilder.Entity("Planera.Api.Data.PersonalAccessToken", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Secret")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("UserId");
-
-                    b.ToTable("PersonalAccessTokens");
-                });
-
-            modelBuilder.Entity("Planera.Api.Data.Project", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
-
-                    b.Property<string>("AuthorId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("EnableTicketAssignees")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("EnableTicketDeadlines")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("EnableTicketDescriptions")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("IconPath")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Slug")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("Timestamp")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AuthorId", "Slug")
-                        .IsUnique();
-
-                    b.ToTable("Projects");
-                });
-
-            modelBuilder.Entity("Planera.Api.Data.ProjectParticipant", b =>
-                {
-                    b.Property<string>("ProjectId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("text");
-
-                    b.Property<int?>("Filter")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Sorting")
-                        .HasColumnType("integer");
-
-                    b.HasKey("ProjectId", "UserId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("ProjectParticipants");
-                });
-
-            modelBuilder.Entity("Planera.Api.Data.Ticket", b =>
+            modelBuilder.Entity("Planera.Api.Data.Tickets.Ticket", b =>
                 {
                     b.Property<int>("Id")
                         .HasColumnType("integer");
 
                     b.Property<string>("ProjectId")
-                        .HasColumnType("text");
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
 
                     b.Property<string>("AuthorId")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
 
                     b.Property<DateTime?>("Deadline")
                         .HasColumnType("timestamp with time zone");
@@ -320,13 +429,20 @@ namespace Planera.Api.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
 
                     b.HasKey("Id", "ProjectId");
 
                     b.HasIndex("AuthorId");
 
+                    b.HasIndex("Deadline");
+
+                    b.HasIndex("Priority");
+
                     b.HasIndex("ProjectId");
+
+                    b.HasIndex("Status");
 
                     b.HasIndex("Title", "Description")
                         .HasAnnotation("Npgsql:TsVectorConfig", "english");
@@ -337,7 +453,7 @@ namespace Planera.Api.Migrations
                     b.ToTable("Tickets");
                 });
 
-            modelBuilder.Entity("Planera.Api.Data.TicketAssignee", b =>
+            modelBuilder.Entity("Planera.Api.Data.Tickets.TicketAssignee", b =>
                 {
                     b.Property<string>("UserId")
                         .HasColumnType("text");
@@ -346,7 +462,7 @@ namespace Planera.Api.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("TicketProjectId")
-                        .HasColumnType("text");
+                        .HasColumnType("character varying(64)");
 
                     b.HasKey("UserId", "TicketId", "TicketProjectId");
 
@@ -355,7 +471,26 @@ namespace Planera.Api.Migrations
                     b.ToTable("TicketAssignees");
                 });
 
-            modelBuilder.Entity("Planera.Api.Data.User", b =>
+            modelBuilder.Entity("Planera.Api.Data.Users.PersonalAccessToken", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Secret")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("PersonalAccessTokens");
+                });
+
+            modelBuilder.Entity("Planera.Api.Data.Users.User", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -364,7 +499,8 @@ namespace Planera.Api.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("AvatarPath")
-                        .HasColumnType("text");
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -436,7 +572,7 @@ namespace Planera.Api.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Planera.Api.Data.User", null)
+                    b.HasOne("Planera.Api.Data.Users.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -445,7 +581,7 @@ namespace Planera.Api.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Planera.Api.Data.User", null)
+                    b.HasOne("Planera.Api.Data.Users.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -460,7 +596,7 @@ namespace Planera.Api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Planera.Api.Data.User", null)
+                    b.HasOne("Planera.Api.Data.Users.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -469,22 +605,33 @@ namespace Planera.Api.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Planera.Api.Data.User", null)
+                    b.HasOne("Planera.Api.Data.Users.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Planera.Api.Data.Invitation", b =>
+            modelBuilder.Entity("Planera.Api.Data.Notifications.PushNotificationSubscription", b =>
                 {
-                    b.HasOne("Planera.Api.Data.Project", "Project")
+                    b.HasOne("Planera.Api.Data.Users.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Planera.Api.Data.Projects.Invitation", b =>
+                {
+                    b.HasOne("Planera.Api.Data.Projects.Project", "Project")
                         .WithMany()
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Planera.Api.Data.User", "User")
+                    b.HasOne("Planera.Api.Data.Users.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -495,15 +642,54 @@ namespace Planera.Api.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Planera.Api.Data.Note", b =>
+            modelBuilder.Entity("Planera.Api.Data.Projects.NotificationTrigger", b =>
                 {
-                    b.HasOne("Planera.Api.Data.User", "Author")
+                    b.HasOne("Planera.Api.Data.Projects.Project", null)
+                        .WithMany("NotificationTriggers")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Planera.Api.Data.Projects.Project", b =>
+                {
+                    b.HasOne("Planera.Api.Data.Users.User", "Author")
+                        .WithMany("Projects")
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Author");
+                });
+
+            modelBuilder.Entity("Planera.Api.Data.Projects.ProjectParticipant", b =>
+                {
+                    b.HasOne("Planera.Api.Data.Projects.Project", "Project")
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Planera.Api.Data.Users.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Planera.Api.Data.Tickets.Note", b =>
+                {
+                    b.HasOne("Planera.Api.Data.Users.User", "Author")
                         .WithMany()
                         .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Planera.Api.Data.Ticket", "Ticket")
+                    b.HasOne("Planera.Api.Data.Tickets.Ticket", "Ticket")
                         .WithMany("Notes")
                         .HasForeignKey("TicketId", "ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -514,45 +700,15 @@ namespace Planera.Api.Migrations
                     b.Navigation("Ticket");
                 });
 
-            modelBuilder.Entity("Planera.Api.Data.Project", b =>
+            modelBuilder.Entity("Planera.Api.Data.Tickets.Ticket", b =>
                 {
-                    b.HasOne("Planera.Api.Data.User", "Author")
-                        .WithMany("Projects")
-                        .HasForeignKey("AuthorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Author");
-                });
-
-            modelBuilder.Entity("Planera.Api.Data.ProjectParticipant", b =>
-                {
-                    b.HasOne("Planera.Api.Data.Project", "Project")
-                        .WithMany()
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Planera.Api.Data.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Project");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Planera.Api.Data.Ticket", b =>
-                {
-                    b.HasOne("Planera.Api.Data.User", "Author")
+                    b.HasOne("Planera.Api.Data.Users.User", "Author")
                         .WithMany("Tickets")
                         .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Planera.Api.Data.Project", "Project")
+                    b.HasOne("Planera.Api.Data.Projects.Project", "Project")
                         .WithMany("Tickets")
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -563,15 +719,15 @@ namespace Planera.Api.Migrations
                     b.Navigation("Project");
                 });
 
-            modelBuilder.Entity("Planera.Api.Data.TicketAssignee", b =>
+            modelBuilder.Entity("Planera.Api.Data.Tickets.TicketAssignee", b =>
                 {
-                    b.HasOne("Planera.Api.Data.User", "User")
+                    b.HasOne("Planera.Api.Data.Users.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Planera.Api.Data.Ticket", "Ticket")
+                    b.HasOne("Planera.Api.Data.Tickets.Ticket", "Ticket")
                         .WithMany()
                         .HasForeignKey("TicketId", "TicketProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -582,17 +738,19 @@ namespace Planera.Api.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Planera.Api.Data.Project", b =>
+            modelBuilder.Entity("Planera.Api.Data.Projects.Project", b =>
                 {
+                    b.Navigation("NotificationTriggers");
+
                     b.Navigation("Tickets");
                 });
 
-            modelBuilder.Entity("Planera.Api.Data.Ticket", b =>
+            modelBuilder.Entity("Planera.Api.Data.Tickets.Ticket", b =>
                 {
                     b.Navigation("Notes");
                 });
 
-            modelBuilder.Entity("Planera.Api.Data.User", b =>
+            modelBuilder.Entity("Planera.Api.Data.Users.User", b =>
                 {
                     b.Navigation("Projects");
 

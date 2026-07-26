@@ -10,6 +10,7 @@ using Planera.Api.Models.User;
 using Planera.Api.Services;
 using Planera.Api.Extensions;
 using Planera.Api.Models;
+using WebPush;
 
 namespace Planera.Api.Controllers;
 
@@ -18,14 +19,16 @@ namespace Planera.Api.Controllers;
 public class AuthenticationController(
     PlaneraAuthenticationService authenticationService,
     IOptions<OidcOptions> oidcOptions,
-    IConfiguration configuration
+    IConfiguration configuration,
+    VapidDetails vapidDetails
 )
     : ControllerBase
 {
     private readonly PlaneraAuthenticationService _authenticationService = authenticationService;
     private readonly IOptions<OidcOptions> _oidcOptions = oidcOptions;
     private readonly IConfiguration _configuration = configuration;
-    
+    private readonly VapidDetails _vapidDetails = vapidDetails;
+
     [AllowAnonymous]
     [HttpGet("info")]
     [ProducesResponseType(typeof(AuthenticationInfo), StatusCodes.Status200OK)]
@@ -35,6 +38,7 @@ public class AuthenticationController(
         {
             PasswordAuthenticationDisabled = _configuration.GetValue<bool>("DisablePasswordAuthentication"),
             RegistrationDisabled = _configuration.GetValue<bool>("DisableRegistration"),
+            VapidPublicKey = _vapidDetails.PublicKey,
         };
 
         if (_oidcOptions.Value.ProviderId != null)

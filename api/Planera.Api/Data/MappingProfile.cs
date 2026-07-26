@@ -1,5 +1,8 @@
 using AutoMapper;
 using Planera.Api.Data.Dto;
+using Planera.Api.Data.Projects;
+using Planera.Api.Data.Tickets;
+using Planera.Api.Data.Users;
 
 namespace Planera.Api.Data;
 
@@ -59,5 +62,6 @@ public class MappingProfile : Profile
             );
         CreateMap<Invitation, InvitationDto>();
         CreateMap<Note, NoteDto>();
+        CreateMap<NotificationTrigger, NotificationTriggerDto>();
     }
 }

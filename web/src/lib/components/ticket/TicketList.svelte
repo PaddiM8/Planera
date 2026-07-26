@@ -250,6 +250,7 @@
                         sortingMap[sortingString],
                         filterMap[filterString],
                     );
+                    console.log(sortingMap[sortingString], sortingString, filterMap[filterString], filterString)
                 } else {
                     queryResult = await $userHub!.invoke(
                         "queryTickets",

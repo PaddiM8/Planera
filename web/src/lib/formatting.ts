@@ -1,5 +1,4 @@
 import * as xss from "xss";
-import {browser} from "$app/environment";
 import {getContext} from "svelte";
 
 function isToday(date: Date) {

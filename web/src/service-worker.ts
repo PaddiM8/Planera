@@ -1,16 +1,13 @@
 /// <reference types="@sveltejs/kit" />
 import { build, files, version } from "$service-worker";
 
-// Create a unique cache name for this deployment
 const CACHE = `cache-${version}`;
-
 const ASSETS = [
-    ...build, // the app itself
-    ...files  // everything in `static`
+    ...build,
+    ...files,
 ];
 
 self.addEventListener("install", (event: any) => {
-    // Create a new cache and add all files to it
     async function addFilesToCache() {
         const cache = await caches.open(CACHE);
         await cache.addAll(ASSETS);
@@ -20,7 +17,6 @@ self.addEventListener("install", (event: any) => {
 });
 
 self.addEventListener("activate", (event: any) => {
-    // Remove previous cached data from disk
     async function deleteOldCaches() {
         for (const key of await caches.keys()) {
             if (key !== CACHE) await caches.delete(key);
@@ -31,7 +27,6 @@ self.addEventListener("activate", (event: any) => {
 });
 
 self.addEventListener("fetch", (event: any) => {
-    // ignore POST requests etc
     if (event.request.method !== "GET") {
         return;
     }
@@ -54,8 +49,8 @@ self.addEventListener("fetch", (event: any) => {
             return cache.match(url.pathname);
         }
 
-        // for everything else, try the network first, but
-        // fall back to the cache if we"re offline
+        // For everything else, try the network first, but
+        // fall back to the cache if we're offline
         try {
             const response = await fetch(event.request);
 
@@ -70,4 +65,53 @@ self.addEventListener("fetch", (event: any) => {
     }
 
     event.respondWith(respond());
+});
+
+self.addEventListener("push", async (event: PushEvent) => {
+    const payload = event.data.json();
+    const options: NotificationOptions = {
+        body: payload.body,
+        icon: "/favicon.png",
+        data: payload.data ?? { url: "/" },
+    };
+
+    event.waitUntil(
+        self.registration.showNotification(payload.title, options)
+    );
+});
+
+self.addEventListener("notificationclick", async (event: NotificationEvent) => {
+    event.notification.close();
+
+    const data = event.notification.data as any;
+    const targetUrl = data?.url ?? "/";
+    
+    // If a tab with the target URL is already open, focus it
+    const clientList = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
+    for (const client of clientList) {
+        if ("url" in client && client.url.includes(targetUrl) && "focus" in client) {
+            return client.focus();
+        }
+    }
+    
+    // ...otherwise navigate to it
+    if (self.clients.openWindow) {
+        return self.clients.openWindow(targetUrl);
+    }
+});
+
+self.addEventListener("pushsubscriptionchange", async (event: PushSubscriptionChangeEvent) => {
+    const oldEndpoint = event.oldSubscription?.endpoint;
+    const newSubscription = await self.registration.pushManager.subscribe({ userVisibleOnly: true });
+    await fetch("/api/notifications/refresh", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            oldEndpoint: oldEndpoint,
+            newEndpoint: newSubscription.endpoint,
+            keys: newSubscription.toJSON().keys,
+        }),
+    })
 });

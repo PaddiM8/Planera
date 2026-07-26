@@ -6,8 +6,8 @@ import {getUserClient, getAuthenticationClient} from "$lib/clients";
 import {pathRequiresAuthentication} from "$lib/paths";
 
 export const load = (async ({ cookies, url, locals }) => {
+    const authenticationInfo = await getAuthenticationClient(cookies).getInfo();
     if (!cookies.get("token") || !pathRequiresAuthentication(url)) {
-        const authenticationInfo = await getAuthenticationClient(cookies).getInfo();
         return {
             authenticationInfo: structuredClone(authenticationInfo),
             locale: locals.locale,
@@ -30,6 +30,7 @@ export const load = (async ({ cookies, url, locals }) => {
 
     return {
         user: structuredClone(response),
+        authenticationInfo: structuredClone(authenticationInfo),
         locale: locals.locale,
     };
 }) satisfies LayoutServerLoad;

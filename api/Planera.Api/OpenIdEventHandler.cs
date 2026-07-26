@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Planera.Api.Data;
+using Planera.Api.Data.Users;
 using Planera.Api.Models;
 using Planera.Api.Services;
 

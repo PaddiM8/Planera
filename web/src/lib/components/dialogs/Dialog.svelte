@@ -40,6 +40,7 @@
 
    h1
        font-size: 1.75em
+       margin-bottom: 0
 
    .dialog
        position: absolute

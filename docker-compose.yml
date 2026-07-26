@@ -38,6 +38,8 @@
       PLANERA_POSTGRES__USER: planera
       PLANERA_POSTGRES__PASSWORD: planera
       PLANERA_POSTGRES__DB: planera
+      # VAPID (for notifications)
+      PLANERA_VAPID__CONTACTEMAIL: "your@email.com"
       # SMTP (optional)
       PLANERA_SMTP__HOST: ""
       PLANERA_SMTP__PORT: ""

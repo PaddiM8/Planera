@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type {ProjectDto} from "../../gen/planeraClient";
+    import {AuthenticationInfo, type ProjectDto} from "../../gen/planeraClient";
     import ErrorText from "$lib/components/form/ErrorText.svelte";
     import UserIcon from "$lib/components/UserIcon.svelte";
     import Label from "$lib/components/GroupLabel.svelte";
@@ -14,16 +14,26 @@
     import PageLayout from "$lib/components/PageLayout.svelte";
     import MainArea from "$lib/components/MainArea.svelte";
     import {getAvatarUrl} from "$lib/clients";
+    import {browser} from "$app/environment";
+    import {subscribeToPushNotifications} from "$lib/notifications";
 
     export let data: {
         projects: ProjectDto[],
         invitations: ProjectDto[],
         error: boolean,
+        authenticationInfo: AuthenticationInfo,
     };
 
     onMount(async () => {
         invitations.set(data.invitations);
-        await createUserHub();
+
+        if (browser) {
+            const hub = await createUserHub();
+
+            if (data.authenticationInfo.vapidPublicKey) {
+                await subscribeToPushNotifications(hub, data.authenticationInfo.vapidPublicKey);
+            }
+        }
     });
 
     async function createUserHub() {
@@ -32,6 +42,8 @@
         hub.onreconnected(createUserHub);
         hub.on("onAddProject", onAddProject);
         hub.on("onAddInvitation", onAddInvitation);
+        
+        return hub;
     }
 
     function onAddProject(project: ProjectDto) {

@@ -41,25 +41,29 @@ export async function startProjectHub(): Promise<HubConnection> {
 }
 
 async function startHub(hub: HubConnection) {
-    let tryConnect = async () => {
-        try {
-            if (hub?.state === "Disconnected") {
-                await hub?.start();
-            }
+    return new Promise<void>(async (resolve, _) => {
+        let tryConnect = async () => {
+            try {
+                if (hub?.state === "Disconnected") {
+                    await hub?.start();
+                }
 
-            return true;
-        } catch {
-            return false;
+                return true;
+            } catch {
+                return false;
+            }
         }
-    }
-    
-    if (await tryConnect()) {
-        return;
-    }
-    
-    let interval = setInterval(async () => {
+
         if (await tryConnect()) {
-            clearInterval(interval);
+            resolve();
+            return;
         }
-    }, 2500);
+
+        let interval = setInterval(async () => {
+            if (await tryConnect()) {
+                resolve();
+                clearInterval(interval);
+            }
+        }, 2500);
+    });
 }

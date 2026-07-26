@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Identity;
 using Planera.Api.Data;
 using Planera.Api.Data.Dto;
 using Planera.Api.Data.Files;
+using Planera.Api.Data.Projects;
+using Planera.Api.Data.Users;
 
 namespace Planera.Api.Services;
 
@@ -14,12 +16,14 @@ public class ProjectService(
     IMapper mapper,
     UserManager<User> userManager,
     ILookupNormalizer normalizer,
+    NotificationScheduler notificationScheduler,
     IFileStorage fileStorage)
 {
     private readonly DataContext _dataContext = dataContext;
     private readonly IMapper _mapper = mapper;
     private readonly UserManager<User> _userManager = userManager;
     private readonly ILookupNormalizer _normalizer = normalizer;
+    private readonly NotificationScheduler _notificationScheduler = notificationScheduler;
     private readonly IFileStorage _fileStorage = fileStorage;
 
     public static ErrorOr<T> ProjectNotFoundError<T>()
@@ -66,6 +70,7 @@ public class ProjectService(
     {
         var project = await QueryBySlug(userId, authorName, slug)
             .Include(x => x.Participants)
+            .Include(x => x.NotificationTriggers)
             .ProjectTo<ProjectDto>(_mapper.ConfigurationProvider)
             .SingleOrDefaultAsync();
         if (project == null)
@@ -103,22 +108,23 @@ public class ProjectService(
         if (author == null)
             return Error.Conflict("User.NotFound", "User was not found.");
 
+        var id = Guid.NewGuid().ToString();
         var project = new Project
         {
-            Id = Guid.NewGuid().ToString(),
+            Id = id,
             AuthorId = authorId,
             Slug = slug.ToLower(),
             Name = name,
             Description = description,
             Timestamp = DateTime.UtcNow,
             Participants = new List<User> { author },
+            NotificationTriggers = GetDefaultNotificationTriggers(id),
         };
 
         var strategy = _dataContext.Database.CreateExecutionStrategy();
 
         return await strategy.ExecuteAsync<ErrorOr<string>>(async () =>
         {
-            
             await using var transaction = await _dataContext.Database.BeginTransactionAsync();
             await _dataContext.Projects.AddAsync(project);
             await _dataContext.SaveChangesAsync();
@@ -167,6 +173,20 @@ public class ProjectService(
         });
     }
 
+    private List<NotificationTrigger> GetDefaultNotificationTriggers(string projectId)
+    {
+        var notificationTrigger = new NotificationTrigger
+        {
+            ProjectId = projectId,
+            Trigger = NotificationTriggerKind.TimeUntilDeadline,
+            Threshold = "1",
+            ThresholdUnit = NotificationThresholdUnit.Days,
+            Action = NotificationActionKind.PushNotification,
+        };
+
+        return [notificationTrigger];
+    }
+
     public async Task<ErrorOr<Updated>> EditAsync(
         string userId,
         string authorName,
@@ -210,7 +230,7 @@ public class ProjectService(
         if (enableTicketAssignees != null)
             project.EnableTicketAssignees = enableTicketAssignees.Value;
 
-        if (enableTicketAssignees != null)
+        if (enableTicketDeadlines != null)
             project.EnableTicketDeadlines = enableTicketDeadlines.Value;
 
         _dataContext.Projects.Update(project);
@@ -306,6 +326,30 @@ public class ProjectService(
         await _dataContext.SaveChangesAsync();
 
         return new ErrorOr<Deleted>();
+    }
+
+    public async Task<ErrorOr<Updated>> SetNotificationTriggersAsync(string userId, string projectId, List<NotificationTriggerDto> triggers)
+    {
+        var project = await QueryById(userId, projectId)
+            .Include(p => p.NotificationTriggers)
+            .SingleOrDefaultAsync();
+        if (project == null)
+            return ProjectNotFoundError<Updated>();
+
+        var mappedTriggers = triggers
+            .Select(t => new NotificationTrigger
+            {
+                ProjectId = projectId,
+                Trigger = t.Trigger,
+                Threshold = t.Threshold,
+                ThresholdUnit = t.ThresholdUnit,
+                Action = t.Action,
+            })
+            .ToList();
+
+        await _notificationScheduler.SetNotificationTriggersForProjectAsync(project.NotificationTriggers, mappedTriggers);
+
+        return new ErrorOr<Updated>();
     }
 
     private async Task<ErrorOr<Deleted>> RemoveInvitation(string projectId, string inviteeName)

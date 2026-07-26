@@ -85,12 +85,14 @@
         }
         
         const now = new Date();
-        if (ticket.deadline < now) {
+        const deadline = new Date(ticket.deadline);
+        if (deadline < now) {
             return "passed";
         }
 
-        const millisecondsPerDay = 1000 * 60 * 60 * 24 * 2;
-        if (ticket.deadline.getTime() - now.getTime() < millisecondsPerDay * 2) {
+        const millisecondsPerDay = 1000 * 60 * 60 * 24;
+        console.log(deadline, now)
+        if (deadline.getTime() - now.getTime() < millisecondsPerDay * 2) {
             return "soon";
         }
         

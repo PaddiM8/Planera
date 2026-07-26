@@ -40,7 +40,7 @@
     let editor: any;
     let selectedPriorityName: string;
     let previousPriority = data?.ticket?.priority;
-
+    
     onMount(() => {
         selectedPriorityName = TicketPriority[data?.ticket?.priority ?? 0];
         projectHub.subscribe(hub => hub?.on("onUpdateTicket", onUpdateTicket));
@@ -299,7 +299,7 @@
             <span class="label">
                 <Label value="Deadline" />
             </span>
-            <DateInput name="deadline" on:input={handleDeadlineInput} time/>
+            <DateInput name="deadline" value={data.ticket.deadline} on:input={handleDeadlineInput} time/>
         </span>
     {/if}
 </div>

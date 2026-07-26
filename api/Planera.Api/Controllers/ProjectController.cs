@@ -127,8 +127,20 @@ public class ProjectController(
             participantName
         );
         await _projectHub.Clients
-            .Group(projectId.ToString())
+            .Group(projectId)
             .OnRemoveParticipant(participantName);
+
+        return result.ToActionResult();
+    }
+   
+    [HttpDelete("{projectId}/setNotificationTriggers")]
+    public async Task<IActionResult> SetNotificationTriggers(string projectId, [FromBody] List<NotificationTriggerDto> triggers)
+    {
+        var result = await _projectService.SetNotificationTriggersAsync(
+            User.FindFirst("Id")!.Value,
+            projectId,
+            triggers
+        );
 
         return result.ToActionResult();
     }

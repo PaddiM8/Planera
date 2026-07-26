@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Planera.Api.Data;
 using Planera.Api.Data.Dto;
+using Planera.Api.Data.Users;
 
 namespace Planera.Api.Services;
 
@@ -59,7 +60,7 @@ public class PersonalAccessTokenService(DataContext context)
         _context.PersonalAccessTokens.Remove(token);
         await _context.SaveChangesAsync();
 
-        return new ErrorOr.Deleted();
+        return new Deleted();
     }
 
     public async Task<string?> ValidateAsync(string token)

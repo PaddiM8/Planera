@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using Planera.Api.Data;
+using Planera.Api.Data.Tickets;
 
 namespace Planera.Api.Models.Ticket;
 

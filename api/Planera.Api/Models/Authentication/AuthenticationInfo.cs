@@ -7,6 +7,8 @@ public class AuthenticationInfo
     public bool RegistrationDisabled { get; set; }
     
     public OidcAuthentiationInfo? Oidc { get; set; }
+    
+    public string? VapidPublicKey { get; set; }
 }
 
 public class OidcAuthentiationInfo

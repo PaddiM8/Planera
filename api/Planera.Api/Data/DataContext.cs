@@ -1,17 +1,25 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Planera.Api.Data.Notifications;
+using Planera.Api.Data.Projects;
+using Planera.Api.Data.Tickets;
+using Planera.Api.Data.Users;
 
 namespace Planera.Api.Data;
 
 public class DataContext(DbContextOptions<DataContext> context, IConfiguration configuration) : IdentityDbContext<User>(context)
 {
-    private readonly IConfiguration _configuration = configuration;
-
     public DbSet<Project> Projects { get; set; }
 
     public DbSet<TicketAssignee> TicketAssignees { get; set; }
 
     public DbSet<ProjectParticipant> ProjectParticipants { get; set; }
+    
+    public DbSet<NotificationTrigger> NotificationTriggers { get; set; }
+    
+    public DbSet<NotificationQueueEntry> NotificationQueue { get; set; }
+
+    public DbSet<PushNotificationSubscription> PushNotificationSubscriptions { get; set; }
 
     public DbSet<Invitation> Invitations { get; set; }
 
@@ -51,6 +59,8 @@ public class DataContext(DbContextOptions<DataContext> context, IConfiguration c
             .HasMany(e => e.Participants)
             .WithMany(e => e.JoinedProjects)
             .UsingEntity<ProjectParticipant>();
+        modelBuilder.Entity<Project>()
+            .HasMany(e => e.NotificationTriggers);
         modelBuilder.Entity<User>()
             .HasMany(e => e.Projects)
             .WithOne(e => e.Author)

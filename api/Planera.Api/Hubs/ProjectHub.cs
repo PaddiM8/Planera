@@ -1,7 +1,9 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Planera.Api.Data;
 using Planera.Api.Data.Dto;
+using Planera.Api.Data.Tickets;
 using Planera.Api.Models.Ticket;
 using Planera.Api.Services;
 using Planera.Api.Extensions;
@@ -179,6 +181,19 @@ public class ProjectHub(
         await Clients
             .Group(projectId)
             .OnRemoveParticipant(username);
+    }
+    
+    public async Task SetNotificationTriggers(string projectId, List<NotificationTriggerDto> notificationTriggers)
+    {
+        foreach (var notificationTrigger in notificationTriggers)
+            Validator.ValidateObject(notificationTrigger, new ValidationContext(notificationTrigger));
+
+        var result = await _projectService.SetNotificationTriggersAsync(
+            Context.User!.FindFirst("Id")!.Value,
+            projectId,
+            notificationTriggers
+        );
+        result.Unwrap();
     }
 
     public async Task RemoveNote(int noteId)

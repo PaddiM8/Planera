@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using Planera.Api.Data;
 using Planera.Api.Data.Dto;
+using Planera.Api.Data.Tickets;
 using Planera.Api.Models.Ticket;
 using Planera.Api.Services;
 using Planera.Api.Extensions;

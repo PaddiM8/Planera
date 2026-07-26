@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using Planera.Api.Data.Users;
 
-namespace Planera.Api.Data;
+namespace Planera.Api.Data.Tickets;
 
 public class Note
 {

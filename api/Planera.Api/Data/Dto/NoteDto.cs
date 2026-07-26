@@ -1,3 +1,5 @@
+using Planera.Api.Data.Tickets;
+
 namespace Planera.Api.Data.Dto;
 
 public class NoteDto

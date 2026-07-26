@@ -11,6 +11,7 @@ using MimeKit;
 using MimeKit.Text;
 using Planera.Api.Data;
 using Planera.Api.Data.Dto;
+using Planera.Api.Data.Users;
 using Planera.Api.Models.Authentication;
 using Planera.Api.Models;
 

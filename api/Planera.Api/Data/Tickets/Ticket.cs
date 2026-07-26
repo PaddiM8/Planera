@@ -1,16 +1,25 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
+using Planera.Api.Data.Projects;
+using Planera.Api.Data.Users;
 
-namespace Planera.Api.Data;
+namespace Planera.Api.Data.Tickets;
 
 [PrimaryKey(nameof(Id), nameof(ProjectId))]
+[Index(nameof(ProjectId))]
+[Index(nameof(Deadline))]
+[Index(nameof(Priority))]
+[Index(nameof(Status))]
 public class Ticket
 {
     public int Id { get; set; }
 
+    [StringLength(64)]
     public required string ProjectId { get; set; }
 
     public Project Project { get; set; } = null!;
 
+    [StringLength(150)]
     public required string Title { get; set; }
 
     public required string Description { get; set; }
@@ -21,6 +30,7 @@ public class Ticket
 
     public ICollection<Note> Notes { get; set; } = new List<Note>();
 
+    [StringLength(64)]
     public required string AuthorId { get; set; }
 
     public User Author { get; set; } = null!;

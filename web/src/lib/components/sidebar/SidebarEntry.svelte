@@ -14,7 +14,7 @@
             : `${value}/`;
     }
 
-    $: path = withTrailingSlash($page.url.pathname)
+    $: path = withTrailingSlash($page.url?.pathname)
 </script>
 
 <a class="entry"

@@ -2,9 +2,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Planera.Api.Data;
 using Planera.Api.Data.Dto;
+using Planera.Api.Data.Tickets;
 using Planera.Api.Services;
 using Planera.Api.Extensions;
-using Planera.Api.Models.Ticket;
+using Planera.Api.Models.Notifications;
 
 namespace Planera.Api.Hubs;
 
@@ -13,6 +14,7 @@ public class UserHub(
     UserService userService,
     TicketService ticketService,
     PersonalAccessTokenService personalAccessTokenService,
+    NotificationService notificationService,
     IHubContext<ProjectHub, IProjectHubContext> projectHub
 )
     : Hub<IUserHubContext>
@@ -20,6 +22,7 @@ public class UserHub(
     private readonly UserService _userService = userService;
     private readonly TicketService _ticketService = ticketService;
     private readonly PersonalAccessTokenService _personalAccessTokenService = personalAccessTokenService;
+    private readonly NotificationService _notificationService = notificationService;
 
     public async Task AcceptInvitation(string projectId)
     {
@@ -58,6 +61,16 @@ public class UserHub(
     public async Task RevokePersonalAccessToken()
     {
         var result = await _personalAccessTokenService.RevokeAsync(Context.User!.FindFirst("Id")!.Value);
+        result.Unwrap();
+    }
+    
+    public async Task SubscribeToPushNotifications(PushNotificationModel pushNotification)
+    {
+        var result = await _notificationService.SubscribeAsync(
+            Context.User!.FindFirst("Id")!.Value,
+            pushNotification.Endpoint,
+            pushNotification.Keys
+        );
         result.Unwrap();
     }
 

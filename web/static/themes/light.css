@@ -19,7 +19,8 @@
     --button-background-selected: #a8a8a8;
     --button-background-disabled: #9f9f9f;
     --border-width: 1px;
-    --border: var(--border-width) solid #e6e6e6;
+    --border-color: #e6e6e6;
+    --border: var(--border-width) solid var(--border-color);
     --text-gray: #757575;
     --spacing: 0.8rem;
     --vertical-padding: 0.55rem;

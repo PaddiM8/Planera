@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Planera.Api.Data;
+using Planera.Api.Data.Users;
 using Planera.Api.Services;
 
 namespace Planera.Api;

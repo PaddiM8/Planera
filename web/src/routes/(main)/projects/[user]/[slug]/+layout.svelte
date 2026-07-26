@@ -70,7 +70,9 @@
             }
         }
 
-        await createProjectHub();
+        if (browser) {
+            await createProjectHub();
+        }
     });
 
     async function createProjectHub() {

@@ -4,10 +4,21 @@
 
     export let choices: string[];
     export let selectedValue: string = "";
+    export let selectedIndex: number | undefined = 0;
+    export let width: string | undefined = undefined;
     export let name: string | undefined = undefined;
 
-    let isOpen = false;
+    const menuId = `menu-${crypto.randomUUID()}`;
+    let menuElement: HTMLElement;
     const dispatcher = createEventDispatcher();
+
+    if (selectedValue) {
+        selectedIndex = choices.indexOf(selectedValue);
+    }
+    
+    $: if (selectedIndex !== undefined) {
+        selectedValue = choices[selectedIndex];
+    }
 
     onMount(() => {
         if (!selectedValue && choices.length > 0) {
@@ -17,11 +28,15 @@
 
     function handleItemClick(item: string) {
         selectedValue = item;
+        selectedIndex = choices.indexOf(selectedValue);
         dispatcher("change", item);
     }
 
     function handleKeyDown(e: KeyboardEvent) {
         if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+            // Prevent scrolling
+            e.preventDefault();
+            
             const direction = e.key === "ArrowDown" ? 1 : -1;
             const currentIndex = choices.indexOf(selectedValue);
             const newIndex = Math.min(
@@ -29,26 +44,27 @@
                 Math.max(0, currentIndex + direction)
             );
             selectedValue = choices[newIndex];
+            selectedIndex = newIndex;
         }
     }
 </script>
 
-<div class="select" class:open={isOpen}>
+<div class="select">
     <input type="text"
            {name}
-           readonly
            bind:value={selectedValue}
-           on:focus={() => isOpen = true}
-           on:blur={() => isOpen = false}
-           on:keydown={handleKeyDown} />
+           on:pointerdown={() => menuElement.showPopover()}
+           on:blur={() => menuElement.hidePopover()}
+           on:keydown={handleKeyDown}
+           style="anchor-name: --anchor-{menuId}; width: {width ?? ''}"/>
     <span class="icon">
         <Icon src={ChevronDown} />
     </span>
-    <div class="menu">
+    <div id={menuId} class="menu" popover="manual" bind:this={menuElement} style="position-anchor: --anchor-{menuId}">
         {#each choices as choice}
-            <span class="item"
+            <button class="item"
                   class:selected={selectedValue === choice}
-                  on:mousedown={() => handleItemClick(choice)}>{choice}</span>
+                  on:mousedown={() => handleItemClick(choice)}>{choice}</button>
         {/each}
     </div>
 </div>
@@ -58,9 +74,6 @@
         position: relative
         display: flex
         caret-color: transparent
-
-        &.open input
-            background-color: var(--background-hover)
 
     input
         position: relative
@@ -85,6 +98,7 @@
             background-color: var(--background-hover)
 
         &:focus
+            background-color: var(--background-hover)
             outline-width: 2px
             outline-color: var(--primary)
 
@@ -98,26 +112,31 @@
         transform: translate(-50%, -50%)
         pointer-events: none
 
-    .select:not(.open) .menu
-        display: none
-
     .menu
-        position: absolute
-        display: flex
+        position: fixed
+        display: none
         flex-direction: column
-        width: 100%
-        bottom: 0
-        left: 0
-        transform: translateY(calc(100% + 0.25em))
+
+        width: anchor-size(width)
+        top: calc(anchor(bottom) + 0.25em)
+        left: anchor(left)
+        margin: 0
+        padding: 0
+        
         border-radius: var(--radius)
         border: var(--border)
         background-color: var(--background)
-        overflow: hidden
-        z-index: 999999
+        color: var(--on-background)
+        
+        &:popover-open
+            display: flex
 
         .item
             padding: var(--vertical-padding) var(--horizontal-padding)
             font-weight: 500
+            font-size: 1em
+            text-align: left
+            color: var(--on-background)
             cursor: pointer
 
             &:hover, &.selected

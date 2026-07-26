@@ -7,6 +7,7 @@ var builder = DistributedApplication.CreateBuilder(args);
 var postgres = builder
     .AddPostgres("Postgres")
     .WithHostPort(5433)
+    .WithDataVolume()
     .WithLifetime(ContainerLifetime.Persistent);
 var postgresDatabase = postgres.AddDatabase("PlaneraDatabase");
 
@@ -24,7 +25,7 @@ var frontend = builder
 var gateway = builder
     .AddYarp("gateway")
     .WithHttpEndpoint(port: 2001)
-    .WithHttpsEndpoint(port: 2002)
+    .WithHttpsEndpoint(port: 2002, targetPort: 2002)
     .WithConfiguration(yarp =>
     {
         yarp.AddRoute(frontend);

@@ -4,7 +4,7 @@ import type {ProjectDto} from "../../gen/planeraClient";
 import {handleProblem} from "$lib/problemDetails";
 import type {SwaggerException} from "../../gen/planeraClient";
 
-export async function load({ cookies }: ServerLoadEvent) {
+export async function load({ cookies, parent }: ServerLoadEvent) {
     let response: ProjectDto[];
     let invitationsResponse: ProjectDto[];
     try {
@@ -13,10 +13,13 @@ export async function load({ cookies }: ServerLoadEvent) {
     } catch (ex) {
         return handleProblem(ex as SwaggerException);
     }
+    
+    const { authenticationInfo } = await parent();
 
     return {
         projects: structuredClone(response),
         invitations: structuredClone(invitationsResponse),
         error: false,
+        authenticationInfo: authenticationInfo,
     };
 }

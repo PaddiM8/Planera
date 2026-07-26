@@ -1,4 +1,6 @@
-namespace Planera.Api.Data;
+using Planera.Api.Data.Users;
+
+namespace Planera.Api.Data.Tickets;
 
 public class TicketAssignee
 {

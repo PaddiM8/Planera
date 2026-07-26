@@ -4,6 +4,7 @@ using ErrorOr;
 using Microsoft.EntityFrameworkCore;
 using Planera.Api.Data;
 using Planera.Api.Data.Dto;
+using Planera.Api.Data.Tickets;
 
 namespace Planera.Api.Services;
 

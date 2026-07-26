@@ -669,6 +669,106 @@ export class NoteClient extends AuthorizedApiBase {
     }
 }
 
+export class NotificationClient extends AuthorizedApiBase {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(configuration: IConfig, baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        super(configuration);
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl ?? "";
+    }
+
+    subscribe(pushNotification: PushNotificationModel): Promise<FileResponse> {
+        let url_ = this.baseUrl + "/notifications/subscribe";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(pushNotification);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.processSubscribe(_response);
+        });
+    }
+
+    protected processSubscribe(response: Response): Promise<FileResponse> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse>(null as any);
+    }
+
+    refresh(refreshPushNotification: RefreshPushNotificationModel): Promise<FileResponse> {
+        let url_ = this.baseUrl + "/notifications/refresh";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(refreshPushNotification);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.processRefresh(_response);
+        });
+    }
+
+    protected processRefresh(response: Response): Promise<FileResponse> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse>(null as any);
+    }
+}
+
 export class ProjectClient extends AuthorizedApiBase {
     private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
     private baseUrl: string;
@@ -1014,6 +1114,53 @@ export class ProjectClient extends AuthorizedApiBase {
     }
 
     protected processRemoveParticipant(response: Response): Promise<FileResponse> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse>(null as any);
+    }
+
+    setNotificationTriggers(projectId: string, triggers: NotificationTriggerDto[]): Promise<FileResponse> {
+        let url_ = this.baseUrl + "/projects/{projectId}/setNotificationTriggers";
+        if (projectId === undefined || projectId === null)
+            throw new globalThis.Error("The parameter 'projectId' must be defined.");
+        url_ = url_.replace("{projectId}", encodeURIComponent("" + projectId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(triggers);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.processSetNotificationTriggers(_response);
+        });
+    }
+
+    protected processSetNotificationTriggers(response: Response): Promise<FileResponse> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
@@ -1907,6 +2054,7 @@ export class AuthenticationInfo implements IAuthenticationInfo {
     passwordAuthenticationDisabled?: boolean;
     registrationDisabled?: boolean;
     oidc?: OidcAuthentiationInfo | undefined;
+    vapidPublicKey?: string | undefined;
 
     constructor(data?: IAuthenticationInfo) {
         if (data) {
@@ -1922,6 +2070,7 @@ export class AuthenticationInfo implements IAuthenticationInfo {
             this.passwordAuthenticationDisabled = _data["passwordAuthenticationDisabled"];
             this.registrationDisabled = _data["registrationDisabled"];
             this.oidc = _data["oidc"] ? OidcAuthentiationInfo.fromJS(_data["oidc"]) : undefined as any;
+            this.vapidPublicKey = _data["vapidPublicKey"];
         }
     }
 
@@ -1937,6 +2086,7 @@ export class AuthenticationInfo implements IAuthenticationInfo {
         data["passwordAuthenticationDisabled"] = this.passwordAuthenticationDisabled;
         data["registrationDisabled"] = this.registrationDisabled;
         data["oidc"] = this.oidc ? this.oidc.toJSON() : undefined as any;
+        data["vapidPublicKey"] = this.vapidPublicKey;
         return data;
     }
 }
@@ -1945,6 +2095,7 @@ export interface IAuthenticationInfo {
     passwordAuthenticationDisabled?: boolean;
     registrationDisabled?: boolean;
     oidc?: OidcAuthentiationInfo | undefined;
+    vapidPublicKey?: string | undefined;
 }
 
 export class OidcAuthentiationInfo implements IOidcAuthentiationInfo {
@@ -2352,6 +2503,7 @@ export class ProjectDto implements IProjectDto {
     doneTicketsCount?: number;
     assignedToMeCount?: number;
     participants?: UserDto[];
+    notificationTriggers?: NotificationTriggerDto[];
 
     constructor(data?: IProjectDto) {
         if (data) {
@@ -2385,6 +2537,11 @@ export class ProjectDto implements IProjectDto {
                 this.participants = [] as any;
                 for (let item of _data["participants"])
                     this.participants!.push(UserDto.fromJS(item));
+            }
+            if (Array.isArray(_data["notificationTriggers"])) {
+                this.notificationTriggers = [] as any;
+                for (let item of _data["notificationTriggers"])
+                    this.notificationTriggers!.push(NotificationTriggerDto.fromJS(item));
             }
         }
     }
@@ -2420,6 +2577,11 @@ export class ProjectDto implements IProjectDto {
             for (let item of this.participants)
                 data["participants"].push(item ? item.toJSON() : undefined as any);
         }
+        if (Array.isArray(this.notificationTriggers)) {
+            data["notificationTriggers"] = [];
+            for (let item of this.notificationTriggers)
+                data["notificationTriggers"].push(item ? item.toJSON() : undefined as any);
+        }
         return data;
     }
 }
@@ -2443,6 +2605,69 @@ export interface IProjectDto {
     doneTicketsCount?: number;
     assignedToMeCount?: number;
     participants?: UserDto[];
+    notificationTriggers?: NotificationTriggerDto[];
+}
+
+export class NotificationTriggerDto implements INotificationTriggerDto {
+    trigger!: NotificationTriggerKind;
+    threshold?: string | undefined;
+    thresholdUnit?: NotificationThresholdUnit | undefined;
+    action!: NotificationActionKind;
+
+    constructor(data?: INotificationTriggerDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.trigger = _data["trigger"];
+            this.threshold = _data["threshold"];
+            this.thresholdUnit = _data["thresholdUnit"];
+            this.action = _data["action"];
+        }
+    }
+
+    static fromJS(data: any): NotificationTriggerDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new NotificationTriggerDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["trigger"] = this.trigger;
+        data["threshold"] = this.threshold;
+        data["thresholdUnit"] = this.thresholdUnit;
+        data["action"] = this.action;
+        return data;
+    }
+}
+
+export interface INotificationTriggerDto {
+    trigger: NotificationTriggerKind;
+    threshold?: string | undefined;
+    thresholdUnit?: NotificationThresholdUnit | undefined;
+    action: NotificationActionKind;
+}
+
+export enum NotificationTriggerKind {
+    TimeUntilDeadline = 0,
+}
+
+export enum NotificationThresholdUnit {
+    Minutes = 0,
+    Hours = 1,
+    Days = 2,
+}
+
+export enum NotificationActionKind {
+    PushNotification = 0,
 }
 
 export enum TicketPriority {
@@ -2598,6 +2823,144 @@ export class EditNoteModel implements IEditNoteModel {
 export interface IEditNoteModel {
     content: string;
     status: TicketStatus | undefined;
+}
+
+export class PushNotificationModel implements IPushNotificationModel {
+    endpoint!: string;
+    expirationTime?: Date | undefined;
+    keys!: NotificationSubscriptionKeys;
+
+    constructor(data?: IPushNotificationModel) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+        if (!data) {
+            this.keys = new NotificationSubscriptionKeys();
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.endpoint = _data["endpoint"];
+            this.expirationTime = _data["expirationTime"] ? new Date(_data["expirationTime"].toString()) : undefined as any;
+            this.keys = _data["keys"] ? NotificationSubscriptionKeys.fromJS(_data["keys"]) : new NotificationSubscriptionKeys();
+        }
+    }
+
+    static fromJS(data: any): PushNotificationModel {
+        data = typeof data === 'object' ? data : {};
+        let result = new PushNotificationModel();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["endpoint"] = this.endpoint;
+        data["expirationTime"] = this.expirationTime ? this.expirationTime.toISOString() : undefined as any;
+        data["keys"] = this.keys ? this.keys.toJSON() : undefined as any;
+        return data;
+    }
+}
+
+export interface IPushNotificationModel {
+    endpoint: string;
+    expirationTime?: Date | undefined;
+    keys: NotificationSubscriptionKeys;
+}
+
+export class NotificationSubscriptionKeys implements INotificationSubscriptionKeys {
+    p256Dh!: string;
+    auth!: string;
+
+    constructor(data?: INotificationSubscriptionKeys) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.p256Dh = _data["p256Dh"];
+            this.auth = _data["auth"];
+        }
+    }
+
+    static fromJS(data: any): NotificationSubscriptionKeys {
+        data = typeof data === 'object' ? data : {};
+        let result = new NotificationSubscriptionKeys();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["p256Dh"] = this.p256Dh;
+        data["auth"] = this.auth;
+        return data;
+    }
+}
+
+export interface INotificationSubscriptionKeys {
+    p256Dh: string;
+    auth: string;
+}
+
+export class RefreshPushNotificationModel implements IRefreshPushNotificationModel {
+    oldEndpoint!: string;
+    newEndpoint!: string;
+    expirationTime?: Date | undefined;
+    keys!: NotificationSubscriptionKeys;
+
+    constructor(data?: IRefreshPushNotificationModel) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+        if (!data) {
+            this.keys = new NotificationSubscriptionKeys();
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.oldEndpoint = _data["oldEndpoint"];
+            this.newEndpoint = _data["newEndpoint"];
+            this.expirationTime = _data["expirationTime"] ? new Date(_data["expirationTime"].toString()) : undefined as any;
+            this.keys = _data["keys"] ? NotificationSubscriptionKeys.fromJS(_data["keys"]) : new NotificationSubscriptionKeys();
+        }
+    }
+
+    static fromJS(data: any): RefreshPushNotificationModel {
+        data = typeof data === 'object' ? data : {};
+        let result = new RefreshPushNotificationModel();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["oldEndpoint"] = this.oldEndpoint;
+        data["newEndpoint"] = this.newEndpoint;
+        data["expirationTime"] = this.expirationTime ? this.expirationTime.toISOString() : undefined as any;
+        data["keys"] = this.keys ? this.keys.toJSON() : undefined as any;
+        return data;
+    }
+}
+
+export interface IRefreshPushNotificationModel {
+    oldEndpoint: string;
+    newEndpoint: string;
+    expirationTime?: Date | undefined;
+    keys: NotificationSubscriptionKeys;
 }
 
 export class CreateProjectModel implements ICreateProjectModel {
@@ -2766,11 +3129,11 @@ export enum TicketSorting {
 export enum TicketFilter {
     All = 0,
     Open = 1,
-    OpenWithDeadline = 2,
-    Closed = 3,
-    Inactive = 4,
-    Done = 5,
-    AssignedToMe = 6,
+    Closed = 2,
+    Inactive = 3,
+    Done = 4,
+    AssignedToMe = 5,
+    OpenWithDeadline = 6,
 }
 
 export class CreateTicketModel implements ICreateTicketModel {

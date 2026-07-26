@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using Planera.Api.Data;
 using Planera.Api.Data.Dto;
 using Planera.Api.Data.Files;
+using Planera.Api.Data.Projects;
+using Planera.Api.Data.Users;
 
 namespace Planera.Api.Services;
 

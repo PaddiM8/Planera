@@ -1,25 +1,44 @@
 <script lang="ts">
-    import type {HTMLInputTypeAttribute} from "svelte/elements";
-    import {createEventDispatcher, getContext} from "svelte";
-    import Button from "$lib/components/form/Button.svelte";
     import FormLabel from "$lib/components/form/FormLabel.svelte";
 
-    export let value: string = "";
+    export let value: Date | undefined;
     export let name: string = "";
     export let label: string | undefined = undefined;
     export let time: boolean = false;
 
     let wrapperElement: HTMLElement;
-
+    let dateString: string | undefined;
+    
+    $: dateString = toDateString(value);
+    
     export function focus() {
         (wrapperElement.firstElementChild as HTMLInputElement).focus();
     }
     
-    function handleDateChange(event: Event) {
-        if (time) {
-            const target = event.target as HTMLInputElement;
-            value = target.value + "T00:00"
+    function toDateString(date: Date | undefined) {
+        if (!date) {
+            return undefined;
         }
+
+        const newDate = new Date(date);
+        const pad = (n: number) => String(n).padStart(2, "0");
+
+        const year = newDate.getFullYear();
+        const month = pad(newDate.getMonth() + 1);
+        const day = pad(newDate.getDate());
+        const hours = pad(newDate.getHours());
+        const minutes = pad(newDate.getMinutes());
+
+        if (time) {
+            return `${year}-${month}-${day}T${hours}:${minutes}`;
+        } else {
+            return `${year}-${month}-${day}`;
+        }
+    }
+    
+    function handleDateChange(event: Event) {
+        const target = event.target as HTMLInputElement;
+        value = new Date(target.value);
     }
 </script>
 
@@ -32,8 +51,7 @@
         {#if value}
             <input type="datetime-local"
                    id="input-{name}"
-                   lang="{getContext('locale')}"
-                   bind:value={value}
+                   bind:value={dateString}
                    on:input
                    {name} />
         {:else}

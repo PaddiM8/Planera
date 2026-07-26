@@ -34,7 +34,7 @@
     let titleInput: Input;
     let assigneesInput: BlockInput;
     let priorityInput: MultiButton;
-    let deadlineValue: string = "";
+    let deadlineValue: Date | undefined;
     let isFormLoading = false;
     let ticketListElement: TicketList | undefined;
 
@@ -57,7 +57,7 @@
             editor?.reset();
             priorityInput?.reset();
             assigneesInput?.reset();
-            deadlineValue = "";
+            deadlineValue = undefined;
             setTimeout(() => {
                 titleInput?.focus();
             }, 100);

@@ -7,7 +7,7 @@
     --background-selected: #424242;
     --background-secondary: #242424;
     --background-secondary-hover: #d4d4d8;
-    --component-background-rgb: 38, 38, 38;
+    --component-background-rgb: 39, 39, 39;
     --component-background: rgb(var(--component-background-rgb));
     --sidebar-icon-color: #bdbdbd;
     --primary: #1d4ed8;
@@ -19,7 +19,8 @@
     --button-background-selected: #a8a8a8;
     --button-background-disabled: #656565;
     --border-width: 1px;
-    --border: var(--border-width) solid #363636;
+    --border-color: #2e2e2e;
+    --border: var(--border-width) solid var(--border-color);
     --text-gray: #858585;
     --spacing: 0.8rem;
     --vertical-padding: 0.55rem;

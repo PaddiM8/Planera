@@ -12,4 +12,6 @@
 </Dialog>
 
 <style lang="sass">
+    .buttons
+      margin-top: 0.4em
 </style>

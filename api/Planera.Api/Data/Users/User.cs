@@ -1,10 +1,13 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+using Planera.Api.Data.Projects;
+using Planera.Api.Data.Tickets;
 
-namespace Planera.Api.Data;
+namespace Planera.Api.Data.Users;
 
 public class User : IdentityUser
 {
+    [StringLength(250)]
     public string? AvatarPath { get; set; }
 
     public InterfaceTheme Theme { get; set; }

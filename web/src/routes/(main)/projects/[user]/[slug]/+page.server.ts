@@ -2,8 +2,7 @@ import type {RequestEvent, ServerLoadEvent} from "@sveltejs/kit";
 import {
     type CreateTicketModel,
     type SwaggerException,
-    TicketFilter,
-    type TicketQueryResult, TicketSorting
+    type TicketQueryResult
 } from "../../../../../gen/planeraClient";
 import {getTicketClient} from "$lib/clients";
 import {parsePriority} from "$lib/priority";
@@ -28,7 +27,7 @@ export async function load({ cookies, params }: ServerLoadEvent) {
     for (const ticket of response.tickets ?? []) {
         ticket.description = sanitizeHtml(makeImagePathsAbsolute(ticket.description ?? ""));
     }
-
+    
     return {
         sorting: response.sorting,
         filter: response.filter,

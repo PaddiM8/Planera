@@ -7,7 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using Planera.Api.Data;
 using Planera.Api.Data.Dto;
 using Planera.Api.Data.Files;
-using Planera.Api.Models.Ticket;
+using Planera.Api.Data.Projects;
+using Planera.Api.Data.Tickets;
 
 namespace Planera.Api.Services;
 
@@ -15,11 +16,13 @@ public class TicketService(
     DataContext dataContext,
     IMapper mapper,
     ProjectService projectService,
+    NotificationScheduler notificationScheduler,
     IFileStorage fileStorage)
 {
     private readonly DataContext _dataContext = dataContext;
     private readonly IMapper _mapper = mapper;
     private readonly ProjectService _projectService = projectService;
+    private readonly NotificationScheduler _notificationScheduler = notificationScheduler;
     private readonly IFileStorage _fileStorage = fileStorage;
 
     private static readonly Regex _imageSrcRegex = new(
@@ -190,6 +193,8 @@ public class TicketService(
             filter = TicketFilter.All;
         }
 
+        sorting ??= TicketSorting.HighestPriority;
+
         var now = DateTime.UtcNow;
         if (string.IsNullOrEmpty(searchQuery))
         {
@@ -210,8 +215,6 @@ public class TicketService(
                 _ => query.OrderByDescending(x => x.Timestamp),
             };
         }
-
-        sorting ??= TicketSorting.HighestPriority;
 
         var tickets = await query
             .Include(x => x.Author)
@@ -239,6 +242,8 @@ public class TicketService(
             await using var transaction = await _dataContext.Database.BeginTransactionAsync();
             var project = await _projectService
                 .QueryById(userId, projectId)
+                .Include(p => p.NotificationTriggers)
+                .Include(p => p.Author)
                 .SingleOrDefaultAsync();
             if (project == null)
                 return ProjectService.ProjectNotFoundError<TicketDto>();
@@ -265,6 +270,14 @@ public class TicketService(
             };
             await _dataContext.Tickets.AddAsync(ticket);
             await _dataContext.SaveChangesAsync();
+
+            await _notificationScheduler.ScheduleForTicketAsync(
+                ticket,
+                project.Author.UserName!,
+                project,
+                project.NotificationTriggers,
+                isNew: true
+            );
             await transaction.CommitAsync();
 
             return _mapper.Map<TicketDto>(ticket);
@@ -279,23 +292,44 @@ public class TicketService(
         string description,
         DateTime? deadline)
     {
-        var ticketResult = await FindAsync(userId, projectId, ticketId);
-        if (ticketResult.IsError)
-            return ticketResult.Errors;
+        var strategy = _dataContext.Database.CreateExecutionStrategy();
+        return await strategy.ExecuteAsync(async () =>
+        {
+            var project = await _projectService
+                .QueryById(userId, projectId)
+                .Include(p => p.NotificationTriggers)
+                .Include(p => p.Author)
+                .SingleOrDefaultAsync();
+            if (project == null)
+                return ProjectService.ProjectNotFoundError<Updated>();
 
-        var ticket = ticketResult.Value;
-        ticket.Title = title;
-        ticket.Description = await SaveImagesAndReplaceUrls(
-            projectId,
-            description,
-            ticket.Description
-        );
-        ticket.Deadline = deadline?.ToUniversalTime();
+            var ticket = await _dataContext.Tickets.FindAsync(ticketId, projectId);
+            if (ticket == null)
+                return TicketNotFoundError<Updated>();
 
-        _dataContext.Tickets.Update(ticket);
-        await _dataContext.SaveChangesAsync();
+            ticket.Title = title;
+            ticket.Description = await SaveImagesAndReplaceUrls(
+                projectId,
+                description,
+                ticket.Description
+            );
+            ticket.Deadline = deadline?.ToUniversalTime();
 
-        return new ErrorOr<Updated>();
+            await using var transaction = await _dataContext.Database.BeginTransactionAsync();
+            _dataContext.Tickets.Update(ticket);
+            await _dataContext.SaveChangesAsync();
+
+            await _notificationScheduler.ScheduleForTicketAsync(
+                ticket,
+                project.Author.UserName!,
+                project,
+                project.NotificationTriggers,
+                isNew: false
+            );
+            await transaction.CommitAsync();
+
+            return new ErrorOr<Updated>();
+        });
     }
 
     public async Task<ErrorOr<Deleted>> RemoveTicketAsync(
@@ -303,15 +337,37 @@ public class TicketService(
         string projectId,
         int ticketId)
     {
-        var ticketResult = await FindAsync(userId, projectId, ticketId);
-        if (ticketResult.IsError)
-            return ticketResult.Errors;
+        var strategy = _dataContext.Database.CreateExecutionStrategy();
+       
+        return await strategy.ExecuteAsync(async () =>
+        {
+            var project = await _projectService
+                .QueryById(userId, projectId)
+                .Include(p => p.NotificationTriggers)
+                .Include(p => p.Author)
+                .SingleOrDefaultAsync();
+            if (project == null)
+                return ProjectService.ProjectNotFoundError<Deleted>();
 
-        var ticket = ticketResult.Value;
-        _dataContext.Tickets.Remove(ticket);
-        await _dataContext.SaveChangesAsync();
+            var ticket = await _dataContext.Tickets.FindAsync(ticketId, projectId);
+            if (ticket == null)
+                return TicketNotFoundError<Deleted>();
 
-        return new ErrorOr<Deleted>();
+            await using var transaction = await _dataContext.Database.BeginTransactionAsync();
+            _dataContext.Tickets.Remove(ticket);
+            await _dataContext.SaveChangesAsync();
+
+            await _notificationScheduler.ScheduleForTicketAsync(
+                ticket,
+                project.Author.UserName!,
+                project,
+                project.NotificationTriggers,
+                isNew: false
+            );
+            await transaction.CommitAsync();
+
+            return new ErrorOr<Deleted>();
+        });
     }
 
     public async Task<ErrorOr<Updated>> SetStatus(
@@ -320,16 +376,39 @@ public class TicketService(
         int ticketId,
         TicketStatus status)
     {
-        var ticketResult = await FindAsync(userId, projectId, ticketId);
-        if (ticketResult.IsError)
-            return ticketResult.Errors;
+        var strategy = _dataContext.Database.CreateExecutionStrategy();
 
-        var ticket = ticketResult.Value;
-        ticket.Status = status;
-        _dataContext.Tickets.Update(ticket);
-        await _dataContext.SaveChangesAsync();
+        return await strategy.ExecuteAsync(async () =>
+        {
+            var project = await _projectService
+                .QueryById(userId, projectId)
+                .Include(p => p.NotificationTriggers)
+                .Include(p => p.Author)
+                .SingleOrDefaultAsync();
+            if (project == null)
+                return ProjectService.ProjectNotFoundError<Updated>();
 
-        return new ErrorOr<Updated>();
+            var ticket = await _dataContext.Tickets.FindAsync(ticketId, projectId);
+            if (ticket == null)
+                return TicketNotFoundError<Updated>();
+
+            await using var transaction = await _dataContext.Database.BeginTransactionAsync();
+
+            ticket.Status = status;
+            _dataContext.Tickets.Update(ticket);
+            await _dataContext.SaveChangesAsync();
+
+            await _notificationScheduler.ScheduleForTicketAsync(
+                ticket,
+                project.Author.UserName!,
+                project,
+                project.NotificationTriggers,
+                isNew: false
+            );
+            await transaction.CommitAsync();
+
+            return new ErrorOr<Updated>();
+        });
     }
 
     public async Task<ErrorOr<Updated>> SetPriorityAsync(
@@ -410,15 +489,39 @@ public class TicketService(
 
     public async Task<ErrorOr<Updated>> SetDeadlineAsync(string userId, string projectId, int ticketId, DateTime? deadline)
     {
-        var ticketResult = await FindAsync(userId, projectId, ticketId);
-        if (ticketResult.IsError)
-            return ticketResult.Errors;
-        
-        ticketResult.Value.Deadline = deadline?.ToUniversalTime();
-        _dataContext.Update(ticketResult.Value);
-        await _dataContext.SaveChangesAsync();
-        
-        return new ErrorOr<Updated>();
+        var strategy = _dataContext.Database.CreateExecutionStrategy();
+
+        return await strategy.ExecuteAsync(async () =>
+        {
+            var project = await _projectService
+                .QueryById(userId, projectId)
+                .Include(p => p.NotificationTriggers)
+                .Include(p => p.Author)
+                .SingleOrDefaultAsync();
+            if (project == null)
+                return ProjectService.ProjectNotFoundError<Updated>();
+
+            var ticket = await _dataContext.Tickets.FindAsync(ticketId, projectId);
+            if (ticket == null)
+                return TicketNotFoundError<Updated>();
+
+            await using var transaction = await _dataContext.Database.BeginTransactionAsync();
+
+            ticket.Deadline = deadline?.ToUniversalTime();
+            _dataContext.Update(ticket);
+            await _dataContext.SaveChangesAsync();
+
+            await _notificationScheduler.ScheduleForTicketAsync(
+                ticket,
+                project.Author.UserName!,
+                project,
+                project.NotificationTriggers,
+                isNew: false
+            );
+            await transaction.CommitAsync();
+
+            return new ErrorOr<Updated>();
+        });
     }
 
     private async Task<string> SaveImagesAndReplaceUrls(string projectId, string ticketBody, string? oldBody = null)
