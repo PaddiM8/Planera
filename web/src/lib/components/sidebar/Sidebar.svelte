@@ -8,16 +8,26 @@
 
 	onMount(() => {
 		let startTouchX = 0;
+		let startTouchY = 0;
 		document.ontouchmove = (e) => {
 			if (!dragging) {
 				return;
 			}
 
-			const offset = Math.min(e.touches[0].clientX - startTouchX, sidebarElement.clientWidth);
-			if (sidebarElement.classList.contains("open")) {
-				sidebarElement.style.transform = `translateX(${offset}px)`;
+			let offsetX = Math.min(e.touches[0].clientX - startTouchX, sidebarElement.clientWidth);
+			const offsetY = Math.abs(e.touches[0].clientY - startTouchY);
+			const isOpen = sidebarElement.classList.contains("open");
+			if (!isOpen) {
+				if (offsetX < 50 || offsetY > 150 || Math.abs(offsetY) > Math.abs(offsetX)) {
+					return;
+				}
+			}
+		
+			if (isOpen) {
+				offsetX = Math.min(0, offsetX);
+				sidebarElement.style.transform = `translateX(${offsetX}px)`;
 			} else {
-				sidebarElement.style.transform = `translateX(calc(-100% + ${offset}px))`;
+				sidebarElement.style.transform = `translateX(calc(-100% + ${offsetX}px))`;
 			}
 		};
 		document.ontouchend = endDrag;
@@ -28,6 +38,7 @@
 
 			startDrag();
 			startTouchX = e.touches[0].clientX;
+			startTouchY = e.touches[0].clientY;
 		};
 	});
 
