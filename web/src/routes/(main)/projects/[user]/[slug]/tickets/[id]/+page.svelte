@@ -272,6 +272,7 @@
         </span>
         <MultiButton name="priority"
                      choices={["None", "Low", "Normal", "High", "Severe"]}
+                     colors={["var(--none)", "var(--low)", "var(--normal)", "var(--high)", "var(--severe)"]}
                      defaultValue="Normal"
                      bind:selectedValue={selectedPriorityName}
                      on:change={handlePriorityChange}/>

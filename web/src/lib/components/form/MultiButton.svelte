@@ -1,13 +1,21 @@
 <script lang="ts">
     import {createEventDispatcher, onMount} from "svelte";
 
-    export let choices: string[];
+    export let choices: string[] = [];
     export let choiceValues: string[] | undefined = undefined;
+    export let colors: string[] | undefined = undefined;
     export let selectedValue: string | undefined = undefined;
     export let defaultValue: string | undefined = undefined;
     export let name: string | undefined = undefined;
-
+    export let yesNo: boolean | undefined = undefined;
+    
     const dispatcher = createEventDispatcher();
+
+    if (yesNo) {
+        choices = ["No", "Yes"];
+        colors = ["var(--severe)", "var(--normal)"]
+        choiceValues = ["false", "true"]
+    }
 
     onMount(() => {
         if (!selectedValue) {
@@ -34,6 +42,7 @@
 <span class="multi-button">
     {#each choices as choice, i}
         {@const value = choiceValues ? choiceValues[i] : choice}
+        {@const color = colors ? colors[i] : undefined}
         <span class="button">
             <input type="radio"
                    id="choice-{name}-{value.replace(' ', '-')}"
@@ -41,7 +50,10 @@
                    name={name}
                    bind:group={selectedValue}
                    on:change={e => handleChange(e, value)} />
-            <label for="choice-{name}-{value.replace(' ', '-')}">{choice}</label>
+            <label for="choice-{name}-{value.replace(' ', '-')}"
+                   style="{color ? `background-color: ${color};` : ''}">
+                {choice}
+            </label>
         </span>
     {/each}
 </span>
@@ -70,9 +82,12 @@
         top: 0
         left: 0
         z-index: -1
-
+      
     input[type="radio"]:checked + label
-        background-color: var(--background-hover)
+      background-color: var(--background-selected)
+      
+    input[type="radio"]:not(:checked) + label
+      background-color: var(--component-background) !important
 
     input[type="radio"]:focus-visible + label
         position: relative

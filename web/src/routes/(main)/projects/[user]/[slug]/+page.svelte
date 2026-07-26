@@ -118,6 +118,7 @@
                     </span>
                     <MultiButton name="priority"
                                  choices={["None", "Low", "Normal", "High", "Severe"]}
+                                 colors={["var(--none)", "var(--low)", "var(--normal)", "var(--high)", "var(--severe)"]}
                                  defaultValue="Normal"
                                  bind:this={priorityInput} />
                 </span>
@@ -141,7 +142,7 @@
                     <span class="label">
                         <Label value="Deadline" />
                     </span>
-                    <DateInput bind:value={deadlineValue} name="deadline" time/>
+                    <DateInput bind:value={deadlineValue} name="deadline" time />
                 </span>
                 {/if}
             </div>

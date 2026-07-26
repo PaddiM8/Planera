@@ -118,24 +118,21 @@
 
         <div class="group">
             <FormLabel value="Project Descriptions" />
-            <MultiButton choices={["Enable", "Disable"]}
-                         choiceValues={["true", "false"]}
+            <MultiButton yesNo
                          selectedValue={data.project.enableTicketDescriptions ? "true" : "false"}
                          name="enableTicketDescriptions" />
         </div>
 
         <div class="group">
             <FormLabel value="Project Assignees" />
-            <MultiButton choices={["Enable", "Disable"]}
-                         choiceValues={["true", "false"]}
+            <MultiButton yesNo
                          selectedValue={data.project.enableTicketAssignees ? "true" : "false"}
                          name="enableTicketAssignees" />
         </div>
 
         <div class="group">
             <FormLabel value="Deadlines" />
-            <MultiButton choices={["Enable", "Disable"]}
-                         choiceValues={["true", "false"]}
+            <MultiButton yesNo
                          selectedValue={data.project.enableTicketDeadlines ? "true" : "false"}
                          name="enableTicketDeadlines" />
         </div>

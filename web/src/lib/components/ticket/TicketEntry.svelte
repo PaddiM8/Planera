@@ -236,7 +236,7 @@
         display: flex
         flex-direction: column
         padding: var(--vertical-padding) var(--horizontal-padding)
-        margin-bottom: 0.4em
+        margin-bottom: 0.6em
         border: var(--border)
         border-radius: var(--radius)
         background-color: var(--component-background)
