@@ -25,7 +25,7 @@
     import type {FormSubmitInput} from "../../../../../../types";
     import {truncate} from "$lib/util";
     import DateInput from "$lib/components/form/DateInput.svelte";
-	import { formatDate, isToday } from "$lib/formatting";
+    import {formatDate, formatDateFull, isToday} from "$lib/formatting";
 
     export let form: {
         problem: ProblemDetails,
@@ -308,7 +308,7 @@
 
     <div class="dates">
         {#if data.ticket.timestamp}
-            <time class="creation-date">
+            <time class="creation-date" data-tooltip={formatDateFull(data.ticket.timestamp)}>
                 {#if isToday(data.ticket.timestamp)}
                     Created today at {formatDate(data.ticket.timestamp)}
                 {:else}
@@ -317,7 +317,7 @@
             </time>
         {/if}
         {#if data.ticket.modifiedTimestamp}
-            <time class="modification-date">
+            <time class="modification-date" data-tooltip={formatDateFull(data.ticket.modifiedTimestamp)}>
                 {#if isToday(data.ticket.modifiedTimestamp)}
                     (modified: today at {formatDate(data.ticket.timestamp)})
                 {:else}
@@ -479,12 +479,13 @@
             flex-grow: 1
           
     .dates
-      display: flex
-      gap: 0.4em
+        display: flex
+        gap: 0.4em
       
     .creation-date, .modification-date
-      color: var(--text-gray)
-
+        color: var(--text-gray)
+        cursor: default
+        
     .notes
         display: flex
         flex-direction: column

@@ -160,6 +160,53 @@
       background-color: inherit
       font-family: inherit
 
+    :global([data-tooltip])
+          position: relative
+
+    :global([data-tooltip]::after)
+        opacity: 0
+        position: absolute
+        content: attr(data-tooltip)
+        top: -0.3em
+        left: 50%
+        transform: translate(-50%, -100%)
+
+        padding: var(--vertical-padding) var(--horizontal-padding)
+        color: var(--on-background)
+        background-color: var(--background-secondary)
+        border-radius: var(--radius)
+        border: var(--border)
+        font-size: 0.85em
+        
+        transition: 0s ease opacity
+        z-index: 9998
+        white-space: nowrap
+
+    :global([data-tooltip]:hover::after)
+        opacity: 1
+        transition-delay: 750ms
+
+    :global([data-tooltip]::before)
+        opacity: 0
+        position: absolute
+        content: ''
+        top: 0
+        left: 50%
+        transform: translate(-50%, -100%) rotate(45deg)
+        
+        width: 0.75em
+        height: 0.75em
+
+        background-color: var(--background-secondary)
+        border-right: var(--border)
+        border-bottom: var(--border)
+        transition: 0s ease opacity
+        z-index: 9999
+        
+    :global([data-tooltip]:hover::before)
+        opacity: 1
+        transition-delay: 750ms
+
     #content
         display: grid
         grid-template-rows: auto 1fr

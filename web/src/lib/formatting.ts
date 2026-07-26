@@ -56,6 +56,17 @@ export function formatDate(date: Date | string | undefined, forceTime: boolean =
         .replace(",", "");
 }
 
+export function formatDateFull(date: Date | string | undefined) {
+    if (!date) {
+        return undefined;
+    }
+
+    return new Date(date).toLocaleDateString(undefined, {
+        hour: "2-digit",
+        minute: "2-digit",
+    });
+}
+
 const sanitizerOptions = {
     whiteList: {
         h1: ["dir"],

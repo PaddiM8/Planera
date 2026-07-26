@@ -9,7 +9,7 @@
     import Input from "$lib/components/form/Input.svelte";
     import Button from "$lib/components/form/Button.svelte";
     import Form from "$lib/components/form/Form.svelte";
-    import {formatDate} from "$lib/formatting";
+    import {formatDate, formatDateFull} from "$lib/formatting";
     import type {ProblemDetails} from "$lib/problemDetails";
 
     export let note: NoteDto;
@@ -111,7 +111,7 @@
     {:else}
         <div class="bottom">
             <p class="content">{note.content}</p>
-            <time>{formatDate(note.timestamp)}</time>
+            <time data-tooltip={formatDateFull(note.timestamp)}>{formatDate(note.timestamp)}</time>
         </div>
     {/if}
 </div>
@@ -172,4 +172,5 @@
             color: var(--text-gray)
             font-size: 0.8em
             font-weight: 500
+            user-select: none
 </style>
