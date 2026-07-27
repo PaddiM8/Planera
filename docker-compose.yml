@@ -66,6 +66,7 @@
       PLANERA_OIDC__SCOPES: "openid profile email"
     volumes:
       - ./data/api:/app/data
+      - ./data/dp-keys:/root/.aspnet/DataProtection-Keys
   planera-web:
     image: ghcr.io/paddim8/planera-web:latest
     restart: always
