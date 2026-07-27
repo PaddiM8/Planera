@@ -15,6 +15,10 @@ public class MappingProfile : Profile
             .ForMember(
                 dest => dest.Username,
                 opt => opt.MapFrom(src => src.UserName)
+            )
+            .ForMember(
+                dest => dest.HasPassword,
+                opt => opt.MapFrom(src => src.PasswordHash != null)
             );
         CreateMap<Project, ProjectDto>()
             .ForMember(

@@ -2,7 +2,7 @@
     import Form from "$lib/components/form/Form.svelte";
     import Input from "$lib/components/form/Input.svelte";
     import Button from "$lib/components/form/Button.svelte";
-    import {AccountDto} from "../../../../gen/planeraClient.js";
+    import {AccountDto, AuthenticationInfo} from "../../../../gen/planeraClient.js";
     import {toast} from "$lib/toast";
     import FormLabel from "$lib/components/form/FormLabel.svelte";
     import {getAvatarUrl} from "$lib/clients";
@@ -12,6 +12,7 @@
     export let form;
     export let data: {
         account: AccountDto,
+        authenticationInfo: AuthenticationInfo,
     };
 
     function afterSubmitUpdate(success: boolean) {
@@ -65,27 +66,47 @@
     </Form>
 </section>
 
-<h2>Change Password</h2>
-<section class="password-change">
-    <Form action="?/changePassword"
-          problem={form?.changePassword}
-          afterSubmit={afterSubmitChangePassword}>
-        <Input type="password"
-               label="Current Password"
-               name="currentPassword"
-               placeholder="Current Password..." />
-        <Input type="password"
-               label="New Password"
-               name="newPassword"
-               placeholder="New Password..." />
-        <Input type="password"
-               label="Confirm Password"
-               name="confirmedPassword"
-               placeholder="Confirm Password..." />
+{#if data.account.hasPassword && !data.authenticationInfo.passwordAuthenticationDisabled}
+    <h2>Change Password</h2>
+    <section class="password-change">
+        <Form action="?/changePassword"
+              problem={form?.changePassword}
+              afterSubmit={afterSubmitChangePassword}>
+            <Input type="password"
+                   label="Current Password"
+                   name="currentPassword"
+                   placeholder="Current Password..." />
+            <Input type="password"
+                   label="New Password"
+                   name="newPassword"
+                   placeholder="New Password..." />
+            <Input type="password"
+                   label="Confirm Password"
+                   name="confirmedPassword"
+                   placeholder="Confirm Password..." />
 
-        <Button value="Update" primary submit />
-    </Form>
-</section>
+            <Button value="Update" primary submit />
+        </Form>
+    </section>
+{:else if !data.authenticationInfo.passwordAuthenticationDisabled}
+    <h2>Set Password</h2>
+    <section class="password-change">
+        <Form action="?/changePassword"
+              problem={form?.changePassword}
+              afterSubmit={afterSubmitChangePassword}>
+            <Input type="password"
+                   label="New Password"
+                   name="newPassword"
+                   placeholder="New Password..." />
+            <Input type="password"
+                   label="Confirm Password"
+                   name="confirmedPassword"
+                   placeholder="Confirm Password..." />
+
+            <Button value="Update" primary submit />
+        </Form>
+    </section>
+{/if}
 
 <style lang="sass">
     section

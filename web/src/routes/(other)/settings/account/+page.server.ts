@@ -3,7 +3,7 @@ import {getUserClient} from "$lib/clients";
 import {handleProblem, handleProblemForForm} from "$lib/problemDetails";
 import type {EditUserModel, ChangePasswordModel, AccountDto, SwaggerException} from "../../../../gen/planeraClient";
 
-export async function load({ cookies }: ServerLoadEvent) {
+export async function load({ cookies, parent }: ServerLoadEvent) {
     let response: AccountDto;
     try {
         response = await getUserClient(cookies).getAccount();
@@ -11,9 +11,12 @@ export async function load({ cookies }: ServerLoadEvent) {
         return handleProblem(ex as SwaggerException);
     }
 
+    const { authenticationInfo } = await parent();
+
     return {
         account: structuredClone(response),
         error: false,
+        authenticationInfo: authenticationInfo,
     };
 }
 

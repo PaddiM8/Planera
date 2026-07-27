@@ -104,10 +104,18 @@ public class UserService(
         return new ErrorOr<Updated>();
     }
 
-    public async Task<ErrorOr<Updated>> ChangePasswordAsync(string userId, string currentPassword, string newPassword)
+    public async Task<ErrorOr<Updated>> ChangePasswordAsync(string userId, string? currentPassword, string newPassword)
     {
         var user = await userManager.FindByIdAsync(userId);
-        var identityResult = await userManager.ChangePasswordAsync(user!, currentPassword, newPassword);
+        IdentityResult identityResult;
+        if (user!.PasswordHash == null)
+        {
+            identityResult = await userManager.AddPasswordAsync(user, newPassword);
+        }
+        else
+        {
+            identityResult = await userManager.ChangePasswordAsync(user, currentPassword ?? string.Empty, newPassword);
+        }
 
         return !identityResult.Succeeded
             ? Error.Validation("CurrentPassword.Invalid", "Incorrect password.")

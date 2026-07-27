@@ -3252,6 +3252,7 @@ export class AccountDto implements IAccountDto {
     id!: string;
     username!: string;
     email!: string;
+    hasPassword!: boolean;
     avatarPath?: string | undefined;
     theme?: InterfaceTheme;
 
@@ -3269,6 +3270,7 @@ export class AccountDto implements IAccountDto {
             this.id = _data["id"];
             this.username = _data["username"];
             this.email = _data["email"];
+            this.hasPassword = _data["hasPassword"];
             this.avatarPath = _data["avatarPath"];
             this.theme = _data["theme"];
         }
@@ -3286,6 +3288,7 @@ export class AccountDto implements IAccountDto {
         data["id"] = this.id;
         data["username"] = this.username;
         data["email"] = this.email;
+        data["hasPassword"] = this.hasPassword;
         data["avatarPath"] = this.avatarPath;
         data["theme"] = this.theme;
         return data;
@@ -3296,6 +3299,7 @@ export interface IAccountDto {
     id: string;
     username: string;
     email: string;
+    hasPassword: boolean;
     avatarPath?: string | undefined;
     theme?: InterfaceTheme;
 }
@@ -3349,7 +3353,7 @@ export interface IEditUserModel {
 }
 
 export class ChangePasswordModel implements IChangePasswordModel {
-    currentPassword!: string;
+    currentPassword?: string | undefined;
     newPassword!: string;
     confirmedPassword!: string;
 
@@ -3387,7 +3391,7 @@ export class ChangePasswordModel implements IChangePasswordModel {
 }
 
 export interface IChangePasswordModel {
-    currentPassword: string;
+    currentPassword?: string | undefined;
     newPassword: string;
     confirmedPassword: string;
 }
