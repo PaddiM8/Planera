@@ -23,7 +23,7 @@ public class NotificationSendingBackgroundService(
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        using var timer = new PeriodicTimer(TimeSpan.FromMinutes(1));
+        using var timer = new PeriodicTimer(TimeSpan.FromSeconds(10));
         while (!cancellationToken.IsCancellationRequested)
         {
             try

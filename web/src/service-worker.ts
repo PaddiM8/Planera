@@ -83,13 +83,16 @@ self.addEventListener("push", async (event: PushEvent) => {
 self.addEventListener("notificationclick", async (event: NotificationEvent) => {
     event.notification.close();
 
-    const data = event.notification.data as any;
-    const targetUrl = data?.url ?? "/";
+    const targetUrl = new URL(
+        event.notification.data?.url || "/",
+        self.location.origin
+    ).href;
     
     // If a tab with the target URL is already open, focus it
     const clientList = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
     for (const client of clientList) {
         if ("url" in client && client.url.includes(targetUrl) && "focus" in client) {
+            console.log("focusing client", client)
             return client.focus();
         }
     }
