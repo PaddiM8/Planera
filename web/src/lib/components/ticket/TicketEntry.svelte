@@ -272,7 +272,7 @@
 
             .item
                 display: flex
-                flex-direction: column
+                gap: 0.3em
                 align-items: center
                 justify-content: center
                 flex-grow: 1
@@ -290,7 +290,8 @@
                     background-color: var(--background-hover)
 
                 .icon
-                    width: 1.5em
+                    width: 1.2em
+                    height: 1.2em
 
                     &.done
                         color: var(--green)
@@ -475,11 +476,11 @@
             font-weight: 500
             font-size: 0.9em
 
-    :global(.deadline > *:first-child)
+    :global(.ticket .deadline > *:first-child)
         width: 1em
         height: 1em
 
-    :global(.note-count > *:first-child)
+    :global(.ticket .note-count > *:first-child)
         width: 1em
         height: 1em
 
@@ -492,4 +493,7 @@
 
         .touch-overlay
             display: block
+        
+        .assignee.add-button
+            display: none
 </style>
