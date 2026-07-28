@@ -282,9 +282,18 @@ public class ProjectService(
     {
         var project = await QueryById(userId, projectId)
             .Include(x => x.Author)
+            .Include(x => x.Participants)
+            .Include(x => x.InvitedUsers)
             .SingleOrDefaultAsync();
         if (project == null)
             return ProjectNotFoundError<(UserDto, ProjectDto)>();
+
+        var normalizedParticipantName = _userManager.NormalizeName(participantName);
+        if (project.Participants.Any(p => p.NormalizedUserName == normalizedParticipantName))
+            return Error.Conflict("Participant.AlreadyAdded", "A user with the given name is already a participant in the project.");
+
+        if (project.InvitedUsers.Any(p => p.NormalizedUserName == normalizedParticipantName))
+            return Error.Conflict("Participant.AlreadyInvited", "A user with the given name has already been invited to the project.");
 
         var participant = await _userManager.FindByNameAsync(participantName);
         if (participant == null)
