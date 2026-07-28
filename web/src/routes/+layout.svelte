@@ -127,6 +127,7 @@
 
         padding: 0
         margin: 0
+        font-size: 15px
         color: var(--on-background)
 
     :global(h1)
