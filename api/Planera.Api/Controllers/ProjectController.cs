@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Planera.Api.Data.Dto;
+using Planera.Api.Data.Notifications;
 using Planera.Api.Hubs;
 using Planera.Api.Models.Project;
 using Planera.Api.Services;
@@ -140,6 +141,18 @@ public class ProjectController(
             User.FindFirst("Id")!.Value,
             projectId,
             triggers
+        );
+
+        return result.ToActionResult();
+    }
+
+    [HttpPut("{projectId}/configureUserNotifications")]
+    public async Task<IActionResult> ConfigureUserNotifications(string projectId, List<NotificationKinds> notificationKinds)
+    {
+        var result = await _projectService.ConfigureUserNotificationAsync(
+            User.FindFirstValue("Id")!,
+            projectId,
+            notificationKinds
         );
 
         return result.ToActionResult();

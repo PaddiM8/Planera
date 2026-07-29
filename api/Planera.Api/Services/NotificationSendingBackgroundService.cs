@@ -1,6 +1,7 @@
 using System.Net;
 using Newtonsoft.Json;
 using Planera.Api.Data;
+using Planera.Api.Data.Notifications;
 using Planera.Api.Data.Projects;
 using Planera.Api.Models.Notifications;
 using WebPush;
@@ -97,14 +98,19 @@ public class NotificationSendingBackgroundService(
     {
         var webPushClient = new WebPushClient(_httpClient);
 
-        var subscriptionsResult = await notificationService.GetSubscriptionsForUsersInProjectAsync(entry.TargetId);
+        var subscriptionsResult = await notificationService.GetSubscriptionsForUsersInProjectAsync(entry.TargetId, entry.NotificationKind);
         if (subscriptionsResult.IsError)
             return (null, false);
 
         // As long as it managed to send it to one of the subscriptions, that is good enough.
-        bool success = false;
-        foreach (var subscription in subscriptionsResult.Value)
+        bool success = true;
+        foreach (var (subscription, participation) in subscriptionsResult.Value)
         {
+            var userExpectsAllNotifications = entry.NotificationKind == NotificationKinds.DeadlineMyTicket &&
+                participation.EnabledNotificationKinds.HasFlag(NotificationKinds.DeadlineOtherTicket);
+            if (entry.AssignedUserIds?.Contains(subscription.UserId) is false && !userExpectsAllNotifications)
+                continue;
+
             var remoteSubscription = new PushSubscription(subscription.Endpoint, subscription.P256Dh, subscription.Auth);
 
             try
@@ -126,7 +132,7 @@ public class NotificationSendingBackgroundService(
             catch (WebPushException ex)
             {
                 // If the subscription is no longer active, remove it from the database and consider it to be
-                // as success since it was handled.
+                // a success since it was handled.
                 if (ex.StatusCode is HttpStatusCode.Gone or HttpStatusCode.NotFound)
                 {
                     await notificationService.UnsubscribeAsync(subscription);

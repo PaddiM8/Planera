@@ -7,11 +7,12 @@
     export let foregroundColors: string[] | undefined = undefined;
     export let selectedValue: string | undefined = undefined;
     export let defaultValue: string | undefined = undefined;
+    export let disabled: boolean = false;
     export let name: string | undefined = undefined;
     export let yesNo: boolean | undefined = undefined;
     
     const dispatcher = createEventDispatcher();
-
+    
     if (yesNo) {
         choices = ["No", "Yes"];
         backgroundColors = ["var(--severe)", "var(--normal)"]
@@ -51,6 +52,7 @@
                    id="choice-{name}-{value.replace(' ', '-')}"
                    value={value}
                    name={name}
+                   disabled={disabled}
                    bind:group={selectedValue}
                    on:change={e => handleChange(e, value)} />
             <label for="choice-{name}-{value.replace(' ', '-')}"
@@ -80,29 +82,34 @@
             border-bottom-right-radius: var(--radius)
             border-right: 0
 
-    input[type="radio"]
+    input
         position: absolute
         top: 0
         left: 0
         z-index: -1
+        
+    input[disabled] + label
+        cursor: default !important
+        background-color: var(--button-background-disabled) !important
+        color: var(--text-gray) !important
       
-    input[type="radio"]:checked + label
+    input:checked + label
       color: var(--on-background)
       background-color: var(--background-selected)
       
-    input[type="radio"]:not(:checked) + label
+    input:not([disabled]):not(:checked) + label
       color: var(--on-background) !important
       background-color: var(--component-background) !important
 
-    input[type="radio"]:focus-visible + label
+    input:focus-visible + label
         position: relative
         outline: 2px solid var(--blue)
         z-index: 999
 
-    .button:not(:last-of-type) input[type="radio"]:focus + label
+    .button:not(:last-of-type) input:focus + label
         border-right: var(--border)
 
-    input[type="radio"] + label
+    input + label
         display: block
         content: ""
         padding: var(--vertical-padding) var(--horizontal-padding)
@@ -115,6 +122,6 @@
         cursor: pointer
         -webkit-tap-highlight-color: transparent
 
-        &:hover:not(input[type="radio"]:checked + label)
-            background-color: var(--background-hover) !important
+    input:not([disabled]):hover:not(input:checked + label)
+        background-color: var(--background-hover) !important
 </style>

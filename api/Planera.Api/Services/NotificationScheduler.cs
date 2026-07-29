@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Planera.Api.Data;
+using Planera.Api.Data.Notifications;
 using Planera.Api.Data.Projects;
 using Planera.Api.Data.Tickets;
 using Planera.Api.Utility;
@@ -171,6 +172,13 @@ public class NotificationScheduler(DataContext dataContext)
         if (!threshold.HasValue || !ticket.Deadline.HasValue)
             return;
 
+        var assignedUserIds = ticket
+            .Assignees
+            .Select(u => u.Id)
+            .ToList();
+        if (assignedUserIds.Count == 0)
+            assignedUserIds.Add(ticket.AuthorId);
+
         var scheduledTime = ticket.Deadline.Value - threshold.Value;
         var entry = new NotificationQueueEntry
         {
@@ -179,8 +187,10 @@ public class NotificationScheduler(DataContext dataContext)
             NotificationTriggerId = triggerRule.Id,
             ObjectId = ticket.Id.ToString(),
             ScheduledTime = scheduledTime,
+            AssignedUserIds = assignedUserIds,
             TriggerKind = triggerRule.Trigger,
             ActionKind = triggerRule.Action,
+            NotificationKind = NotificationKinds.DeadlineMyTicket,
             Title = $"({project.Name}) Approaching deadline for #{ticket.Id} {ticket.Title.Truncate(25)}",
             Content = $"Due for {triggerRule.Threshold} {triggerRule.ThresholdUnit.ToString()?.ToLower()}: '{ticket.Title.Truncate(50)}'".Truncate(500),
             Url = $"/projects/{authorName}/{project.Slug}/{ticket.Id}",

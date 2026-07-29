@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Planera.Api.Data.Notifications;
 using Planera.Api.Data.Tickets;
 using Planera.Api.Data.Users;
 
@@ -19,4 +20,6 @@ public class ProjectParticipant
     public TicketSorting Sorting { get; set; }
 
     public TicketFilter? Filter { get; set; }
+
+    public NotificationKinds EnabledNotificationKinds { get; set; } = NotificationKinds.Core | NotificationKinds.DeadlineMyTicket;
 }

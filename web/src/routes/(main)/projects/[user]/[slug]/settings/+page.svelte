@@ -6,7 +6,7 @@
     import {toast} from "$lib/toast";
     import {dialog} from "$lib/dialog";
     import {participants} from "../../../../store";
-    import {NotificationTriggerDto, type ProjectDto} from "../../../../../../gen/planeraClient";
+    import {NotificationKinds, NotificationTriggerDto, type ProjectDto} from "../../../../../../gen/planeraClient";
     import {projectHub} from "../store";
     import {getAvatarUrl} from "$lib/clients";
     import AvatarPicker from "$lib/components/form/AvatarPicker.svelte";
@@ -18,7 +18,6 @@
     import TableCell from "$lib/components/table/TableCell.svelte";
     import Select from "$lib/components/form/Select.svelte";
     import {Icon, Trash} from "svelte-hero-icons";
-    import {onMount} from "svelte";
 
     export let data: {
         project: ProjectDto,
@@ -27,6 +26,13 @@
     export let form;
 
     let deleteFormSlugValue: string;
+
+    let enableNotifications = data.project.me?.enabledNotificationKinds?.includes(NotificationKinds.Core)
+        ? "true"
+        : "false";
+    let notifyDeadlines = data.project.me?.enabledNotificationKinds?.includes(NotificationKinds.DeadlineOtherTicket)
+        ? "all-tickets"
+        : data.project.me?.enabledNotificationKinds?.includes(NotificationKinds.DeadlineMyTicket) ? "my-tickets" : "none";
 
     async function handleAddParticipant(name: string): Promise<boolean> {
         try {
@@ -62,6 +68,14 @@
     function handleSubmit(success: boolean) {
         if (success) {
             toast.info("Project updated successfully.");
+        }
+    }
+
+    function afterSubmitConfigureNotifications(success: boolean) {
+        if (success) {
+            toast.info("Updated notification settings successfully.");
+        } else {
+            toast.error("Failed to update notification settings.");
         }
     }
     
@@ -159,6 +173,36 @@
              addButtonText="Invite"
              handleAdd={handleAddParticipant}
              handleRemove={handleRemoveParticipant} />
+</section>
+
+<hr>
+
+<h2>Notifications for {data.project.me?.user.username}</h2>
+<section class="notifications">
+    <Form action="?/configureNotifications"
+          problem={form?.problem}
+          afterSubmit={afterSubmitConfigureNotifications}
+          reset={false}>
+        <input type="hidden" name="projectId" value={data.project.id} />
+        <div>
+            <FormLabel value="Enable notifications" />
+            <MultiButton yesNo
+                         name="enable-notifications"
+                         bind:selectedValue={enableNotifications} />
+        </div>
+
+        <div>
+            <FormLabel value="Notify me about deadlines" />
+            <MultiButton choices={["None", "My Tickets", "All Tickets"]}
+                         choiceValues={["none", "my-tickets", "all-tickets"]}
+                         backgroundColors={["var(--severe)", "var(--normal)", "var(--normal)"]}
+                         foregroundColors={["var(--on-severe)", "var(--on-normal)", "var(--on-normal)"]}
+                         name="notify-deadlines"
+                         selectedValue={notifyDeadlines}
+                         disabled={enableNotifications == "false"} />
+        </div>
+        <Button value="Save" primary submit />
+    </Form>
 </section>
 
 <hr>

@@ -2,6 +2,7 @@ using ErrorOr;
 using Microsoft.EntityFrameworkCore;
 using Planera.Api.Data;
 using Planera.Api.Data.Notifications;
+using Planera.Api.Data.Projects;
 using Planera.Api.Models.Notifications;
 
 namespace Planera.Api.Services;
@@ -59,19 +60,45 @@ public class NotificationService(DataContext dataContext)
         }
     }
 
-    public async Task<ErrorOr<List<PushNotificationSubscription>>> GetSubscriptionsForUserAsync(string userId)
+    public async Task<ErrorOr<List<PushNotificationSubscription>>> GetSubscriptionsForUserAsync(string userId, NotificationKinds notificationKind)
     {
         return await _dataContext
             .PushNotificationSubscriptions
             .Where(x => x.UserId == userId)
+            .Select(x => new
+            {
+                Subscription = x,
+                EnabledNotificationKinds = x.User.EnabledNotificationKinds,
+            })
+            .Where(x => x.EnabledNotificationKinds.HasFlag(notificationKind))
+            .Select(x => x.Subscription)
             .ToListAsync();
     }
 
-    public async Task<ErrorOr<List<PushNotificationSubscription>>> GetSubscriptionsForUsersInProjectAsync(string projectId)
+    public async Task<ErrorOr<List<(PushNotificationSubscription, ProjectParticipant)>>> GetSubscriptionsForUsersInProjectAsync(string projectId, NotificationKinds notificationKind)
     {
-        return await _dataContext
+        var result = await _dataContext
             .PushNotificationSubscriptions
-            .Where(x => x.User.JoinedProjects.Any(p => p.Id == projectId))
+            .Select(x => new
+            {
+                Subscription = x,
+                Participation = x
+                    .User
+                    .ProjectParticipations
+                    .FirstOrDefault(p => p.ProjectId == projectId && p.UserId == x.UserId)
+            })
+            .Where(x => x.Subscription.User.EnabledNotificationKinds.HasFlag(notificationKind))
+            .Where(x => x.Participation != null)
+            .Where(x => x.Participation!.EnabledNotificationKinds.HasFlag(notificationKind))
+            .Select(x => new
+            {
+                Subscription = x.Subscription,
+                Participation = x.Participation,
+            })
             .ToListAsync();
+
+        return result
+            .Select(x => (x.Subscription, x.Participation))
+            .ToList()!;
     }
 }

@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Planera.Api.Data.Dto;
+using Planera.Api.Data.Notifications;
 using Planera.Api.Models.User;
 using Planera.Api.Services;
 using Planera.Api.Extensions;
@@ -55,6 +56,17 @@ public class UserController(UserService userService, PersonalAccessTokenService 
             User.FindFirst("Id")!.Value,
             model.CurrentPassword,
             model.NewPassword
+        );
+
+        return result.ToActionResult();
+    }
+
+    [HttpPut("configureNotifications")]
+    public async Task<IActionResult> ConfigureNotifications(List<NotificationKinds> notificationKinds)
+    {
+        var result = await _userService.ConfigureNotificationAsync(
+            User.FindFirstValue("Id")!,
+            notificationKinds
         );
 
         return result.ToActionResult();

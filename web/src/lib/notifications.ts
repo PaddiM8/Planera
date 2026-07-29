@@ -1,23 +1,27 @@
 import type {HubConnection} from "@microsoft/signalr";
 import {dialog} from "$lib/dialog";
+import {browser} from "$app/environment";
+
+export function checkNotificationsEnabled() {
+    if (!browser) {
+        return false;
+    }
+
+    return Notification.permission === "granted";
+}
 
 export async function subscribeToPushNotifications(userHub: HubConnection, vapidPublicKey: string) {
     if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
         return;
     }
 
-    // If notificationsAllowed has already been set, it has already been handled.
-    if (localStorage.getItem("notificationsAllowed")) {
+    if (Notification.permission === "granted" || Notification.permission === "denied") {
         return;
     }
 
     if (!await requestPermission()) {
-        localStorage.setItem("notificationsAllowed", "false");
-
         return;
     }
-
-    localStorage.setItem("notificationsAllowed", "true");
 
     const registration = await navigator.serviceWorker.ready;
     let subscription = await registration.pushManager.getSubscription();

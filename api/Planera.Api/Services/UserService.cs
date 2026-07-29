@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Planera.Api.Data;
 using Planera.Api.Data.Dto;
 using Planera.Api.Data.Files;
+using Planera.Api.Data.Notifications;
 using Planera.Api.Data.Projects;
 using Planera.Api.Data.Users;
 
@@ -122,6 +123,23 @@ public class UserService(
             : new ErrorOr<Updated>();
     }
 
+    public async Task<ErrorOr<Updated>> ConfigureNotificationAsync(string userId, List<NotificationKinds> notificationKinds)
+    {
+        var user = await dataContext.Users.FindAsync(userId);
+        if (user == null)
+            return Error.NotFound("UserId.NotFound", "A user with the given ID was not found.");
+        
+        var notificationKindsEnum = NotificationKinds.None;
+        foreach (var kind in notificationKinds)
+            notificationKindsEnum |= kind;
+
+        user.EnabledNotificationKinds = notificationKindsEnum;
+        dataContext.Users.Update(user);
+        await dataContext.SaveChangesAsync();
+
+        return new ErrorOr<Updated>();
+    }
+
     public async Task<ErrorOr<IEnumerable<ProjectDto>>> GetInvitations(string userId)
     {
         return await dataContext.Invitations
@@ -133,25 +151,32 @@ public class UserService(
 
     public async Task<ErrorOr<InvitationDto>> AcceptInvitation(string userId, string projectId)
     {
-        var invitation = await dataContext.Invitations
-            .Where(x => x.UserId == userId)
-            .Include(x => x.User)
-            .Where(x => x.ProjectId == projectId)
-            .Include(x => x.Project)
-            .ThenInclude(x => x.Author)
-            .SingleOrDefaultAsync();
-        if (invitation == null)
-            return Error.NotFound("Invitation.NotFound", "Invitation was not found.");
+        var strategy = dataContext.Database.CreateExecutionStrategy();
 
-        await dataContext.ProjectParticipants.AddAsync(new ProjectParticipant
+        return await strategy.ExecuteAsync<ErrorOr<InvitationDto>>(async () =>
         {
-            UserId = userId,
-            ProjectId = projectId,
-        });
-        dataContext.Invitations.Remove(invitation);
-        await dataContext.SaveChangesAsync();
+            var invitation = await dataContext.Invitations
+                .Where(x => x.UserId == userId)
+                .Include(x => x.User)
+                .Where(x => x.ProjectId == projectId)
+                .Include(x => x.Project)
+                .ThenInclude(x => x.Author)
+                .SingleOrDefaultAsync();
+            if (invitation == null)
+                return Error.NotFound("Invitation.NotFound", "Invitation was not found.");
 
-        return mapper.Map<InvitationDto>(invitation);
+            var participant = new ProjectParticipant
+            {
+                UserId = userId,
+                ProjectId = projectId,
+            };
+
+            await dataContext.ProjectParticipants.AddAsync(participant);
+            dataContext.Invitations.Remove(invitation);
+            await dataContext.SaveChangesAsync();
+
+            return mapper.Map<InvitationDto>(invitation);
+        });
     }
 
     public async Task<ErrorOr<Updated>> DeclineInvitation(string userId, string projectId)

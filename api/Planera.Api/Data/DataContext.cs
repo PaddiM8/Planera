@@ -7,7 +7,7 @@ using Planera.Api.Data.Users;
 
 namespace Planera.Api.Data;
 
-public class DataContext(DbContextOptions<DataContext> context, IConfiguration configuration) : IdentityDbContext<User>(context)
+public class DataContext(DbContextOptions<DataContext> context) : IdentityDbContext<User>(context)
 {
     public DbSet<Project> Projects { get; set; }
 
@@ -69,5 +69,7 @@ public class DataContext(DbContextOptions<DataContext> context, IConfiguration c
             .HasMany(e => e.Invitations)
             .WithMany(e => e.InvitedUsers)
             .UsingEntity<Invitation>();
+        modelBuilder.Entity<User>()
+            .HasMany(e => e.ProjectParticipations);
     }
 }

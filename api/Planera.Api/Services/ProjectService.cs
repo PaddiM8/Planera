@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Planera.Api.Data;
 using Planera.Api.Data.Dto;
 using Planera.Api.Data.Files;
+using Planera.Api.Data.Notifications;
 using Planera.Api.Data.Projects;
 using Planera.Api.Data.Users;
 
@@ -85,6 +86,12 @@ public class ProjectService(
             .Count(x =>
                 x.ProjectId == project.Id && x.Assignees.Any(assignee => assignee.Id == userId)
             );
+        var me = await _dataContext
+            .ProjectParticipants
+            .Include(x => x.User)
+            .FirstOrDefaultAsync(x => x.ProjectId == project.Id && x.UserId == userId);
+        if (me != null)
+            project.Me = _mapper.Map<ProjectParticipant, ProjectParticipantDto>(me);
 
         return project;
     }
@@ -267,8 +274,18 @@ public class ProjectService(
         if (project == null)
             return ProjectNotFoundError<Deleted>();
 
-        _dataContext.Projects.Remove(project);
-        await _dataContext.SaveChangesAsync();
+        var strategy = _dataContext.Database.CreateExecutionStrategy();
+
+        await strategy.ExecuteAsync(async () =>
+        {
+            await _dataContext
+                .ProjectParticipants
+                .Where(x => x.ProjectId == projectId)
+                .ExecuteDeleteAsync();
+
+            _dataContext.Projects.Remove(project);
+            await _dataContext.SaveChangesAsync();
+        });
 
         _fileStorage.DeleteDirectory(projectId);
 
@@ -379,5 +396,26 @@ public class ProjectService(
         await _dataContext.SaveChangesAsync();
 
         return new ErrorOr<Deleted>();
+    }
+
+    public async Task<ErrorOr<Updated>> ConfigureUserNotificationAsync(
+        string userId,
+        string projectId,
+        List<NotificationKinds> notificationKinds
+    )
+    {
+        var participant = await _dataContext.ProjectParticipants.FindAsync(projectId, userId);
+        if (participant == null)
+            return Error.NotFound("Project.NotFound", "Project was not found for user.");
+
+        var notificationKindsEnum = NotificationKinds.None;
+        foreach (var kind in notificationKinds)
+            notificationKindsEnum |= kind;
+
+        participant.EnabledNotificationKinds = notificationKindsEnum;
+        _dataContext.ProjectParticipants.Update(participant);
+        await _dataContext.SaveChangesAsync();
+
+        return new ErrorOr<Updated>();
     }
 }

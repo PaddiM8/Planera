@@ -27,6 +27,8 @@
     function afterSubmitChangePassword(success: boolean) {
         if (success) {
             toast.info("Updated password successfully.");
+        } else {
+            toast.error("Failed to update password");
         }
     }
 

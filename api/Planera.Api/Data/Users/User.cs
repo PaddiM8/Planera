@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
+using Planera.Api.Data.Notifications;
 using Planera.Api.Data.Projects;
 using Planera.Api.Data.Tickets;
 
@@ -12,6 +13,10 @@ public class User : IdentityUser
 
     public InterfaceTheme Theme { get; set; }
 
+    public NotificationKinds EnabledNotificationKinds { get; set; } = NotificationKinds.Core |
+        NotificationKinds.DeadlineMyTicket |
+        NotificationKinds.DeadlineOtherTicket;
+
     public ICollection<Project> Projects { get; init; } = new List<Project>();
 
     public ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
@@ -21,4 +26,6 @@ public class User : IdentityUser
     public ICollection<Project> JoinedProjects { get; set; } = new List<Project>();
 
     public ICollection<Project> Invitations { get; set; } = new List<Project>();
+
+    public ICollection<ProjectParticipant> ProjectParticipations { get; set; } = new List<ProjectParticipant>();
 }

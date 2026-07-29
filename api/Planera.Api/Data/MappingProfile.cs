@@ -1,5 +1,6 @@
 using AutoMapper;
 using Planera.Api.Data.Dto;
+using Planera.Api.Data.Notifications;
 using Planera.Api.Data.Projects;
 using Planera.Api.Data.Tickets;
 using Planera.Api.Data.Users;
@@ -19,6 +20,15 @@ public class MappingProfile : Profile
             .ForMember(
                 dest => dest.HasPassword,
                 opt => opt.MapFrom(src => src.PasswordHash != null)
+            )
+            .ForMember(
+                dest => dest.EnabledNotificationKinds,
+                opt => opt.MapFrom(src =>
+                    Enum
+                        .GetValues<NotificationKinds>()
+                        .Where(x => src.EnabledNotificationKinds.HasFlag(x))
+                        .ToList()
+                )
             );
         CreateMap<Project, ProjectDto>()
             .ForMember(
@@ -53,6 +63,16 @@ public class MappingProfile : Profile
                 dest => dest.DoneTicketsCount,
                 opt => opt.MapFrom(src =>
                     src.Tickets.Count(ticket => ticket.Status == TicketStatus.Done)
+                )
+            );
+        CreateMap<ProjectParticipant, ProjectParticipantDto>()
+            .ForMember(
+                dest => dest.EnabledNotificationKinds,
+                opt => opt.MapFrom(src =>
+                    Enum
+                        .GetValues<NotificationKinds>()
+                        .Where(x => src.EnabledNotificationKinds.HasFlag(x))
+                        .ToList()
                 )
             );
         CreateMap<Ticket, TicketDto>()

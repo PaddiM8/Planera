@@ -1181,6 +1181,53 @@ export class ProjectClient extends AuthorizedApiBase {
         }
         return Promise.resolve<FileResponse>(null as any);
     }
+
+    configureUserNotifications(projectId: string, notificationKinds: NotificationKinds[]): Promise<FileResponse> {
+        let url_ = this.baseUrl + "/projects/{projectId}/configureUserNotifications";
+        if (projectId === undefined || projectId === null)
+            throw new globalThis.Error("The parameter 'projectId' must be defined.");
+        url_ = url_.replace("{projectId}", encodeURIComponent("" + projectId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(notificationKinds);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.processConfigureUserNotifications(_response);
+        });
+    }
+
+    protected processConfigureUserNotifications(response: Response): Promise<FileResponse> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse>(null as any);
+    }
 }
 
 export class TicketClient extends AuthorizedApiBase {
@@ -1790,6 +1837,50 @@ export class UserClient extends AuthorizedApiBase {
     }
 
     protected processChangePassword(response: Response): Promise<FileResponse> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse>(null as any);
+    }
+
+    configureNotifications(notificationKinds: NotificationKinds[]): Promise<FileResponse> {
+        let url_ = this.baseUrl + "/user/configureNotifications";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(notificationKinds);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.processConfigureNotifications(_response);
+        });
+    }
+
+    protected processConfigureNotifications(response: Response): Promise<FileResponse> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
@@ -2507,6 +2598,7 @@ export class ProjectDto implements IProjectDto {
     inactiveTicketsCount?: number;
     doneTicketsCount?: number;
     assignedToMeCount?: number;
+    me?: ProjectParticipantDto | undefined;
     participants?: UserDto[];
     notificationTriggers?: NotificationTriggerDto[];
 
@@ -2538,6 +2630,7 @@ export class ProjectDto implements IProjectDto {
             this.inactiveTicketsCount = _data["inactiveTicketsCount"];
             this.doneTicketsCount = _data["doneTicketsCount"];
             this.assignedToMeCount = _data["assignedToMeCount"];
+            this.me = _data["me"] ? ProjectParticipantDto.fromJS(_data["me"]) : undefined as any;
             if (Array.isArray(_data["participants"])) {
                 this.participants = [] as any;
                 for (let item of _data["participants"])
@@ -2577,6 +2670,7 @@ export class ProjectDto implements IProjectDto {
         data["inactiveTicketsCount"] = this.inactiveTicketsCount;
         data["doneTicketsCount"] = this.doneTicketsCount;
         data["assignedToMeCount"] = this.assignedToMeCount;
+        data["me"] = this.me ? this.me.toJSON() : undefined as any;
         if (Array.isArray(this.participants)) {
             data["participants"] = [];
             for (let item of this.participants)
@@ -2609,8 +2703,96 @@ export interface IProjectDto {
     inactiveTicketsCount?: number;
     doneTicketsCount?: number;
     assignedToMeCount?: number;
+    me?: ProjectParticipantDto | undefined;
     participants?: UserDto[];
     notificationTriggers?: NotificationTriggerDto[];
+}
+
+export class ProjectParticipantDto implements IProjectParticipantDto {
+    projectId!: string;
+    user!: UserDto;
+    sorting?: TicketSorting;
+    filter?: TicketFilter | undefined;
+    enabledNotificationKinds?: NotificationKinds[];
+
+    constructor(data?: IProjectParticipantDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+        if (!data) {
+            this.user = new UserDto();
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.projectId = _data["projectId"];
+            this.user = _data["user"] ? UserDto.fromJS(_data["user"]) : new UserDto();
+            this.sorting = _data["sorting"];
+            this.filter = _data["filter"];
+            if (Array.isArray(_data["enabledNotificationKinds"])) {
+                this.enabledNotificationKinds = [] as any;
+                for (let item of _data["enabledNotificationKinds"])
+                    this.enabledNotificationKinds!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): ProjectParticipantDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ProjectParticipantDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["projectId"] = this.projectId;
+        data["user"] = this.user ? this.user.toJSON() : undefined as any;
+        data["sorting"] = this.sorting;
+        data["filter"] = this.filter;
+        if (Array.isArray(this.enabledNotificationKinds)) {
+            data["enabledNotificationKinds"] = [];
+            for (let item of this.enabledNotificationKinds)
+                data["enabledNotificationKinds"].push(item);
+        }
+        return data;
+    }
+}
+
+export interface IProjectParticipantDto {
+    projectId: string;
+    user: UserDto;
+    sorting?: TicketSorting;
+    filter?: TicketFilter | undefined;
+    enabledNotificationKinds?: NotificationKinds[];
+}
+
+export enum TicketSorting {
+    Newest = 0,
+    Oldest = 1,
+    HighestPriority = 2,
+    LowestPriority = 3,
+}
+
+export enum TicketFilter {
+    All = 0,
+    Open = 1,
+    Closed = 2,
+    Inactive = 3,
+    Done = 4,
+    AssignedToMe = 5,
+    OpenWithDeadline = 6,
+}
+
+export enum NotificationKinds {
+    None = 0,
+    Core = 1,
+    DeadlineMyTicket = 2,
+    DeadlineOtherTicket = 4,
 }
 
 export class NotificationTriggerDto implements INotificationTriggerDto {
@@ -3124,23 +3306,6 @@ export interface ITicketQueryResult {
     filter?: TicketFilter;
 }
 
-export enum TicketSorting {
-    Newest = 0,
-    Oldest = 1,
-    HighestPriority = 2,
-    LowestPriority = 3,
-}
-
-export enum TicketFilter {
-    All = 0,
-    Open = 1,
-    Closed = 2,
-    Inactive = 3,
-    Done = 4,
-    AssignedToMe = 5,
-    OpenWithDeadline = 6,
-}
-
 export class CreateTicketModel implements ICreateTicketModel {
     title!: string;
     description!: string;
@@ -3255,6 +3420,7 @@ export class AccountDto implements IAccountDto {
     hasPassword!: boolean;
     avatarPath?: string | undefined;
     theme?: InterfaceTheme;
+    enabledNotificationKinds?: NotificationKinds[];
 
     constructor(data?: IAccountDto) {
         if (data) {
@@ -3273,6 +3439,11 @@ export class AccountDto implements IAccountDto {
             this.hasPassword = _data["hasPassword"];
             this.avatarPath = _data["avatarPath"];
             this.theme = _data["theme"];
+            if (Array.isArray(_data["enabledNotificationKinds"])) {
+                this.enabledNotificationKinds = [] as any;
+                for (let item of _data["enabledNotificationKinds"])
+                    this.enabledNotificationKinds!.push(item);
+            }
         }
     }
 
@@ -3291,6 +3462,11 @@ export class AccountDto implements IAccountDto {
         data["hasPassword"] = this.hasPassword;
         data["avatarPath"] = this.avatarPath;
         data["theme"] = this.theme;
+        if (Array.isArray(this.enabledNotificationKinds)) {
+            data["enabledNotificationKinds"] = [];
+            for (let item of this.enabledNotificationKinds)
+                data["enabledNotificationKinds"].push(item);
+        }
         return data;
     }
 }
@@ -3302,6 +3478,7 @@ export interface IAccountDto {
     hasPassword: boolean;
     avatarPath?: string | undefined;
     theme?: InterfaceTheme;
+    enabledNotificationKinds?: NotificationKinds[];
 }
 
 export class EditUserModel implements IEditUserModel {

@@ -85,8 +85,6 @@ public class TicketService(
             : _mapper.Map<TicketDto>(ticket);
     }
 
-    // TODO: Return an object containing both a collection of tickets and the
-    // sorting/filtering options that were used.
     public async Task<ErrorOr<TicketQueryResult>> GetAllAsync(
         string userId,
         string? username,
@@ -95,7 +93,8 @@ public class TicketService(
         int amount,
         string? searchQuery = null,
         TicketSorting? sorting = null,
-        TicketFilter? filter = null)
+        TicketFilter? filter = null
+    )
     {
         List<Project> projects;
         if (username != null && slug != null)

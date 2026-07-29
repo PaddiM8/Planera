@@ -1,3 +1,5 @@
+using Planera.Api.Data.Notifications;
+
 namespace Planera.Api.Data.Dto;
 
 public class AccountDto
@@ -13,4 +15,6 @@ public class AccountDto
     public string? AvatarPath { get; set; }
 
     public InterfaceTheme Theme { get; set; }
+
+    public List<NotificationKinds> EnabledNotificationKinds { get; set; } = [];
 }

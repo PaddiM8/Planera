@@ -39,6 +39,8 @@ public class ProjectDto
     /// </summary>
     public int AssignedToMeCount { get; set; }
 
+    public ProjectParticipantDto? Me { get; set; }
+    
     public ICollection<UserDto> Participants { get; set; } = new List<UserDto>();
     
     public ICollection<NotificationTriggerDto> NotificationTriggers { get; set; } = new List<NotificationTriggerDto>();
