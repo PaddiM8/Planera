@@ -136,6 +136,8 @@
 
         .content
             margin: 0.2em 0
+            white-space: wrap
+            word-break: break-word
 
     .status
         display: block
@@ -173,4 +175,5 @@
             font-size: 0.8em
             font-weight: 500
             user-select: none
+            padding-left: 0.8em
 </style>
