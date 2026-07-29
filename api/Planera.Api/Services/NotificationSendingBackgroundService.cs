@@ -84,7 +84,7 @@ public class NotificationSendingBackgroundService(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error when sending notification for queue entry for NotificationTrigger {NotificationTriggerId}", entry.NotificationTriggerId);
+            _logger.LogError(ex, "Error when sending notification for queue entry with title: '{Title}'", entry.Title);
         }
 
         return (null, false);
@@ -98,16 +98,37 @@ public class NotificationSendingBackgroundService(
     {
         var webPushClient = new WebPushClient(_httpClient);
 
-        var subscriptionsResult = await notificationService.GetSubscriptionsForUsersInProjectAsync(entry.TargetId, entry.NotificationKind);
-        if (subscriptionsResult.IsError)
-            return (null, false);
+        List<(PushNotificationSubscription, ProjectParticipant?)> entries;
+        if (entry.TargetKind == NotificationTargetKind.User)
+        {
+            var subscriptionsResult = await notificationService.GetSubscriptionsForUserAsync(entry.TargetId, entry.NotificationKind);
+            if (subscriptionsResult.IsError)
+                return (null, false);
+            
+            entries = subscriptionsResult
+                .Value
+                .Select<PushNotificationSubscription, (PushNotificationSubscription, ProjectParticipant?)>(x => (x, null))
+                .ToList();
+        }
+        else if (entry.TargetKind == NotificationTargetKind.Project)
+        {
+            var subscriptionsResult = await notificationService.GetSubscriptionsForUsersInProjectAsync(entry.TargetId, entry.NotificationKind);
+            if (subscriptionsResult.IsError)
+                return (null, false);
+            
+            entries = subscriptionsResult.Value!;
+        }
+        else
+        {
+            throw new NotImplementedException();
+        }
 
         // As long as it managed to send it to one of the subscriptions, that is good enough.
         bool success = true;
-        foreach (var (subscription, participation) in subscriptionsResult.Value)
+        foreach (var (subscription, participation) in entries)
         {
             var userExpectsAllNotifications = entry.NotificationKind == NotificationKinds.DeadlineMyTicket &&
-                participation.EnabledNotificationKinds.HasFlag(NotificationKinds.DeadlineOtherTicket);
+                participation?.EnabledNotificationKinds.HasFlag(NotificationKinds.DeadlineOtherTicket) is true;
             if (entry.AssignedUserIds?.Contains(subscription.UserId) is false && !userExpectsAllNotifications)
                 continue;
 
@@ -118,7 +139,7 @@ public class NotificationSendingBackgroundService(
                 var payload = new PushNotificationPayload
                 {
                     Title = entry.Title,
-                    Content = entry.Content,
+                    Body = entry.Content,
                     Data = new PushNotificationData
                     {
                         Url = entry.Url ?? "/",

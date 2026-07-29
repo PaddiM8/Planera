@@ -2845,6 +2845,7 @@ export interface INotificationTriggerDto {
 
 export enum NotificationTriggerKind {
     TimeUntilDeadline = 0,
+    Other = 1,
 }
 
 export enum NotificationThresholdUnit {

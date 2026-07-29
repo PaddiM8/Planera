@@ -13,8 +13,8 @@ public class NotificationQueueEntry
     public required string TargetId { get; set; }
 
     public required NotificationTargetKind TargetKind { get; set; }
-    
-    public required int NotificationTriggerId { get; set; }
+
+    public int NotificationTriggerId { get; set; }
     
     [StringLength(64)]
     public required string ObjectId { get; set; }
@@ -24,11 +24,11 @@ public class NotificationQueueEntry
     /// Users that have eg. enabled all deadline notifications in a project would receive
     /// the notification without being in this list.
     /// </summary>
-    public required List<string>? AssignedUserIds { get; set; }
+    public List<string>? AssignedUserIds { get; set; }
 
-    public required DateTime ScheduledTime { get; set; }
-    
-    public required NotificationTriggerKind TriggerKind { get; set; }
+    public DateTime ScheduledTime { get; set; } = DateTime.UtcNow;
+
+    public NotificationTriggerKind TriggerKind { get; set; } = NotificationTriggerKind.Other;
     
     public required NotificationActionKind ActionKind { get; set; }
     

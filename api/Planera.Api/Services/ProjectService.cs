@@ -9,6 +9,7 @@ using Planera.Api.Data.Files;
 using Planera.Api.Data.Notifications;
 using Planera.Api.Data.Projects;
 using Planera.Api.Data.Users;
+using Planera.Api.Utility;
 
 namespace Planera.Api.Services;
 
@@ -322,6 +323,19 @@ public class ProjectService(
             User = participant,
         });
         await _dataContext.SaveChangesAsync();
+
+        var notificationEntry = new NotificationQueueEntry
+        {
+            TargetId = participant.Id,
+            TargetKind = NotificationTargetKind.User,
+            ActionKind = NotificationActionKind.PushNotification,
+            Title = "Project Invitation",
+            Content = $"You have been invited to '{project.Name.Truncate(25)}'.",
+            NotificationKind = NotificationKinds.Core,
+            ObjectId = project.Id,
+            Url = "/invitations",
+        };
+        await _notificationScheduler.ScheduleAsync(notificationEntry, isNew: true);
 
         return (_mapper.Map<UserDto>(participant), _mapper.Map<ProjectDto>(project));
     }
