@@ -211,7 +211,7 @@
         </span>
         <div class="right">
             {#if ticket.deadline}
-                <span class="deadline {getDeadlineClockClass()}">
+                <span class="deadline {ticket.status !== TicketStatus.Done && ticket.status !== TicketStatus.Closed ? getDeadlineClockClass() : ''}">
                     <Icon src={Clock} />
                     <time>{formatDate(ticket.deadline, true)}</time>
                 </span>
