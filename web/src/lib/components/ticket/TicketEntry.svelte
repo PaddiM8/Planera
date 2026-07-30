@@ -205,7 +205,10 @@
             {/each}
             {#if !ticket.assignees?.some(x => x.username === $user.username) && !isOverview}
                 <button class="assignee add-button" on:click={assignToMe}>
-                    <Icon src={Plus} />
+                    <span class="icon">
+                        <Icon src={Plus} />
+                    </span>
+                    <span class="text">Assign Me</span>
                 </button>
             {/if}
         </span>
@@ -424,26 +427,24 @@
         .add-button
             display: flex
             align-items: center
-            justify-content: center
-            width: 1.375em
-            height: 1.375em
-            padding: 0
-            aspect-ratio: 1 / 1
+            gap: 0.2em
+            padding: 0.2em 0.4em
+            width: 100%
             text-align: center
-            border-radius: 100%
+            border-radius: var(--radius)
             border: var(--border)
             background-color: var(--background)
-            color: var(--on-backgrkound)
-            font-size: 1em
+            color: var(--on-background)
+            font-size: 0.7em
             cursor: pointer
 
             &:hover
                 background-color: var(--background-hover)
 
-        :global(.add-button > *)
-            width: 0.75em
-            height: 0.75em
-            
+            .icon
+                width: 1em
+                height: 1em
+
     .right
         display: flex
         gap: 0.8em
