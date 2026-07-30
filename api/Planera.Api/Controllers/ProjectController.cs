@@ -115,7 +115,7 @@ public class ProjectController(
         await _userHub.Clients
             .User(participantName)
             .OnAddInvitation(result.Value.project);
-
+        
         return result.ToActionResult();
     }
 

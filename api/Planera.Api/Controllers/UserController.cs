@@ -5,16 +5,20 @@ using Planera.Api.Data.Notifications;
 using Planera.Api.Models.User;
 using Planera.Api.Services;
 using Planera.Api.Extensions;
-using Planera.Api.Models;
 
 namespace Planera.Api.Controllers;
 
 [ApiController]
 [Route("user")]
-public class UserController(UserService userService, PersonalAccessTokenService personalAccessTokenService) : ControllerBase
+public class UserController(
+    UserService userService,
+    PersonalAccessTokenService personalAccessTokenService,
+    IConfiguration configuration
+) : ControllerBase
 {
     private readonly UserService _userService = userService;
     private readonly PersonalAccessTokenService _personalAccessTokenService = personalAccessTokenService;
+    private readonly IConfiguration _configuration = configuration;
 
     [HttpGet]
     [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
@@ -93,6 +97,19 @@ public class UserController(UserService userService, PersonalAccessTokenService 
         return result.ToActionResult();
     }
 
+    [HttpGet("invitations/{projectId}/accept")]
+    public async Task<IActionResult> AcceptInvitationAndRedirect(string projectId)
+    {
+        var result = await _userService.AcceptInvitation(
+            User.FindFirst("Id")!.Value,
+            projectId
+        );
+        if (result.IsError)
+            return Redirect($"{_configuration["FrontendUrl"]}/invitations");
+
+        return Redirect($"{_configuration["FrontendUrl"]}/projects/{result.Value.Project.Author.Username}/{result.Value.Project.Slug}");
+    }
+
     [HttpPost("invitations/{projectId}/decline")]
     public async Task<IActionResult> DeclineInvitation(string projectId)
     {
@@ -102,6 +119,13 @@ public class UserController(UserService userService, PersonalAccessTokenService 
         );
 
         return result.ToActionResult();
+    }
+
+    [HttpGet("invitations/{projectId}/decline")]
+    public async Task<IActionResult> DeclineInvitationAndRedirect(string projectId)
+    {
+        // Just redirect to the invitation page to add an extra confirmation step
+        return Redirect($"{_configuration["FrontendUrl"]}/invitations");
     }
 
     [HttpGet("tokens/personal-access-token")]

@@ -16,17 +16,22 @@ namespace Planera.Api.Services;
 public class ProjectService(
     DataContext dataContext,
     IMapper mapper,
+    IConfiguration configuration,
     UserManager<User> userManager,
     ILookupNormalizer normalizer,
     NotificationScheduler notificationScheduler,
-    IFileStorage fileStorage)
+    IFileStorage fileStorage,
+    EmailService emailService
+)
 {
     private readonly DataContext _dataContext = dataContext;
     private readonly IMapper _mapper = mapper;
+    private readonly IConfiguration _configuration = configuration;
     private readonly UserManager<User> _userManager = userManager;
     private readonly ILookupNormalizer _normalizer = normalizer;
     private readonly NotificationScheduler _notificationScheduler = notificationScheduler;
     private readonly IFileStorage _fileStorage = fileStorage;
+    private readonly EmailService _emailService = emailService;
 
     public static ErrorOr<T> ProjectNotFoundError<T>()
         => Error.Conflict("Project.NotFound", "Project was not found.");
@@ -336,6 +341,19 @@ public class ProjectService(
             Url = "/invitations",
         };
         await _notificationScheduler.ScheduleAsync(notificationEntry, isNew: true);
+
+        if (participant.Email != null && participant.EnabledNotificationKinds.HasFlag(NotificationKinds.Core))
+        {
+            var frontendUrl = _configuration["FrontendUrl"]!;
+            var acceptUrl = $"{frontendUrl}/api/user/invitations/{project.Id}/accept";
+            var declineUrl = $"{frontendUrl}/api/user/invitations/{project.Id}/decline";
+            var emailBody = $"""
+                <p>Would you like to join the project?</p>
+                {EmailTemplateUtility.Button("Accept", acceptUrl, isPrimary: true)}
+                {EmailTemplateUtility.Button("Decline", declineUrl, isPrimary: false)}
+                """;
+            await _emailService.SendAsync($"You've been invited to '{project.Name.Truncate(35)}'", emailBody, participant.Email);
+        }
 
         return (_mapper.Map<UserDto>(participant), _mapper.Map<ProjectDto>(project));
     }

@@ -27,7 +27,7 @@ export const actions = {
 
         const cookieOptions: any = {
             httpOnly: true,
-            sameSite: "strict",
+            sameSite: "lax",
             secure: false,
             path: "/",
             maxAge: 60 * 60 * 24 * 365
