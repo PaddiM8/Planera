@@ -38,6 +38,7 @@ public class AuthenticationController(
         {
             PasswordAuthenticationDisabled = _configuration.GetValue<bool>("DisablePasswordAuthentication"),
             RegistrationDisabled = _configuration.GetValue<bool>("DisableRegistration"),
+            PasswordResetPossible = !string.IsNullOrWhiteSpace(_configuration.GetValue<string>("Smtp:Host")),
             VapidPublicKey = _vapidDetails.PublicKey,
         };
 

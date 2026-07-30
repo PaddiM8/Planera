@@ -2230,6 +2230,7 @@ export class UserClient extends AuthorizedApiBase {
 export class AuthenticationInfo implements IAuthenticationInfo {
     passwordAuthenticationDisabled?: boolean;
     registrationDisabled?: boolean;
+    passwordResetPossible?: boolean;
     oidc?: OidcAuthentiationInfo | undefined;
     vapidPublicKey?: string | undefined;
 
@@ -2246,6 +2247,7 @@ export class AuthenticationInfo implements IAuthenticationInfo {
         if (_data) {
             this.passwordAuthenticationDisabled = _data["passwordAuthenticationDisabled"];
             this.registrationDisabled = _data["registrationDisabled"];
+            this.passwordResetPossible = _data["passwordResetPossible"];
             this.oidc = _data["oidc"] ? OidcAuthentiationInfo.fromJS(_data["oidc"]) : undefined as any;
             this.vapidPublicKey = _data["vapidPublicKey"];
         }
@@ -2262,6 +2264,7 @@ export class AuthenticationInfo implements IAuthenticationInfo {
         data = typeof data === 'object' ? data : {};
         data["passwordAuthenticationDisabled"] = this.passwordAuthenticationDisabled;
         data["registrationDisabled"] = this.registrationDisabled;
+        data["passwordResetPossible"] = this.passwordResetPossible;
         data["oidc"] = this.oidc ? this.oidc.toJSON() : undefined as any;
         data["vapidPublicKey"] = this.vapidPublicKey;
         return data;
@@ -2271,6 +2274,7 @@ export class AuthenticationInfo implements IAuthenticationInfo {
 export interface IAuthenticationInfo {
     passwordAuthenticationDisabled?: boolean;
     registrationDisabled?: boolean;
+    passwordResetPossible?: boolean;
     oidc?: OidcAuthentiationInfo | undefined;
     vapidPublicKey?: string | undefined;
 }

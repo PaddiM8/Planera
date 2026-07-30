@@ -5,6 +5,8 @@ public class AuthenticationInfo
     public bool PasswordAuthenticationDisabled { get; set; }
     
     public bool RegistrationDisabled { get; set; }
+
+    public bool PasswordResetPossible { get; set; }
     
     public OidcAuthentiationInfo? Oidc { get; set; }
     

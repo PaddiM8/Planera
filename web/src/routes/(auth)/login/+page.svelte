@@ -58,7 +58,9 @@
                 <Input name="username" placeholder="Username..." bind:value={usernameValue} />
                 <Input type="password" name="password" placeholder="Password..." />
                 <div class="buttons">
-                    <a href="/forgot-password">Forgot password?</a>
+                    {#if data.authenticationInfo?.passwordResetPossible}
+                        <a href="/forgot-password">Forgot password?</a>
+                    {/if}
                     <Button value="Sign In" primary submit />
                 </div>
             </Form>
