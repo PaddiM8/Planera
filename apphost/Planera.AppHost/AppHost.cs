@@ -34,7 +34,7 @@ var gateway = builder
             .WithTransformPathRemovePrefix("/api");
     });
 
-api.WithEnvironment("PLANERA_FRONTEND_URL", gateway.GetEndpoint("https"));
+api.WithEnvironment("PLANERA_FRONTENDURL", gateway.GetEndpoint("https"));
 frontend
     .WithReference(api)
     .WaitFor(api)

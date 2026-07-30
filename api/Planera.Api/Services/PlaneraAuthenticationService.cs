@@ -7,13 +7,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using ErrorOr;
 using Microsoft.Extensions.Options;
-using MimeKit;
-using MimeKit.Text;
-using Planera.Api.Data;
 using Planera.Api.Data.Dto;
 using Planera.Api.Data.Users;
 using Planera.Api.Models.Authentication;
 using Planera.Api.Models;
+using Planera.Api.Utility;
 
 namespace Planera.Api.Services;
 
@@ -87,6 +85,9 @@ public class PlaneraAuthenticationService(
             Email = email,
         };
 
+        if (await _userManager.FindByEmailAsync(email) != null)
+            return Error.Conflict("Email.AlreadyExists", "A user with the provided email address already exists.");
+
         var result = await _userManager.CreateAsync(user, password);
         if (!result.Succeeded)
         {
@@ -97,9 +98,13 @@ public class PlaneraAuthenticationService(
 
         if (_configuration.GetValue<bool>("EmailConfirmation"))
         {
-            await SendConfirmationEmailAsync(user);
+            var emailResult = await SendConfirmationEmailAsync(user);
+            if (emailResult.IsError)
+                return ErrorOrFactory.From<AuthenticationResult?>(emailResult.Errors);
 
-            return ErrorOrFactory.From<AuthenticationResult?>([]);
+            AuthenticationResult? authenticationResult = null;
+
+            return authenticationResult;
         }
 
         var loginToken = GenerateToken(user.Id, username, email);
@@ -163,18 +168,12 @@ public class PlaneraAuthenticationService(
             return Error.NotFound("Username.NotFound", "A user with the given username was not found.");
 
         var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
-        var emailBody = new TextPart(TextFormat.Text)
-        {
-            Text = $"""
-                Someone requested a password reset for your account.
-                If you did this, you can reset your password here:
-                {_configuration["FrontendUrl"]}/reset-password?user={user.Id}&token={HttpUtility.UrlEncode(resetToken)}
-
-                If you did not expect this email, feel free to ignore it.
-
-                - Planera.Api
-                """,
-        };
+        var resetUrl = $"{_configuration["FrontendUrl"]}/reset-password?user={user.Id}&token={HttpUtility.UrlEncode(resetToken)}";
+        var emailBody = $"""
+            <p>Someone requested a password reset for your account. If you did this, you can reset your password here:</p>
+            {EmailTemplateUtility.Button("Reset Password", resetUrl, isPrimary: true)}
+            <p>If you did not expect this email, feel free to ignore it.
+            """;
 
         return await _emailService.SendAsync("Password Reset", emailBody, user.Email!);
     }
@@ -220,15 +219,11 @@ public class PlaneraAuthenticationService(
     public async Task<ErrorOr<Success>> SendConfirmationEmailAsync(User user)
     {
         var confirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-        var emailBody = new TextPart(TextFormat.Text)
-        {
-            Text = $"""
-            Someone signed up to Planera.Api using your email. If it was you, please confirm your email by pressing the link below:
-            {_configuration["FrontendUrl"]}/confirm-email?user={user.Id}&token={HttpUtility.UrlEncode(confirmationToken)}
-
-            - Planera.Api
-            """,
-        };
+        var url = $"{_configuration["FrontendUrl"]}/confirm-email?user={user.Id}&token={HttpUtility.UrlEncode(confirmationToken)}";
+        var emailBody = $"""
+            <p>Someone signed up to Planera using your email. If it was you, please confirm your email by pressing the button below:</p>
+            {EmailTemplateUtility.Button("Confirm Email", url, isPrimary: true)}
+            """;
         await _emailService.SendAsync("Email Confirmation", emailBody, user.Email!);
 
         return new ErrorOr<Success>();
