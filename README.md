@@ -14,7 +14,7 @@ A simple ticket-based project management web application.
   * Notes/comments
 * Push notifications
   * Get notified when a deadline is coming up
-* Progressive web app (at it to your phone's home screen)
+* Progressive web app (add it to your phone's home screen)
 * OIDC login
 
 ## Getting Started
