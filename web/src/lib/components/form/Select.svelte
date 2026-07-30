@@ -58,7 +58,7 @@
     <input {name}
            inputmode="none"
            bind:value={selectedValue}
-           on:pointerdown={() => menuElement.showPopover()}
+           on:focus={() => menuElement.showPopover()}
            on:blur={() => menuElement.hidePopover()}
            on:keydown={handleKeyDown}
            style="anchor-name: --anchor-{menuId}; {width ? `width: ${width};` : ''}" />
