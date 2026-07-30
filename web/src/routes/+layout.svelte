@@ -165,7 +165,6 @@
           position: relative
 
     :global([data-tooltip]::after)
-        display: none
         opacity: 0
         position: absolute
         content: attr(data-tooltip)
@@ -183,14 +182,13 @@
         transition: 0s ease opacity
         z-index: 9998
         white-space: nowrap
+        pointer-events: none
 
     :global([data-tooltip]:hover::after)
-        display: block
         opacity: 1
         transition-delay: 750ms
 
     :global([data-tooltip]::before)
-        display: none
         opacity: 0
         position: absolute
         content: ''
@@ -206,9 +204,9 @@
         border-bottom: var(--border)
         transition: 0s ease opacity
         z-index: 9999
+        pointer-events: none
         
     :global([data-tooltip]:hover::before)
-        display: block
         opacity: 1
         transition-delay: 750ms
 
