@@ -319,9 +319,9 @@
         {#if data.ticket.modifiedTimestamp}
             <time class="modification-date" data-tooltip={formatDateFull(data.ticket.modifiedTimestamp)}>
                 {#if isToday(data.ticket.modifiedTimestamp)}
-                    (modified: today at {formatDate(data.ticket.timestamp)})
+                    (modified: today at {formatDate(data.ticket.modifiedTimestamp)})
                 {:else}
-                    (modified: {formatDate(data.ticket.timestamp)})
+                    (modified: {formatDate(data.ticket.modifiedTimestamp)})
                 {/if}
             </time>
         {/if}
