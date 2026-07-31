@@ -2,7 +2,7 @@ import type {ServerLoadEvent} from "@sveltejs/kit";
 import {handleProblem, handleProblemForForm} from "$lib/problemDetails";
 import {
     type TicketDto, type SwaggerException, type CreateTicketModel, type CreateNoteModel, type EditNoteModel,
-    ProjectDto
+    ProjectDto, EditTicketModel
 } from "../../../../../../../gen/planeraClient";
 import {getNoteClient, getProjectClient, getTicketClient} from "$lib/clients";
 import type {RequestEvent} from "@sveltejs/kit";
@@ -36,15 +36,21 @@ export const actions = {
     edit: async ({ request, cookies }: RequestEvent) => {
         const formData = await request.formData();
         try {
+            let description = formData.get("description") as string;
+            if (description) {
+                description = makeImagePathsRelative(description);
+            }
+
             await getTicketClient(cookies).edit(
                 formData.get("projectId") as string,
                 Number(formData.get("ticketId")),
                 {
                     title: formData.get("title") as string,
-                    description: makeImagePathsRelative(formData.get("description") as string),
-                } as CreateTicketModel,
+                    description: description,
+                } as EditTicketModel,
             );
         } catch (ex) {
+            console.log(ex)
             return handleProblemForForm(ex as SwaggerException);
         }
     },

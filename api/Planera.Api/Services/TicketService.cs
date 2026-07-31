@@ -288,7 +288,7 @@ public class TicketService(
         string projectId,
         int ticketId,
         string title,
-        string description,
+        string? description,
         DateTime? deadline)
     {
         var strategy = _dataContext.Database.CreateExecutionStrategy();
@@ -527,7 +527,7 @@ public class TicketService(
         });
     }
 
-    private async Task<string> SaveImagesAndReplaceUrls(string projectId, string ticketBody, string? oldBody = null)
+    private async Task<string?> SaveImagesAndReplaceUrls(string projectId, string ticketBody, string? oldBody = null)
     {
         // If the pre-edit body of the ticket was provided, put all the
         // existing image paths in a collection and remove the ones that

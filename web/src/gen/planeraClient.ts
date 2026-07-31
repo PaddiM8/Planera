@@ -3462,7 +3462,7 @@ export interface ICreateTicketModel {
 
 export class EditTicketModel implements IEditTicketModel {
     title!: string;
-    description!: string;
+    description?: string | undefined;
     deadline?: Date | undefined;
 
     constructor(data?: IEditTicketModel) {
@@ -3500,7 +3500,7 @@ export class EditTicketModel implements IEditTicketModel {
 
 export interface IEditTicketModel {
     title: string;
-    description: string;
+    description?: string | undefined;
     deadline?: Date | undefined;
 }
 

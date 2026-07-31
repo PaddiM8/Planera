@@ -8,7 +8,7 @@ public class EditTicketModel
     [StringLength(150, ErrorMessage = ErrorStrings.StringLength)]
     public required string Title { get; init; }
 
-    public required string Description { get; init; }
+    public string? Description { get; init; }
     
     public DateTime? Deadline { get; set; }
 }

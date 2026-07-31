@@ -54,13 +54,17 @@
     }
 
     async function beforeSubmit({ formData }: FormSubmitInput) {
-        formData.append("description", await editor.getHtml());
+        if (editor) {
+            formData.append("description", await editor.getHtml());
+        }
     }
 
     function afterSubmit(success: boolean) {
         if (success) {
             isEditing = false;
             toast.info("Updated ticket successfully.");
+        } else {
+            toast.error("Failed to update ticket.");
         }
     }
 
@@ -72,7 +76,7 @@
 
     function handleEdit() {
         isEditing = true;
-        editor.setHtml(data.ticket.description);
+        editor?.setHtml(data.ticket.description);
     }
 
     async function setStatus(status: TicketStatus) {
@@ -305,28 +309,27 @@
             <DateInput name="deadline" value={data.ticket.deadline} on:input={handleDeadlineInput} time/>
         </span>
     {/if}
+</div>
 
-    <div class="dates">
-        {#if data.ticket.timestamp}
-            <time class="creation-date" data-tooltip={formatDateFull(data.ticket.timestamp)}>
-                {#if isToday(data.ticket.timestamp)}
-                    Created today at {formatDate(data.ticket.timestamp)}
-                {:else}
-                    Created on {formatDate(data.ticket.timestamp)}
-                {/if}
-            </time>
-        {/if}
-        {#if data.ticket.modifiedTimestamp}
-            <time class="modification-date" data-tooltip={formatDateFull(data.ticket.modifiedTimestamp)}>
-                {#if isToday(data.ticket.modifiedTimestamp)}
-                    (modified: today at {formatDate(data.ticket.modifiedTimestamp)})
-                {:else}
-                    (modified: {formatDate(data.ticket.modifiedTimestamp)})
-                {/if}
-            </time>
-        {/if}
-        
-    </div>
+<div class="dates">
+    {#if data.ticket.timestamp}
+        <time class="creation-date" data-tooltip={formatDateFull(data.ticket.timestamp)}>
+            {#if isToday(data.ticket.timestamp)}
+                Created today at {formatDate(data.ticket.timestamp)}
+            {:else}
+                Created on {formatDate(data.ticket.timestamp)}
+            {/if}
+        </time>
+    {/if}
+    {#if data.ticket.modifiedTimestamp}
+        <time class="modification-date" data-tooltip={formatDateFull(data.ticket.modifiedTimestamp)}>
+            {#if isToday(data.ticket.modifiedTimestamp)}
+                (modified: today at {formatDate(data.ticket.modifiedTimestamp)})
+            {:else}
+                (modified: {formatDate(data.ticket.modifiedTimestamp)})
+            {/if}
+        </time>
+    {/if}
 </div>
 
 <hr>
@@ -481,6 +484,7 @@
     .dates
         display: flex
         gap: 0.4em
+        margin-top: 0.8em
       
     .creation-date, .modification-date
         color: var(--text-gray)

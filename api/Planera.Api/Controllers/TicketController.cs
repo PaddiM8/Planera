@@ -144,7 +144,7 @@ public class TicketController(TicketService ticketService) : ControllerBase
             projectId,
             ticketId,
             model.Title,
-            model.Description,
+            model.Description ?? string.Empty,
             model.Deadline
         );
 
