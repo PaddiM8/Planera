@@ -207,8 +207,8 @@
 
 <hr>
 
-<h2>Notifications</h2>
-<section class="notifications">
+<h2>Notification Triggers</h2>
+<section class="notification-triggers">
     <div class="container">
         <Table headers={["Event", "Threshold", "Action", ""]}>
             {#each data.project.notificationTriggers ?? [] as notificationTrigger}
@@ -274,7 +274,7 @@
     :global(.participants > *)
         height: 100%
         
-    .notifications
+    .notification-triggers
         max-width: unset
         
         .container
@@ -297,6 +297,9 @@
 
             &:hover
                 color: var(--red)
+                
+    :global(.notification-triggers table)
+        min-width: 50em
 
     .delete
         p

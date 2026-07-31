@@ -14,7 +14,7 @@
 				return;
 			}
 
-			if (touchEventIsOnSidebarButton(e)) {
+			if (shouldIgnoreTouchEvent(e)) {
 				return;
 			}
 
@@ -40,7 +40,7 @@
 				return;
 			}
 			
-			if (touchEventIsOnSidebarButton(e)) {
+			if (shouldIgnoreTouchEvent(e)) {
 				return;
 			}
 			
@@ -63,7 +63,7 @@
 			return;
 		}
 		
-		if (touchEventIsOnSidebarButton(e)) {
+		if (shouldIgnoreTouchEvent(e)) {
 			return;
 		}
 
@@ -84,16 +84,28 @@
 		sidebarElement.style.transform = "";
 	}
 	
-	function touchEventIsOnSidebarButton(event: TouchEvent) {
+	function shouldIgnoreTouchEvent(event: TouchEvent) {
 		for (const touched of event.touches) {
 			let target: any = touched.target;
-			while (target && !target.classList.contains("sidebar-button")) {
+			while (target && !shouldIgnoreTouchEventForTarget(target)) {
 				target = target.parentElement;
 			}
 
 			if (target) {
 				return true;
 			}
+		}
+		
+		return false;
+	}
+	
+	function shouldIgnoreTouchEventForTarget(target: HTMLElement) {
+		if (target.classList.contains("sidebar-button")) {
+			return true;
+		}
+		
+		if (target.scrollLeft > 0) {
+			return true;
 		}
 		
 		return false;
