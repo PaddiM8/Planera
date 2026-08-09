@@ -84,7 +84,7 @@ public class NotificationScheduler(DataContext dataContext)
             .NotificationQueue
             .Where(t => t.NotificationTriggerId == newRule.Id)
             .ExecuteUpdateAsync(x =>
-                x.SetProperty(e => e.ScheduledTime, p => p.ScheduledTime.Add(timeToAdd))
+                x.SetProperty(e => e.ScheduledTime, p => p.ScheduledTime + timeToAdd)
             );
 
         // Remove any entries that got pushed back to the past to prevent notification spam

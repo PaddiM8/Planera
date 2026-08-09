@@ -89,7 +89,7 @@
             toast.info("Saved notification triggers successfully.");
         } catch (ex) {
             console.log(ex);
-            toast.info("Failed to save notification triggers.");
+            toast.error("Failed to save notification triggers.");
         }
     }
     
