@@ -140,9 +140,68 @@ public class UserService(
         return new ErrorOr<Updated>();
     }
 
+    public async Task<ErrorOr<List<ProjectDto>>> GetPinnedProjectsAsync(string userId)
+    {
+        var user = await dataContext
+            .Users
+            .FindAsync(userId);
+        if (user == null)
+            return Error.NotFound("UserId.NotFound", "A user with the given ID was not found.");
+
+        var projects = await dataContext
+            .Projects
+            .Where(p => user.PinnedProjects.Contains(p.Id))
+            .ProjectTo<ProjectDto>(mapper.ConfigurationProvider)
+            .ToListAsync();
+
+        // Use the same order as PinnedProjects
+        projects = projects
+            .Join(
+                user.PinnedProjects.Index(),
+                p => p.Id,
+                x => x.Item,
+                (p, x) => (p, x.Index)
+            )
+            .OrderBy(x => x.Index)
+            .Select(x => x.p)
+            .ToList();
+        
+        // Remove any projects that don't exist anymore
+        var nonExistentProjects = user
+            .PinnedProjects
+            .Except(projects.Select(p => p.Id))
+            .ToList();
+        if (nonExistentProjects.Count > 0)
+        {
+            user.PinnedProjects = user
+                .PinnedProjects
+                .Except(nonExistentProjects)
+                .ToList();
+            dataContext.Users.Update(user);
+            await dataContext.SaveChangesAsync();
+        }
+
+        return projects;
+    }
+
+    public async Task<ErrorOr<Updated>> SetPinnedProjectsAsync(string userId, List<string> projectIds)
+    {
+        var user = await dataContext
+            .Users
+            .FindAsync(userId);
+        if (user == null)
+            return Error.NotFound("UserId.NotFound", "A user with the given ID was not found.");
+
+        user.PinnedProjects = projectIds;
+        await dataContext.SaveChangesAsync();
+
+        return new ErrorOr<Updated>();
+    }
+
     public async Task<ErrorOr<IEnumerable<ProjectDto>>> GetInvitations(string userId)
     {
-        return await dataContext.Invitations
+        return await dataContext
+            .Invitations
             .Where(x => x.UserId == userId)
             .Select(x => x.Project)
             .ProjectTo<ProjectDto>(mapper.ConfigurationProvider)
@@ -173,6 +232,9 @@ public class UserService(
 
             await dataContext.ProjectParticipants.AddAsync(participant);
             dataContext.Invitations.Remove(invitation);
+
+            participant.User.PinnedProjects = [..participant.User.PinnedProjects, projectId];
+            
             await dataContext.SaveChangesAsync();
 
             return mapper.Map<InvitationDto>(invitation);

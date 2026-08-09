@@ -17,6 +17,8 @@ public class User : IdentityUser
         NotificationKinds.DeadlineMyTicket |
         NotificationKinds.DeadlineOtherTicket;
 
+    public List<string> PinnedProjects { get; set; } = [];
+
     public ICollection<Project> Projects { get; init; } = new List<Project>();
 
     public ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();

@@ -53,6 +53,15 @@
     function onAddInvitation(project: ProjectDto) {
         invitations.update(x => [project, ...x]);
     }
+    
+    async function handleDrop(event: CustomEvent) {
+        const project = data.projects[event.detail.startIndex];
+        delete data.projects[event.detail.startIndex];
+        data.projects.splice(event.detail.dropIndex, 0, project);
+        data.projects = [...data.projects].filter(x => x);
+        
+        await $userHub?.invoke("setPinnedProjects", data.projects.map(p => p.id));
+    }
 </script>
 
 <PageLayout>
@@ -82,7 +91,9 @@
             {#each data?.projects ?? [] as project}
                 <SidebarEntry src="/projects/{project.author?.username}/{project.slug}"
                               value={project.name}
-                              settingsSrc="/projects/{project.author?.username}/{project.slug}/settings">
+                              draggable
+                              settingsSrc="/projects/{project.author?.username}/{project.slug}/settings"
+                              on:drop={handleDrop}>
                     <UserIcon type="project"
                               name="{project.name}"
                               image={getAvatarUrl(project.iconPath, "small")} />

@@ -76,6 +76,23 @@ public class UserController(
         return result.ToActionResult();
     }
 
+    [HttpGet("pinnedProjects")]
+    [ProducesResponseType(typeof(List<ProjectDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetPinnedProjects()
+    {
+        var result = await _userService.GetPinnedProjectsAsync(User.FindFirstValue("Id")!);
+
+        return result.ToActionResult();
+    }
+
+    [HttpPut("pinnedProjects")]
+    public async Task<IActionResult> SetPinnedProjects([FromBody] List<string> pinnedProjectIds)
+    {
+        var result = await _userService.SetPinnedProjectsAsync(User.FindFirstValue("Id")!, pinnedProjectIds);
+
+        return result.ToActionResult();
+    }
+
     [HttpGet("invitations")]
     [ProducesResponseType(typeof(IEnumerable<ProjectDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetInvitations()

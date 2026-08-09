@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Planera.Api.Data;
@@ -23,6 +24,12 @@ public class UserHub(
     private readonly TicketService _ticketService = ticketService;
     private readonly PersonalAccessTokenService _personalAccessTokenService = personalAccessTokenService;
     private readonly NotificationService _notificationService = notificationService;
+
+    public async Task SetPinnedProjects(List<string> pinnedProjectIds)
+    {
+        var result = await _userService.SetPinnedProjectsAsync(Context.User!.FindFirstValue("Id")!, pinnedProjectIds);
+        result.Unwrap();
+    }
 
     public async Task AcceptInvitation(string projectId)
     {

@@ -140,6 +140,10 @@ public class ProjectService(
         {
             await using var transaction = await _dataContext.Database.BeginTransactionAsync();
             await _dataContext.Projects.AddAsync(project);
+            
+            // Add to author's project list
+            author.PinnedProjects = [..author.PinnedProjects, project.Id];
+
             await _dataContext.SaveChangesAsync();
             _fileStorage.CreateDirectory(project.Id);
 
@@ -179,7 +183,7 @@ public class ProjectService(
 
                 return Error.Unexpected("Unknown", "Failed to create project.");
             }
-
+            
             await transaction.CommitAsync();
 
             return project.Id;
@@ -289,6 +293,7 @@ public class ProjectService(
                 .Where(x => x.ProjectId == projectId)
                 .ExecuteDeleteAsync();
 
+            // Note: Will be removed from individual users' pinned project list in UserService.GetPinnedProjects.
             _dataContext.Projects.Remove(project);
             await _dataContext.SaveChangesAsync();
         });

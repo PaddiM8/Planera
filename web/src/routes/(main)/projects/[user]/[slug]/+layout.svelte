@@ -5,7 +5,6 @@
     import {participants} from "../../../store";
     import {browser} from "$app/environment";
     import {toast} from "$lib/toast";
-    import {HubConnectionState} from "@microsoft/signalr";
     import {projectHub} from "./store";
 
     export let data: {
