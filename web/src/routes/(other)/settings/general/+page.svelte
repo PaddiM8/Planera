@@ -13,24 +13,28 @@
     import {browser} from "$app/environment";
     import Button from "$lib/components/form/Button.svelte";
 
-    export let data: {
+    interface Props {
+        data: {
     account: AccountDto,
     authenticationInfo: AuthenticationInfo,
 };
-export let form: {
+        form: {
     errors: { string: string[] } | undefined,
     problem: ProblemDetails,
 };
+    }
+
+    let { data = $bindable(), form }: Props = $props();
 
 const themeMap : { [key: string]: InterfaceTheme }= {
     "System": InterfaceTheme.System,
     "Light": InterfaceTheme.Light,
     "Dark": InterfaceTheme.Dark,
 };
-let themeName = getKeyFromValue(themeMap, data.account.theme)!;
-let enableNotifications = checkNotificationsEnabled() && data.account.enabledNotificationKinds?.includes(NotificationKinds.Core)
+let themeName = $state(getKeyFromValue(themeMap, data.account.theme)!);
+let enableNotifications = $state(checkNotificationsEnabled() && data.account.enabledNotificationKinds?.includes(NotificationKinds.Core)
     ? "true"
-    : "false";
+    : "false");
 let notifyDeadlines = data.account.enabledNotificationKinds?.includes(NotificationKinds.DeadlineMyTicket)
     ? "true"
     : "false";

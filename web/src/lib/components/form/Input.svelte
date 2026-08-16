@@ -1,21 +1,38 @@
 <script lang="ts">
-    import type {HTMLInputTypeAttribute} from "svelte/elements";
+    import { createBubbler } from 'svelte/legacy';
+
+    const bubble = createBubbler();
+    import type {EventHandler, HTMLInputAttributes, HTMLInputTypeAttribute} from "svelte/elements";
     import {createEventDispatcher} from "svelte";
     import Button from "$lib/components/form/Button.svelte";
     import FormLabel from "$lib/components/form/FormLabel.svelte";
 
-    export let type: HTMLInputTypeAttribute = "text";
-    export let value: string = "";
-    export let name: string = "";
-    export let placeholder: string | undefined = undefined;
-    export let label: string | undefined = undefined;
-    export let submitButton: Button | undefined = undefined;
-    export let readonly = false;
+    interface Props {
+        type?: HTMLInputTypeAttribute;
+        value?: string;
+        name?: string;
+        placeholder?: string | undefined;
+        label?: string | undefined;
+        submitButton?: Button | undefined;
+        readonly?: boolean;
+        oninput?: HTMLInputAttributes["oninput"];
+    }
 
-    let wrapperElement: HTMLElement;
+    let {
+        type = "text",
+        value = $bindable(),
+        name = "",
+        placeholder = undefined,
+        label = undefined,
+        submitButton = undefined,
+        readonly = false,
+        oninput = undefined
+    }: Props = $props();
+
+    let wrapperElement: HTMLElement | undefined = $state();
 
     export function focus() {
-        (wrapperElement.firstElementChild as HTMLInputElement).focus();
+        (wrapperElement?.firstElementChild as HTMLInputElement).focus();
     }
 
     function handleKeyDown(e: KeyboardEvent) {
@@ -37,8 +54,8 @@
                placeholder={placeholder}
                {name}
                readonly={readonly}
-               on:input
-               on:keydown={handleKeyDown} />
+               {oninput}
+               onkeydown={handleKeyDown} />
     {:else if type === "password"}
         <input type="password"
                id="input-{name}"
@@ -46,8 +63,8 @@
                {placeholder}
                {name}
                readonly={readonly}
-               on:input
-               on:keydown={handleKeyDown} />
+               {oninput}
+               onkeydown={handleKeyDown} />
     {:else if type === "email"}
         <input type="email"
                id="input-{name}"
@@ -55,8 +72,8 @@
                placeholder={placeholder}
                {name}
                readonly={readonly}
-               on:input
-               on:keydown={handleKeyDown} />
+               {oninput}
+               onkeydown={handleKeyDown} />
     {/if}
 </div>
 

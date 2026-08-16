@@ -2,12 +2,16 @@
     import TicketList from "$lib/components/ticket/TicketList.svelte";
     import {type ProjectDto, type TicketDto, TicketFilter, TicketSorting} from "../../gen/planeraClient";
     
-    export let data: {
+    interface Props {
+        data: {
         project: ProjectDto,
         sorting: TicketSorting,
         filter: TicketFilter,
         tickets: TicketDto[],
     };
+    }
+
+    let { data = $bindable() }: Props = $props();
 </script>
 
 <svelte:head>

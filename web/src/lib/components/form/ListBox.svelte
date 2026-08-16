@@ -5,19 +5,33 @@
     import Button from "$lib/components/form/Button.svelte";
     import type {MaybePromise} from "@sveltejs/kit";
 
-    export let items: {}[] = [];
-    export let key: string | undefined = undefined;
-    export let canAdd: boolean = false;
-    export let canRemove: boolean = false;
-    export let placeholder: string = "";
-    export let emptyText: string = "";
-    export let addButtonText = "Add";
-    export let handleAdd: (value: string) => MaybePromise<boolean>;
-    export let handleRemove: (value: string) => MaybePromise<boolean>;
+    interface Props {
+        items?: {}[];
+        key?: string | undefined;
+        canAdd?: boolean;
+        canRemove?: boolean;
+        placeholder?: string;
+        emptyText?: string;
+        addButtonText?: string;
+        handleAdd: (value: string) => MaybePromise<boolean>;
+        handleRemove: (value: string) => MaybePromise<boolean>;
+    }
 
-    let inputValue: string;
+    let {
+        items = [],
+        key = undefined,
+        canAdd = false,
+        canRemove = false,
+        placeholder = "",
+        emptyText = "",
+        addButtonText = "Add",
+        handleAdd,
+        handleRemove
+    }: Props = $props();
+
+    let inputValue: string = $state();
     let error: string;
-    let addButton;
+    let addButton = $state();
 
     async function handleClickAdd() {
         const success = await handleAdd(inputValue);
@@ -67,7 +81,7 @@
             <span class="item">
                 <span class="text">{getValue(item)}</span>
                 {#if canRemove && isRemovable(item)}
-                    <span class="remove-button" on:click={() => handleClickRemove(item)}>
+                    <span class="remove-button" onclick={() => handleClickRemove(item)}>
                         <Icon src={MinusCircle} />
                     </span>
                 {/if}

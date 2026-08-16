@@ -4,25 +4,38 @@
     import {getAvatarUrl} from "$lib/clients";
     import {createEventDispatcher} from "svelte";
 
-    export let placeholder: string | undefined = undefined;
-    export let options: any[];
-    export let showUserIcons: boolean = false;
-    export let values: any[] = [];
-    export let key: string | undefined = undefined;
-    export let outputKey: string | undefined = undefined;
-    export let label: string | undefined = undefined;
-    export let name: string = "";
+    interface Props {
+        placeholder?: string | undefined;
+        options: any[];
+        showUserIcons?: boolean;
+        values?: any[];
+        key?: string | undefined;
+        outputKey?: string | undefined;
+        label?: string | undefined;
+        name?: string;
+    }
+
+    let {
+        placeholder = undefined,
+        options,
+        showUserIcons = false,
+        values = $bindable([]),
+        key = undefined,
+        outputKey = undefined,
+        label = undefined,
+        name = ""
+    }: Props = $props();
 
     export function reset() {
         values = [];
     }
 
-    let blockAreaElement: HTMLElement;
-    let inputElement: HTMLInputElement;
-    let value: string = "";
-    let isFocused: boolean = false;
-    let selectedSuggestion: any = undefined;
-    let suggestionList: SuggestionList;
+    let blockAreaElement: HTMLElement = $state();
+    let inputElement: HTMLInputElement = $state();
+    let value: string = $state("");
+    let isFocused: boolean = $state(false);
+    let selectedSuggestion: any = $state(undefined);
+    let suggestionList: SuggestionList = $state();
     const dispatcher = createEventDispatcher();
 
     function getValue(obj: any) {
@@ -101,7 +114,7 @@
       class:no-blocks={values.length === 0}
       bind:this={blockAreaElement}>
     {#each values as item}
-        <span class="block" on:click={() => handleBlockClick(item)}>
+        <span class="block" onclick={() => handleBlockClick(item)}>
             {#if showUserIcons}
                 <span class="icon">
                     <UserIcon name={getValue(item)}
@@ -123,9 +136,9 @@
                {placeholder}
                bind:this={inputElement}
                bind:value={value}
-               on:focus={handleFocus}
-               on:blur={handleBlur}
-               on:keydown={handleKeyDown} />
+               onfocus={handleFocus}
+               onblur={handleBlur}
+               onkeydown={handleKeyDown} />
     </span>
     <SuggestionList bind:query={value}
                     items={options}

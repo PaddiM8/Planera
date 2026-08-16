@@ -1,9 +1,13 @@
 <script lang="ts">
-    export let value: string;
-    export let forId: string | undefined = undefined;
+    interface Props {
+        value: string;
+        forId?: string | undefined;
+    }
+
+    let { value, forId = undefined }: Props = $props();
 </script>
 
-<!-- svelte-ignore a11y-label-has-associated-control -->
+<!-- svelte-ignore a11y_label_has_associated_control -->
 <label class="label" {forId}>{value}</label>
 
 <style lang="sass">

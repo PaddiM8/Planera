@@ -3,12 +3,21 @@
     import FileInput from "$lib/components/form/FileInput.svelte";
     import Button from "$lib/components/form/Button.svelte";
 
-    export let name: string;
-    export let entityName: string;
-    export let src: string | undefined = undefined;
-    export let type: "user" | "project";
+    interface Props {
+        name: string;
+        entityName: string;
+        src?: string | undefined;
+        type: "user" | "project";
+    }
 
-    let avatarInput: HTMLInputElement;
+    let {
+        name,
+        entityName,
+        src = $bindable(undefined),
+        type
+    }: Props = $props();
+
+    let avatarInput: HTMLInputElement = $state();
 
     async function handleAvatarFile(e) {
         const target = e.detail.target as HTMLInputElement;

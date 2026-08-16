@@ -18,28 +18,32 @@
     import TicketList from "$lib/components/ticket/TicketList.svelte";
     import DateInput from "$lib/components/form/DateInput.svelte";
 
-    export let data: {
+    interface Props {
+        data: {
         project: ProjectDto,
         sorting: TicketSorting,
         filter: TicketFilter,
         tickets: TicketDto[],
     };
-    export let form: {
+        form: {
         errors: { string: string[] } | undefined,
         problem: ProblemDetails,
     };
+    }
 
-    let editor: any | undefined;
-    let titleValue: string;
-    let titleInput: Input;
-    let assigneesInput: BlockInput;
-    let priorityInput: MultiButton;
-    let deadlineValue: Date | undefined;
-    let isFormLoading = false;
-    let ticketListElement: TicketList | undefined;
+    let { data = $bindable(), form }: Props = $props();
 
-    $: isSubmitDisabled = titleValue?.length < 2 || isFormLoading;
-    $: validFormState = titleValue?.length >= 2;
+    let editor: any | undefined = $state();
+    let titleValue: string = $state();
+    let titleInput: Input = $state();
+    let assigneesInput: BlockInput = $state();
+    let priorityInput: MultiButton = $state();
+    let deadlineValue: Date | undefined = $state();
+    let isFormLoading = $state(false);
+    let ticketListElement: TicketList | undefined = $state();
+
+    let isSubmitDisabled = $derived(titleValue?.length < 2 || isFormLoading);
+    let validFormState = $derived(titleValue?.length >= 2);
 
     onMount(async () => {
         localStorage.setItem("lastVisited", window.location.pathname);

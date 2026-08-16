@@ -1,18 +1,33 @@
 <script lang="ts">
+    import { run } from 'svelte/legacy';
+
     import UserIcon from "$lib/components/UserIcon.svelte";
     import {createEventDispatcher} from "svelte";
     import {getAvatarUrl} from "$lib/clients";
 
-    export let items: any[] = [];
-    export let key: string | undefined = undefined;
-    export let query: string = "";
-    export let shown: boolean = true;
-    export let showUserIcons: boolean = false;
-    export let selectedIndex = 0;
-    export let selectedValue: any | undefined = undefined;
-    export let ignored: any[] = [];
+    interface Props {
+        items?: any[];
+        key?: string | undefined;
+        query?: string;
+        shown?: boolean;
+        showUserIcons?: boolean;
+        selectedIndex?: number;
+        selectedValue?: any | undefined;
+        ignored?: any[];
+    }
 
-    let shownItems: any[] = [];
+    let {
+        items = [],
+        key = undefined,
+        query = $bindable(""),
+        shown = true,
+        showUserIcons = false,
+        selectedIndex = $bindable(0),
+        selectedValue = $bindable(undefined),
+        ignored = []
+    }: Props = $props();
+
+    let shownItems: any[] = $state([]);
     const dispatch = createEventDispatcher();
 
     function getValue(obj: any) {
@@ -21,13 +36,13 @@
             : obj;
     }
 
-    $: {
+    run(() => {
         if (shownItems.length > 0) {
             selectedValue = shownItems[selectedIndex];
         }
-    }
+    });
 
-    $: {
+    run(() => {
         const indexedItems = items.map((x, i) => {
             return { ...x, index: i };
         });
@@ -36,7 +51,7 @@
             !ignored.some(y => y[key ?? ""] === x[key ?? ""]) && getValue(x).includes(query)
         );
         selectedIndex = 0;
-    }
+    });
 
     export function selectNext() {
         selectedIndex = Math.min(shownItems.length - 1, selectedIndex + 1);
@@ -64,7 +79,7 @@
         <span class="item"
               data-index={i}
               class:selected={i === selectedIndex}
-              on:mousedown={() => handleItemClick(i)}>
+              onmousedown={() => handleItemClick(i)}>
             {#if showUserIcons}
                 <span class="icon">
                     <UserIcon name={getValue(item)}

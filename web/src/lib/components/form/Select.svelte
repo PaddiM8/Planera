@@ -1,29 +1,43 @@
-<script context="module">
+<script module>
     import { writable } from "svelte/store";
     let lastMenuId = writable(0);
 </script>
 
 <script lang="ts">
+    import { run } from 'svelte/legacy';
+
     import {Icon, ChevronDown} from "svelte-hero-icons";
     import {createEventDispatcher, onMount} from "svelte";
 
-    export let choices: string[];
-    export let selectedValue: string = "";
-    export let selectedIndex: number | undefined = 0;
-    export let width: string | undefined = undefined;
-    export let name: string | undefined = undefined;
+    interface Props {
+        choices: string[];
+        selectedValue?: string;
+        selectedIndex?: number | undefined;
+        width?: string | undefined;
+        name?: string | undefined;
+    }
+
+    let {
+        choices = $bindable(),
+        selectedValue = $bindable(""),
+        selectedIndex = $bindable(0),
+        width = undefined,
+        name = undefined
+    }: Props = $props();
 
     const menuId = `menu-${$lastMenuId++}`;
-    let menuElement: HTMLElement;
+    let menuElement: HTMLElement | undefined = $state();
     const dispatcher = createEventDispatcher();
 
     if (selectedValue) {
         selectedIndex = choices.indexOf(selectedValue);
     }
     
-    $: if (selectedIndex !== undefined) {
-        selectedValue = choices[selectedIndex];
-    }
+    run(() => {
+        if (selectedIndex !== undefined) {
+            selectedValue = choices[selectedIndex];
+        }
+    });
 
     onMount(() => {
         if (!selectedValue && choices.length > 0) {
@@ -58,9 +72,9 @@
     <input {name}
            inputmode="none"
            bind:value={selectedValue}
-           on:focus={() => menuElement.showPopover()}
-           on:blur={() => menuElement.hidePopover()}
-           on:keydown={handleKeyDown}
+           onfocus={() => menuElement!.showPopover()}
+           onblur={() => menuElement!.hidePopover()}
+           onkeydown={handleKeyDown}
            style="anchor-name: --anchor-{menuId}; {width ? `width: ${width};` : ''}" />
     <span class="icon">
         <Icon src={ChevronDown} />
@@ -69,7 +83,7 @@
         {#each choices as choice}
             <button class="item"
                   class:selected={selectedValue === choice}
-                  on:mousedown={() => handleItemClick(choice)}>{choice}</button>
+                  onmousedown={() => handleItemClick(choice)}>{choice}</button>
         {/each}
     </div>
 </div>

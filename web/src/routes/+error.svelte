@@ -1,10 +1,10 @@
 <script>
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
 </script>
 
 <section class="error-page">
-    <h1>Error ({$page.status})</h1>
-    <h2>{$page.error.message}</h2>
+    <h1>Error ({page.status})</h1>
+    <h2>{page.error.message}</h2>
 </section>
 
 <style lang="sass">

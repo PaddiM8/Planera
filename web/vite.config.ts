@@ -11,6 +11,7 @@ export default defineConfig({
 	server: {
 		// Uses the port Aspire assigns, falling back to 5173 locally
 		port: process.env.PORT ? parseInt(process.env.PORT) : 5173,
+		allowedHosts: ["aspire.dev.internal"],
 		strictPort: true,
 	},
 	ssr: {

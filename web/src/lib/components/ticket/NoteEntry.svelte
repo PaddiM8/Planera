@@ -12,12 +12,16 @@
     import {formatDate, formatDateFull} from "$lib/formatting";
     import type {ProblemDetails} from "$lib/problemDetails";
 
-    export let note: NoteDto;
-    export let editAction: string;
-    export let problem: ProblemDetails;
+    interface Props {
+        note: NoteDto;
+        editAction: string;
+        problem: ProblemDetails;
+    }
 
-    let isEditing = false;
-    let editedContent: string;
+    let { note = $bindable(), editAction, problem }: Props = $props();
+
+    let isEditing = $state(false);
+    let editedContent: string = $state();
     const dispatcher = createEventDispatcher();
 
     async function setStatus(status: TicketStatus) {
@@ -59,15 +63,15 @@
 <div class="note" class:has-status={note.status !== TicketStatus.None}>
     <div class="top">
         {#if note.status === TicketStatus.Done}
-            <button class="status done" on:click={() => setStatus(TicketStatus.None)}>
+            <button class="status done" onclick={() => setStatus(TicketStatus.None)}>
                 <Icon src={Check} />
             </button>
         {:else if note.status === TicketStatus.Inactive}
-            <button class="status inactive" on:click={() => setStatus(TicketStatus.None)}>
+            <button class="status inactive" onclick={() => setStatus(TicketStatus.None)}>
                 <Icon src={Minus} />
             </button>
         {:else if note.status === TicketStatus.Closed}
-            <button class="status closed" on:click={() => setStatus(TicketStatus.None)}>
+            <button class="status closed" onclick={() => setStatus(TicketStatus.None)}>
                 <Icon src={XMark} />
             </button>
         {/if}

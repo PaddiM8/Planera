@@ -1,15 +1,29 @@
 <script lang="ts">
     import {createEventDispatcher, onMount} from "svelte";
 
-    export let choices: string[] = [];
-    export let choiceValues: string[] | undefined = undefined;
-    export let backgroundColors: string[] | undefined = undefined;
-    export let foregroundColors: string[] | undefined = undefined;
-    export let selectedValue: string | undefined = undefined;
-    export let defaultValue: string | undefined = undefined;
-    export let disabled: boolean = false;
-    export let name: string | undefined = undefined;
-    export let yesNo: boolean | undefined = undefined;
+    interface Props {
+        choices?: string[];
+        choiceValues?: string[] | undefined;
+        backgroundColors?: string[] | undefined;
+        foregroundColors?: string[] | undefined;
+        selectedValue?: string | undefined;
+        defaultValue?: string | undefined;
+        disabled?: boolean;
+        name?: string | undefined;
+        yesNo?: boolean | undefined;
+    }
+
+    let {
+        choices = $bindable([]),
+        choiceValues = $bindable(undefined),
+        backgroundColors = $bindable(undefined),
+        foregroundColors = $bindable(undefined),
+        selectedValue = $bindable(undefined),
+        defaultValue = undefined,
+        disabled = false,
+        name = undefined,
+        yesNo = undefined
+    }: Props = $props();
     
     const dispatcher = createEventDispatcher();
     
@@ -54,7 +68,7 @@
                    name={name}
                    disabled={disabled}
                    bind:group={selectedValue}
-                   on:change={e => handleChange(e, value)} />
+                   onchange={e => handleChange(e, value)} />
             <label for="choice-{name}-{value.replace(' ', '-')}"
                    style="{backgroundColor ? `background-color: ${backgroundColor};` : ''} {foregroundColor ? `color: ${foregroundColor};` : ''}">
                 {choice}

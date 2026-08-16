@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { run } from 'svelte/legacy';
+
     import {startProjectHub} from "$lib/hubs";
     import {onMount} from "svelte";
     import type {ProjectDto, UserDto} from "../../../../../gen/planeraClient";
@@ -7,9 +9,14 @@
     import {toast} from "$lib/toast";
     import {projectHub} from "./store";
 
-    export let data: {
+    interface Props {
+        data: {
         project: ProjectDto,
     };
+        children?: import('svelte').Snippet;
+    }
+
+    let { data, children }: Props = $props();
 
     let previousProjectId: string | undefined = undefined;
     let reconnectingToast: HTMLElement | null = null;
@@ -57,10 +64,14 @@
 
     }
 
-    $: connectToProject(data?.project.id);
-    $: if (data) {
-        $participants = data.project.participants ?? [];
-    }
+    run(() => {
+        connectToProject(data?.project.id);
+    });
+    run(() => {
+        if (data) {
+            $participants = data.project.participants ?? [];
+        }
+    });
 
     onMount(async () => {
         for (const participant of data.project.participants ?? []) {
@@ -109,4 +120,4 @@
     }
 </script>
 
-<slot />
+{@render children?.()}

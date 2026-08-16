@@ -1,7 +1,17 @@
 <script lang="ts">
-    export let name: string;
-    export let href: string | undefined = undefined;
-    export let noPreload: boolean = false;
+    interface Props {
+        name: string;
+        href?: string | undefined;
+        noPreload?: boolean;
+        children?: import('svelte').Snippet;
+    }
+
+    let {
+        name,
+        href = undefined,
+        noPreload = false,
+        children
+    }: Props = $props();
 </script>
 
 <svelte:element this={href ? "a" : "span"}
@@ -9,7 +19,7 @@
                 class="entry"
                 data-sveltekit-preload-data={noPreload ? "tap" : ""}>
     <span class="icon">
-        <slot />
+        {@render children?.()}
     </span>
     <span class="name">{ name }</span>
 </svelte:element>

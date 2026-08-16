@@ -1,8 +1,12 @@
 <script lang="ts">
     import {ArrowLongLeft, Icon} from "svelte-hero-icons";
 
-    export let placeName: string | undefined = "";
-    export let href: string | undefined = "../";
+    interface Props {
+        placeName?: string | undefined;
+        href?: string | undefined;
+    }
+
+    let { placeName = "", href = "../" }: Props = $props();
 </script>
 
 <a href={href}>

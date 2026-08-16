@@ -11,13 +11,20 @@
     import {closeTouchOverlay, user} from "../../../routes/(main)/store";
 	import { formatDate } from "$lib/formatting";
 
-    export let ticket: TicketDto;
-    export let isOverview: boolean = false;
+    interface Props {
+        ticket: TicketDto;
+        isOverview?: boolean;
+    }
 
-    let showTouchOverlay = false;
-    let preventTouch = false;
+    let {
+        ticket = $bindable(),
+        isOverview = $bindable(false),
+    }: Props = $props();
 
-    $: ticketUrl = `/projects/${ticket?.project?.author?.username}/${ticket?.projectSlug}/tickets/${ticket?.id}`;
+    let showTouchOverlay = $state(false);
+    let preventTouch = $state(false);
+
+    let ticketUrl = $derived(`/projects/${ticket?.project?.author?.username}/${ticket?.projectSlug}/tickets/${ticket?.id}`);
 
     async function setStatus(status: TicketStatus) {
         if (preventTouch) {
@@ -100,40 +107,40 @@
 </script>
 
 <div class="ticket {isOverview ? 'is-overview' : ''}" class:has-status={ticket.status}>
-    <button class="touch-overlay" on:click={openTouchOverlay}>
+    <button class="touch-overlay" onclick={openTouchOverlay}>
         {#if showTouchOverlay}
             <span class="menu">
                 <span class="row">
                     {#if ticket.status === TicketStatus.None}
-                        <button class="item" on:click={() => setStatus(TicketStatus.Done)}>
+                        <button class="item" onclick={() => setStatus(TicketStatus.Done)}>
                             <span class="icon done">
                                 <Icon src={Check} />
                             </span>
                             <span class="name">Done</span>
                         </button>
-                        <button class="item" on:click={() => setStatus(TicketStatus.Inactive)}>
+                        <button class="item" onclick={() => setStatus(TicketStatus.Inactive)}>
                             <span class="icon inactive">
                                 <Icon src={Minus} />
                             </span>
                             <span class="name">Inactive</span>
                         </button>
-                        <button class="item" on:click={() => setStatus(TicketStatus.Closed)}>
+                        <button class="item" onclick={() => setStatus(TicketStatus.Closed)}>
                             <span class="icon close">
                                 <Icon src={XMark} />
                             </span>
                             <span class="name">Close</span>
                         </button>
                     {:else}
-                        <button class="item" on:click={() => setStatus(TicketStatus.None)}>
+                        <button class="item" onclick={() => setStatus(TicketStatus.None)}>
                             <span class="name">Clear Status</span>
                         </button>
                     {/if}
                 </span>
                 <span class="row">
-                    <button class="item" on:click={() => !preventTouch && goto(ticketUrl)}>
+                    <button class="item" onclick={() => !preventTouch && goto(ticketUrl)}>
                         <span class="name">Open</span>
                     </button>
-                    <button class="item" on:click={closeTouchOverlayImpl}>
+                    <button class="item" onclick={closeTouchOverlayImpl}>
                         <span class="name">Back</span>
                     </button>
                 </span>
@@ -142,15 +149,15 @@
     </button>
     <div class="top">
         {#if ticket.status === TicketStatus.Done}
-            <button class="status done" on:click={() => setStatus(TicketStatus.None)}>
+            <button class="status done" onclick={() => setStatus(TicketStatus.None)}>
                 <Icon src={Check} />
             </button>
         {:else if ticket.status === TicketStatus.Inactive}
-            <button class="status inactive" on:click={() => setStatus(TicketStatus.None)}>
+            <button class="status inactive" onclick={() => setStatus(TicketStatus.None)}>
                 <Icon src={Minus} />
             </button>
         {:else if ticket.status === TicketStatus.Closed}
-            <button class="status closed" on:click={() => setStatus(TicketStatus.None)}>
+            <button class="status closed" onclick={() => setStatus(TicketStatus.None)}>
                 <Icon src={XMark} />
             </button>
         {/if}
@@ -164,15 +171,15 @@
                 <IconButton value="Close"
                             icon={XMark}
                             color="red"
-                            on:click={() => setStatus(TicketStatus.Closed)} />
+                            onclick={() => setStatus(TicketStatus.Closed)} />
                 <IconButton value="Inactive"
                             icon={Minus}
                             color="blue"
-                            on:click={() => setStatus(TicketStatus.Inactive)} />
+                            onclick={() => setStatus(TicketStatus.Inactive)} />
                 <IconButton value="Done"
                             icon={Check}
                             color="green"
-                            on:click={() => setStatus(TicketStatus.Done)} />
+                            onclick={() => setStatus(TicketStatus.Done)} />
             </div>
         {/if}
         
@@ -204,7 +211,7 @@
                 </span>
             {/each}
             {#if !ticket.assignees?.some(x => x.username === $user.username) && !isOverview}
-                <button class="assignee add-button" on:click={assignToMe}>
+                <button class="assignee add-button" onclick={assignToMe}>
                     <span class="icon">
                         <Icon src={Plus} />
                     </span>

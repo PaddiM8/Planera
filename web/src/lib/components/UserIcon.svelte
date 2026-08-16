@@ -1,7 +1,11 @@
 <script lang="ts">
-    export let name: string;
-    export let image: string | undefined = undefined;
-    export let type: "user" | "project";
+    interface Props {
+        name: string;
+        image?: string | undefined;
+        type: "user" | "project";
+    }
+
+    let { name, image = undefined, type }: Props = $props();
 </script>
 
 <span class="logo {type}" class:image={image}>

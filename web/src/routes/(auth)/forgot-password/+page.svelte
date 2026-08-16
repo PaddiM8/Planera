@@ -5,7 +5,7 @@
     import CenteredLayout from "$lib/components/CenteredLayout.svelte";
     import {toast} from "$lib/toast";
 
-    export let form;
+    let { form } = $props();
 
     function handleSubmit(success: boolean) {
         if (success) {

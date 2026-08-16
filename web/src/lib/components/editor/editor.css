@@ -507,10 +507,12 @@ select.font-family {
 .dropdown .item {
     display: flex;
     align-content: center;
+    align-items: center;
     flex-direction: row;
     flex-shrink: 0;
     justify-content: space-between;
 
+    width: 100%;
     max-width: 250px;
     padding: var(--vertical-padding) var(--horizontal-padding);
     border: 0;
@@ -547,18 +549,29 @@ select.font-family {
     display: flex;
     line-height: 20px;
     flex-grow: 1;
-    min-width: 150px;
+    min-width: 110px;
     font-weight: 500;
 }
 
 .dropdown .item .icon {
     display: flex;
-    width: 20px;
-    height: 20px;
+    width: 1.12em;
+    height: 1em;
     user-select: none;
-    margin-right: 12px;
     line-height: 16px;
-    background-size: contain;
+    background-color: var(--on-background);
+}
+
+.dropdown .item .icon-text-container {
+    display: flex;
+    align-items: center;
+    gap: 0.8em;
+}
+
+.dropdown .shortcut {
+    display: none;
+    font-size: 0.7em;
+    color: var(--text-gray)
 }
 
 .dropdown .divider {

@@ -48,7 +48,7 @@
         $getRoot as getRoot,
         FloatingLinkEditorPlugin,
         CodeHighlightPlugin,
-        CodeActionMenuPlugin,
+        CodeActionMenuPlugin, InsertImageDropDownItem, InsertImageDialog,
     } from "@paddim8/svelte-lexical";
     import "./editor.css";
     import TaskEditorTheme from "$lib/components/editor/ticketEditorTheme";
@@ -61,7 +61,11 @@
     const createParagraphNode = lexical.$createParagraphNode;
     const getSelection = lexical.$getSelection;
 
-    export let placeholder: string = "";
+    interface Props {
+        placeholder?: string;
+    }
+
+    let { placeholder = "" }: Props = $props();
 
     const initialConfig = {
         namespace: "TaskEditor",
@@ -84,15 +88,16 @@
     };
 
     let editor: any;
-    let editorShellElement: HTMLElement;
-    let editorElement: HTMLElement;
-    let composer: Composer;
-    let hasFocus = false;
+    let editorShellElement: HTMLElement | undefined = $state();
+    let editorElement: HTMLElement | undefined = $state();
+    let composer: Composer | undefined = $state();
+    let hasFocus = $state(false);
     const dispatcher = createEventDispatcher();
 
     onMount(() => {
-        editor = composer.getEditor();
-        for (const toolbarButton of editorShellElement.querySelectorAll(".toolbar button")) {
+        editor = composer!.getEditor();
+        
+        for (const toolbarButton of editorShellElement!.querySelectorAll(".toolbar button")) {
             toolbarButton.setAttribute("tabIndex", "-1");
         }
 
@@ -104,11 +109,11 @@
             const event = new CustomEvent("input", {
                 bubbles: true
             })
-            editorShellElement.dispatchEvent(event);
+            editorShellElement!.dispatchEvent(event);
         });
-        observer.observe(editorShellElement.querySelector("[contenteditable]")!, config);
+        observer.observe(editorShellElement!.querySelector("[contenteditable]")!, config);
 
-        const contentEditable = editorElement.querySelector("[contenteditable]") as HTMLElement;
+        const contentEditable = editorElement!.querySelector("[contenteditable]") as HTMLElement;
         contentEditable.onfocus = () => hasFocus = true;
         contentEditable.onblur = () => hasFocus = false;
     });
@@ -164,42 +169,45 @@
 
 <Composer {initialConfig} bind:this={composer}>
     <div class="editor-shell" class:has-focus={hasFocus} bind:this={editorShellElement}>
-        <Toolbar let:editor let:activeEditor let:blockType>
-            <UndoButton />
-            <RedoButton />
-            <Divider />
-            {#if activeEditor === editor}
-                <BlockFormatDropDown>
-                    <ParagraphDropDownItem />
-                    <HeadingDropDownItem headingSize="h1" />
-                    <HeadingDropDownItem headingSize="h2" />
-                    <HeadingDropDownItem headingSize="h3" />
-                    <BulletDropDrownItem />
-                    <NumberDropDrownItem />
-                    <CheckDropDrownItem />
-                    <QuoteDropDrownItem />
-                    <CodeDropDrownItem />
-                </BlockFormatDropDown>
+        <Toolbar   >
+            {#snippet children({ editor, activeEditor, blockType })}
+                        <UndoButton />
+                <RedoButton />
                 <Divider />
-            {/if}
-            {#if blockType === "code"}
-                <CodeLanguageDropDown />
-            {:else}
-                <BoldButton />
-                <ItalicButton />
-                <UnderlineButton />
-                <StrikethroughButton />
-                <InsertLink />
-                <FormatCodeButton />
+                {#if activeEditor === editor}
+                    <BlockFormatDropDown>
+                        <ParagraphDropDownItem />
+                        <HeadingDropDownItem headingSize="h1" />
+                        <HeadingDropDownItem headingSize="h2" />
+                        <HeadingDropDownItem headingSize="h3" />
+                        <BulletDropDrownItem />
+                        <NumberDropDrownItem />
+                        <CheckDropDrownItem />
+                        <QuoteDropDrownItem />
+                        <CodeDropDrownItem />
+                    </BlockFormatDropDown>
+                    <Divider />
+                {/if}
+                {#if blockType === "code"}
+                    <CodeLanguageDropDown />
+                {:else}
+                    <BoldButton />
+                    <ItalicButton />
+                    <UnderlineButton />
+                    <StrikethroughButton />
+                    <InsertLink />
+                    <FormatCodeButton />
+                    <Divider />
+                    <InsertDropDown>
+                        <InsertHRDropDownItem />
+                        <InsertImageDropDownItem />
+                    </InsertDropDown>
+                    <Divider />
+                {/if}
+                <DropDownAlign />
                 <Divider />
-                <InsertDropDown>
-                    <InsertHRDropDownItem />
-                </InsertDropDown>
-                <Divider />
-            {/if}
-            <DropDownAlign />
-            <Divider />
-        </Toolbar>
+                                {/snippet}
+                </Toolbar>
         <div class="editor-container tree-view">
             <div class="editor-scroller">
                 <div class="editor" bind:this={editorElement}>
@@ -223,6 +231,8 @@
                 <CodeHighlightPlugin />
                 <CodeActionMenuPlugin anchorElem={editorElement} />
             {/if}
+
+            <InsertImageDialog />
         </div>
     </div>
 </Composer>

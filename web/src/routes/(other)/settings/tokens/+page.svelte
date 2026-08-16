@@ -8,10 +8,14 @@
     import {userHub} from "../store.js";
     import Input from "$lib/components/form/Input.svelte";
 
-    export let data: {
+    interface Props {
+        data: {
         personalAccessTokenMetadata: PersonalAccessTokenMetadataDto | null,
     };
-    export let form;
+        form: any;
+    }
+
+    let { data = $bindable(), form }: Props = $props();
 
     function afterSubmit(success: boolean) {
         if (success) {

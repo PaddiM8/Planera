@@ -4,7 +4,7 @@
     import Form from "$lib/components/form/Form.svelte";
     import CenteredLayout from "$lib/components/CenteredLayout.svelte";
 
-    export let form;
+    let { form } = $props();
 </script>
 
 <svelte:head>

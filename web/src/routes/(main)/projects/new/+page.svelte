@@ -5,19 +5,16 @@
     import FormLabel from "$lib/components/form/FormLabel.svelte";
     import Button from "$lib/components/form/Button.svelte";
 
-    export let form;
-    export let data;
+    let { form, data } = $props();
 
-    let name: string = "";
-    let slug: string;
-
-    $: {
-        slug = name
+    let name: string = $state("");
+    let slug: string = $derived(name
             .split("")
             .map(x => x === " " ? "-" : x.toLowerCase())
             .filter(x => x.match(/[a-z0-9\- ]/))
-            .join("");
-    }
+            .join(""));
+
+    
 </script>
 
 <svelte:head>

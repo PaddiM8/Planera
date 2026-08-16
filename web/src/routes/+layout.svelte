@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { run } from 'svelte/legacy';
+
     import "@fontsource-variable/inter/standard.css";
     import UserIcon from "$lib/components/UserIcon.svelte";
     import ContextMenu from "$lib/components/ContextMenu.svelte";
@@ -15,12 +17,17 @@
     import {browser} from "$app/environment";
     import {setContext} from "svelte";
 
-    export let data: {
+    interface Props {
+        data: {
         user: UserDto,
         authenticationInfo: AuthenticationInfo,
         locale: string,
         systemTheme: string | undefined,
     };
+        children?: import('svelte').Snippet;
+    }
+
+    let { data = $bindable(), children }: Props = $props();
     
     setContext("locale", data.locale);
 
@@ -48,13 +55,13 @@
         return `<link rel="stylesheet" href="/themes/${themeName}.css">`;
     }
 
-    $: {
+    run(() => {
         if (data.user) {
             $user = data.user;
         }
-    }
+    });
 
-    let contextMenuTarget: HTMLElement | undefined;
+    let contextMenuTarget: HTMLElement | undefined = $state();
 
     function openSidebar() {
         const sidebar = document.getElementById("sidebar");
@@ -87,7 +94,7 @@
 
 <div id="content">
     <header>
-        <button class="sidebar-button" on:click={openSidebar}>
+        <button class="sidebar-button" onclick={openSidebar}>
             <Icon src={Bars3} />
         </button>
         <a href="/" class="logo">
@@ -96,8 +103,8 @@
         </a>
         <div class="items">
             {#if data?.user}
-                <!-- svelte-ignore a11y-click-events-have-key-events -->
-                <div class="user" on:click={handleUserClick} role="button" tabindex="0">
+                <!-- svelte-ignore a11y_click_events_have_key_events -->
+                <div class="user" onclick={handleUserClick} role="button" tabindex="0">
                     <UserIcon type="user"
                               name={data.user.username}
                               image={getAvatarUrl(data.user.avatarPath, "big")} />
@@ -111,7 +118,7 @@
     </header>
 
     <section class="page">
-        <slot></slot>
+        {@render children?.()}
     </section>
 </div>
 

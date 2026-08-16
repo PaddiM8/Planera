@@ -1,11 +1,18 @@
 <script lang="ts">
-    export let target: HTMLElement | undefined;
+    import { run } from 'svelte/legacy';
 
-    let element: HTMLElement;
-    let componentWidth: number = 0;
-    let canBeClosed = true;
+    interface Props {
+        target: HTMLElement | undefined;
+        children?: import('svelte').Snippet;
+    }
 
-    $: {
+    let { target = $bindable(), children }: Props = $props();
+
+    let element: HTMLElement = $state();
+    let componentWidth: number = $state(0);
+    let canBeClosed = $state(true);
+
+    run(() => {
         if (target && element) {
             const rect = target.getBoundingClientRect();
             const top = rect.top + rect.height;
@@ -17,7 +24,7 @@
             canBeClosed = false;
             setTimeout(() => canBeClosed = true, 250);
         }
-    }
+    });
 
     function handlePageClick(e: MouseEvent) {
         const targetIsOutside = e.target !== element && !element.contains(e.target as HTMLElement);
@@ -31,10 +38,10 @@
      bind:this={element}
      bind:offsetWidth={componentWidth}
      class:visible={target !== undefined}>
-    <slot />
+    {@render children?.()}
 </div>
 
-<svelte:body on:click={handlePageClick} />
+<svelte:body onclick={handlePageClick} />
 
 <style lang="sass">
     :global(.label)

@@ -1,12 +1,26 @@
 <script lang="ts">
-    import {Icon} from "svelte-hero-icons";
+    import { createBubbler } from 'svelte/legacy';
 
-    export let value: string | undefined = undefined;
-    export let icon: unknown;
-    export let color: "default" | "green" | "blue" | "red" = "default";
+    const bubble = createBubbler();
+    import {Icon} from "svelte-hero-icons";
+    import type {MouseEventHandler} from "svelte/elements";
+
+    interface Props {
+        value?: string | undefined;
+        icon: unknown;
+        color?: "default" | "green" | "blue" | "red";
+        onclick?: MouseEventHandler<HTMLButtonElement>;
+    }
+
+    let {
+        value = undefined,
+        icon,
+        color = "default",
+        onclick = undefined
+    }: Props = $props();
 </script>
 
-<button on:click class:has-value={value}>
+<button {onclick} class:has-value={value}>
     <span class="icon"
           class:green={color === "green"}
           class:blue={color === "blue"}

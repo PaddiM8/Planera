@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import PageLayout from "$lib/components/PageLayout.svelte";
     import SidebarGroup from "$lib/components/sidebar/SidebarGroup.svelte";
     import Sidebar from "$lib/components/sidebar/Sidebar.svelte";
@@ -9,6 +9,11 @@
     import {onMount} from "svelte";
     import {startUserHub} from "$lib/hubs";
     import {userHub} from "./store";
+    interface Props {
+        children?: import('svelte').Snippet;
+    }
+
+    let { children }: Props = $props();
 
     onMount(async () => {
         await createUserHub();
@@ -47,6 +52,6 @@
         </SidebarGroup>
     </Sidebar>
     <MainArea>
-        <slot />
+        {@render children?.()}
     </MainArea>
 </PageLayout>

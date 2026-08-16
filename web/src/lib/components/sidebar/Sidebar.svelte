@@ -1,9 +1,14 @@
 <script lang="ts">
 	import { onMount } from "svelte";
 	import { beforeNavigate } from "$app/navigation";
+	interface Props {
+		children?: import('svelte').Snippet;
+	}
+
+	let { children }: Props = $props();
 
 	const draggerWidth = 10;
-	let sidebarElement: HTMLElement;
+	let sidebarElement: HTMLElement = $state();
 	let dragging = false;
 
 	onMount(() => {
@@ -121,11 +126,11 @@
 </script>
 
 <aside id="sidebar" bind:this={sidebarElement}>
-	<slot />
+	{@render children?.()}
 </aside>
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class="outside" on:click={close}></div>
-<div class="dragger" style="width: {draggerWidth}px" on:touchstart={startDrag}></div>
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<div class="outside" onclick={close}></div>
+<div class="dragger" style="width: {draggerWidth}px" ontouchstart={startDrag}></div>
 
 <style lang="sass">
     @use "../../../values"

@@ -19,17 +19,21 @@
     import Select from "$lib/components/form/Select.svelte";
     import {Icon, Trash} from "svelte-hero-icons";
 
-    export let data: {
+
+    interface Props {
+        data: {
         project: ProjectDto,
     };
+        form: any;
+    }
 
-    export let form;
+    let { data = $bindable(), form }: Props = $props();
 
-    let deleteFormSlugValue: string;
+    let deleteFormSlugValue: string = $state();
 
-    let enableNotifications = data.project.me?.enabledNotificationKinds?.includes(NotificationKinds.Core)
+    let enableNotifications = $state(data.project.me?.enabledNotificationKinds?.includes(NotificationKinds.Core)
         ? "true"
-        : "false";
+        : "false");
     let notifyDeadlines = data.project.me?.enabledNotificationKinds?.includes(NotificationKinds.DeadlineOtherTicket)
         ? "all-tickets"
         : data.project.me?.enabledNotificationKinds?.includes(NotificationKinds.DeadlineMyTicket) ? "my-tickets" : "none";
@@ -230,7 +234,7 @@
                                 bind:selectedIndex={notificationTrigger.action} />
                     </TableCell>
                     <TableCell>
-                        <button class="remove-button" on:click={() => handleRemoveNotificationTrigger(notificationTrigger)}>
+                        <button class="remove-button" onclick={() => handleRemoveNotificationTrigger(notificationTrigger)}>
                             <Icon src={Trash} size="1.2em" />
                         </button>
                     </TableCell>

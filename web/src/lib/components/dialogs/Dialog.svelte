@@ -1,6 +1,11 @@
 <script lang="ts">
-    export let id: string;
-    export let title: string;
+    interface Props {
+        id: string;
+        title: string;
+        children?: import('svelte').Snippet;
+    }
+
+    let { id, title, children }: Props = $props();
 
     function handleKeyDown(e: KeyboardEvent) {
         const dialog = e.target as HTMLElement;
@@ -15,9 +20,9 @@
 </script>
 
 <div id="dialog-background"></div>
-<div id={id} class="dialog" tabindex="0" on:keydown={handleKeyDown}>
+<div id={id} class="dialog" tabindex="0" onkeydown={handleKeyDown}>
     <h1>{title}</h1>
-    <slot />
+    {@render children?.()}
 </div>
 
 <style lang="sass">

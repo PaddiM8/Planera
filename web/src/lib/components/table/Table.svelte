@@ -1,5 +1,10 @@
 <script lang="ts">
-    export let headers: Array<string>;
+    interface Props {
+        headers: Array<string>;
+        children?: import('svelte').Snippet;
+    }
+
+    let { headers, children }: Props = $props();
 </script>
 
 <table>
@@ -11,7 +16,7 @@
     </tr>
     </thead>
     <tbody>
-        <slot />
+        {@render children?.()}
     </tbody>
 </table>
 

@@ -4,15 +4,27 @@
     import {invitations} from "../../../routes/(main)/store";
     import {createEventDispatcher} from "svelte";
 
-    export let src: string;
-    export let value: string;
-    export let unreadCount = 0;
-    export let draggable = false;
-    export let settingsSrc: string | undefined = undefined;
+    interface Props {
+        src: string;
+        value: string;
+        unreadCount?: number;
+        draggable?: boolean;
+        settingsSrc?: string | undefined;
+        children?: import('svelte').Snippet;
+    }
+
+    let {
+        src,
+        value,
+        unreadCount = 0,
+        draggable = false,
+        settingsSrc = undefined,
+        children
+    }: Props = $props();
 
     const dispatch = createEventDispatcher();
     
-    let outerElement: HTMLElement;
+    let outerElement: HTMLElement = $state();
     let isDragging = false;
 
     function withTrailingSlash(value: string) {
@@ -21,7 +33,7 @@
             : `${value}/`;
     }
 
-    $: path = withTrailingSlash($page.url?.pathname)
+    let path = $derived(withTrailingSlash($page.url?.pathname))
     
     function handleDragStart() {
         isDragging = true;
@@ -103,14 +115,14 @@
     <a class="entry"
        href={src}
        draggable={draggable}
-       on:dragstart={handleDragStart}
-       on:dragend={handleDragEnd}
-       on:dragover={handleDragOver}
-       on:dragleave={handleDragLeave}
+       ondragstart={handleDragStart}
+       ondragend={handleDragEnd}
+       ondragover={handleDragOver}
+       ondragleave={handleDragLeave}
        class:selected={(withTrailingSlash(src) !== "/" && path.startsWith(withTrailingSlash(src)) || (src === "/" && path === "/"))}>
-    <span class="icon">
-        <slot />
-    </span>
+        <span class="icon">
+            {@render children?.()}
+        </span>
         <span class="name">{value}</span>
         {#if unreadCount > 0}
             <span class="unread-count">{$invitations.length}</span>

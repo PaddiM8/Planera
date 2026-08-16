@@ -10,14 +10,19 @@
     import IconButton from "$lib/components/IconButton.svelte";
     import {Icon} from "svelte-hero-icons";
 
-    export let form;
-    export let data: {
+    interface Props {
+        form: any;
+        data: {
         emailConfirmed: boolean;
         authenticationInfo: AuthenticationInfo | undefined;
     };
+    }
+
+    let { form, data }: Props = $props();
     
-    let isEmailConfirmationFailure: boolean;
-    let usernameValue: string;
+    let isEmailConfirmationFailure: boolean = $derived(form?.problem &&
+            Object.keys(form.problem).some(x => x === "email"));
+    let usernameValue: string = $state();
 
     onMount(() => {
         if (data?.emailConfirmed) {
@@ -25,10 +30,7 @@
         }
     });
 
-    $: {
-        isEmailConfirmationFailure = form?.problem &&
-            Object.keys(form.problem).some(x => x === "email");
-    }
+    
 
     async function sendConfirmationMail() {
         const result = await fetch(`/send-confirmation-email?username=${usernameValue}`);
@@ -53,7 +55,7 @@
                 {#if isEmailConfirmationFailure}
                     <a href="./"
                        class="resend-confirmation-email"
-                       on:click={sendConfirmationMail}>Resend Confirmation Email</a>
+                       onclick={sendConfirmationMail}>Resend Confirmation Email</a>
                 {/if}
                 <Input name="username" placeholder="Username..." bind:value={usernameValue} />
                 <Input type="password" name="password" placeholder="Password..." />

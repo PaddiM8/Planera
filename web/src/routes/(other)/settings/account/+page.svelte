@@ -9,11 +9,15 @@
     import {invalidateAll} from "$app/navigation";
     import AvatarPicker from "$lib/components/form/AvatarPicker.svelte";
 
-    export let form;
-    export let data: {
+    interface Props {
+        form: any;
+        data: {
         account: AccountDto,
         authenticationInfo: AuthenticationInfo,
     };
+    }
+
+    let { form, data }: Props = $props();
 
     function afterSubmitUpdate(success: boolean) {
         if (success) {

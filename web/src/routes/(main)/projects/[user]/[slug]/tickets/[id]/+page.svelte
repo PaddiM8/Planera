@@ -27,19 +27,23 @@
     import DateInput from "$lib/components/form/DateInput.svelte";
     import {formatDate, formatDateFull, isToday} from "$lib/formatting";
 
-    export let form: {
+    interface Props {
+        form: {
         problem: ProblemDetails,
         addNoteProblem: ProblemDetails,
         editNoteProblem: ProblemDetails,
     };
-    export let data: {
+        data: {
         project: ProjectDto,
         ticket: TicketDto,
     };
+    }
 
-    let isEditing = false;
-    let editor: any;
-    let selectedPriorityName: string;
+    let { form, data = $bindable() }: Props = $props();
+
+    let isEditing = $state(false);
+    let editor: any = $state();
+    let selectedPriorityName: string | undefined = $state();
     let previousPriority = data?.ticket?.priority;
     
     onMount(() => {
@@ -198,15 +202,15 @@
             <IconButton value="Close"
                         icon={XMark}
                         color="red"
-                        on:click={() => setStatus(TicketStatus.Closed)} />
+                        onclick={() => setStatus(TicketStatus.Closed)} />
             <IconButton value="Inactive"
                         icon={Minus}
                         color="blue"
-                        on:click={() => setStatus(TicketStatus.Inactive)} />
+                        onclick={() => setStatus(TicketStatus.Inactive)} />
             <IconButton value="Done"
                         icon={Check}
                         color="green"
-                        on:click={() => setStatus(TicketStatus.Done)} />
+                        onclick={() => setStatus(TicketStatus.Done)} />
         </div>
     {/if}
 </div>
@@ -237,22 +241,22 @@
 <div class="ticket" class:hidden={isEditing}>
     <div class="top">
         {#if data.ticket.status === TicketStatus.Done}
-            <button class="status done" on:click={() => setStatus(TicketStatus.None)}>
+            <button class="status done" onclick={() => setStatus(TicketStatus.None)}>
                 <Icon src={Check} />
             </button>
         {:else if data.ticket.status === TicketStatus.Inactive}
-            <button class="status inactive" on:click={() => setStatus(TicketStatus.None)}>
+            <button class="status inactive" onclick={() => setStatus(TicketStatus.None)}>
                 <Icon src={Minus} />
             </button>
         {:else if data.ticket.status === TicketStatus.Closed}
-            <button class="status closed" on:click={() => setStatus(TicketStatus.None)}>
+            <button class="status closed" onclick={() => setStatus(TicketStatus.None)}>
                 <Icon src={XMark} />
             </button>
         {/if}
         <h2>{data.ticket.title}</h2>
         <div class="icons">
-            <IconButton icon={Trash} on:click={handleRemove} />
-            <IconButton icon={PencilSquare} on:click={handleEdit} />
+            <IconButton icon={Trash} onclick={handleRemove} />
+            <IconButton icon={PencilSquare} onclick={handleEdit} />
         </div>
     </div>
     <div class="about">
@@ -306,7 +310,7 @@
             <span class="label">
                 <Label value="Deadline" />
             </span>
-            <DateInput name="deadline" value={data.ticket.deadline} on:input={handleDeadlineInput} time/>
+            <DateInput name="deadline" value={data.ticket.deadline} oninput={handleDeadlineInput} time />
         </span>
     {/if}
 </div>
@@ -346,8 +350,8 @@
 </Form>
 
 <section class="notes">
-    {#each data?.ticket.notes as note}
-        <NoteEntry bind:note
+    {#each data?.ticket.notes as _, i}
+        <NoteEntry bind:note={data.ticket.notes[i]}
                    editAction="?/editNote"
                    problem={form?.editNoteProblem}
                    on:remove={e => data.ticket.notes = data.ticket.notes.filter(x => x.id !== e.detail)} />

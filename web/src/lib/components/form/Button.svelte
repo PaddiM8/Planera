@@ -1,14 +1,24 @@
 <script lang="ts">
     import {createEventDispatcher} from "svelte";
 
-    export let value: string;
-    export let primary = false;
-    export let submit = false;
-    export let danger = false;
-    export let disabled = false;
+    interface Props {
+        value: string;
+        primary?: boolean;
+        submit?: boolean;
+        danger?: boolean;
+        disabled?: boolean;
+    }
+
+    let {
+        value = $bindable(),
+        primary = false,
+        submit = false,
+        danger = false,
+        disabled = false
+    }: Props = $props();
 
     const dispatch = createEventDispatcher();
-    let element: HTMLElement;
+    let element: HTMLElement = $state();
 
     function handleClick(e: any) {
         dispatch("click", e.details);
@@ -31,7 +41,7 @@
             class:primary
             class:danger
             {disabled}
-            on:click={handleClick}
+            onclick={handleClick}
             bind:this={element}>{value}</button>
 {/if}
 

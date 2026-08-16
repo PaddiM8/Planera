@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { run } from 'svelte/legacy';
+
     import Input from "$lib/components/form/Input.svelte";
     import TicketEntry from "$lib/components/ticket/TicketEntry.svelte";
     import {onDestroy, onMount} from "svelte";
@@ -18,11 +20,21 @@
     } from "../../../gen/planeraClient";
 	import { userHub } from "../../../routes/(main)/store";
 
-    export let project: ProjectDto | undefined = undefined;
-    export let sorting: TicketSorting;
-    export let filter: TicketFilter;
-    export let tickets: Array<TicketDto>;
-    export let isOverview: boolean = false;
+    interface Props {
+        project?: ProjectDto | undefined;
+        sorting: TicketSorting;
+        filter: TicketFilter;
+        tickets: Array<TicketDto>;
+        isOverview?: boolean;
+    }
+
+    let {
+        project = $bindable(undefined),
+        sorting = $bindable(),
+        filter = $bindable(),
+        tickets = $bindable(),
+        isOverview = $bindable(false)
+    }: Props = $props();
     
     export function partialReset() {
         searchQuery = "";
@@ -32,11 +44,11 @@
         }
     }
  
-    let searchQuery: string;
+    let searchQuery: string | undefined = $state();
     const filterMap: { [key: string]: TicketFilter } = {};
-    let filterKeys: string[] = [];
-    let sortingString: string;
-    let filterString: string;
+    let filterKeys: string[] = $state([]);
+    let sortingString: string | undefined = $state();
+    let filterString: string | undefined = $state();
 
     const sortingMap: { [key: string]: TicketSorting } = {
         "Newest": TicketSorting.Newest,
@@ -44,12 +56,10 @@
         "Highest Priority": TicketSorting.HighestPriority,
         "Lowest Priority": TicketSorting.LowestPriority,
     };
-    let queryTimeout: NodeJS.Timeout;
+    let queryTimeout: number;
     let reachedEndOfTickets = false;
     let isLoadingMore = false;
 
-    $: updateSortingWithoutQuerying(sorting, filter);
-    $: refreshFilterMap();
 
     function refreshFilterMap() {
         for (const key in filterMap) {
@@ -97,10 +107,6 @@
         }
     }
 
-    $: if ($projectHub) {
-        $projectHub.off("onUpdateTicket", onUpdateTicket);
-        $projectHub.on("onUpdateTicket", onUpdateTicket);
-    }
 
     onDestroy(() => {
         $projectHub?.off("onUpdateTicket", onUpdateTicket);
@@ -141,8 +147,8 @@
                 tickets.length,
                 ticketsPerPage,
                 searchQuery,
-                sortingMap[sortingString],
-                filterMap[filterString],
+                sortingMap[sortingString!],
+                filterMap[filterString!],
             );
         } else {
             queryResult = await $userHub!.invoke(
@@ -150,8 +156,8 @@
                 tickets.length,
                 ticketsPerPage,
                 searchQuery,
-                sortingMap[sortingString],
-                filterMap[filterString],
+                sortingMap[sortingString!],
+                filterMap[filterString!],
             );
         }
         
@@ -247,8 +253,8 @@
                         0,
                         ticketsPerPage,
                         searchQuery,
-                        sortingMap[sortingString],
-                        filterMap[filterString],
+                        sortingMap[sortingString!],
+                        filterMap[filterString!],
                     );
                 } else {
                     queryResult = await $userHub!.invoke(
@@ -256,8 +262,8 @@
                         0,
                         ticketsPerPage,
                         searchQuery,
-                        sortingMap[sortingString],
-                        filterMap[filterString],
+                        sortingMap[sortingString!],
+                        filterMap[filterString!],
                     );
                 }
                 
@@ -278,6 +284,18 @@
             }
         }, 500);
     }
+    run(() => {
+        updateSortingWithoutQuerying(sorting, filter);
+    });
+    run(() => {
+        refreshFilterMap();
+    });
+    run(() => {
+        if ($projectHub) {
+            $projectHub.off("onUpdateTicket", onUpdateTicket);
+            $projectHub.on("onUpdateTicket", onUpdateTicket);
+        }
+    });
 </script>
 
 <section class="tickets">
@@ -285,7 +303,7 @@
     <div class="search-area">
         <Input placeholder="Search..."
                bind:value={searchQuery}
-               on:input={query} />
+               oninput={query} />
         <div class="sorting">
             <Select bind:choices={filterKeys}
                     bind:selectedValue={filterString}
@@ -295,8 +313,8 @@
                     on:change={query} />
         </div>
     </div>
-    {#each tickets as ticket}
-        <TicketEntry bind:ticket={ticket} bind:isOverview={isOverview} />
+    {#each tickets as _, i}
+        <TicketEntry bind:ticket={tickets[i]} bind:isOverview={isOverview} />
     {/each}
 </section>
 

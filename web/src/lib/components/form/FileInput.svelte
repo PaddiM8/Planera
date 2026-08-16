@@ -2,11 +2,15 @@
     import Button from "$lib/components/form/Button.svelte";
     import {createEventDispatcher} from "svelte";
 
-    export let text: string = "Browse";
-    export let name: string | undefined = undefined;
-    export let accept: string[] | undefined = undefined;
+    interface Props {
+        text?: string;
+        name?: string | undefined;
+        accept?: string[] | undefined;
+    }
 
-    let inputElement: HTMLInputElement;
+    let { text = $bindable("Browse"), name = undefined, accept = undefined }: Props = $props();
+
+    let inputElement: HTMLInputElement = $state();
     const dispatcher = createEventDispatcher();
 
     function handleChange(e) {
@@ -18,7 +22,7 @@
        name={name}
        accept={accept?.join(",")}
        bind:this={inputElement}
-       on:change={handleChange} />
+       onchange={handleChange} />
 <Button bind:value={text} on:click={inputElement?.click()} />
 
 <style lang="sass">

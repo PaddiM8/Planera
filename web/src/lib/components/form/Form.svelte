@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { run } from 'svelte/legacy';
+
     import { enhance } from "$app/forms";
     import type {ProblemDetails} from "$lib/problemDetails";
     import {onMount} from "svelte";
@@ -7,32 +9,38 @@
     import type {SubmitFunction} from "@sveltejs/kit";
     import type {FormSubmitInput} from "../../../routes/types";
 
-    export let action: string | undefined = undefined;
-    export let problem: ProblemDetails | undefined = undefined;
-    export let beforeSubmit: (input: FormSubmitInput) => void = undefined!;
-    export let afterSubmit: (success: boolean) => void = undefined!;
-    export let reset = true;
-    export let horizontal = false;
-    export let smallMargins = false;
-    export let validState = true;
-    export let promptWhenModified = false;
-    export let refresh = true;
-
-    let form: HTMLFormElement;
-    let isModified = false;
-    let isSubmitting = false;
-
-    $: {
-        if (browser) {
-            const primaryButton = form?.querySelector("button.primary, input.primary");
-            const canSubmit = !isSubmitting && validState;
-            if (primaryButton && canSubmit) {
-                primaryButton.removeAttribute("disabled");
-            } else if (primaryButton) {
-                primaryButton.setAttribute("disabled", "");
-            }
-        }
+    interface Props {
+        action?: string | undefined;
+        problem?: ProblemDetails | undefined;
+        beforeSubmit?: (input: FormSubmitInput) => void;
+        afterSubmit?: (success: boolean) => void;
+        reset?: boolean;
+        horizontal?: boolean;
+        smallMargins?: boolean;
+        validState?: boolean;
+        promptWhenModified?: boolean;
+        refresh?: boolean;
+        children?: import('svelte').Snippet;
     }
+
+    let {
+        action = undefined,
+        problem = undefined,
+        beforeSubmit = undefined!,
+        afterSubmit = undefined!,
+        reset = true,
+        horizontal = false,
+        smallMargins = false,
+        validState = true,
+        promptWhenModified = false,
+        refresh = true,
+        children
+    }: Props = $props();
+
+    let form: HTMLFormElement = $state();
+    let isModified = $state(false);
+    let isSubmitting = $state(false);
+
 
     beforeNavigate(({ cancel }) => {
         if (promptWhenModified &&
@@ -96,11 +104,6 @@
         };
     }
 
-    $: {
-        if (form && browser) {
-            showErrors(problem);
-        }
-    }
 
     function showErrors(problem: ProblemDetails | undefined) {
         // Remove existing errors
@@ -132,6 +135,22 @@
             form.requestSubmit();
         }
     }
+    run(() => {
+        if (browser) {
+            const primaryButton = form?.querySelector("button.primary, input.primary");
+            const canSubmit = !isSubmitting && validState;
+            if (primaryButton && canSubmit) {
+                primaryButton.removeAttribute("disabled");
+            } else if (primaryButton) {
+                primaryButton.setAttribute("disabled", "");
+            }
+        }
+    });
+    run(() => {
+        if (form && browser) {
+            showErrors(problem);
+        }
+    });
 </script>
 
 <form method="POST"
@@ -140,12 +159,12 @@
       class:horizontal
       class:small-margins={smallMargins}
       bind:this={form}
-      on:change={() => isModified = true}
-      on:input={() => isModified = true}
-      on:keydown={handleKeyDown}
+      onchange={() => isModified = true}
+      oninput={() => isModified = true}
+      onkeydown={handleKeyDown}
       use:enhance={enhanceHandler}>
     <div class="fields">
-        <slot></slot>
+        {@render children?.()}
     </div>
 </form>
 

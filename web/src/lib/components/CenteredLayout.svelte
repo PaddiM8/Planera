@@ -1,9 +1,14 @@
 <script lang="ts">
-    export let fitToContent: boolean = false;
+    interface Props {
+        fitToContent?: boolean;
+        children?: import('svelte').Snippet;
+    }
+
+    let { fitToContent = false, children }: Props = $props();
 </script>
 
 <div id="content" style="width: {fitToContent ? 'auto' : '100%'}">
-    <slot />
+    {@render children?.()}
 </div>
 
 <style lang="sass">

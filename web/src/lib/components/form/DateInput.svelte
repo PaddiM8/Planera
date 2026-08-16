@@ -1,18 +1,29 @@
 <script lang="ts">
     import FormLabel from "$lib/components/form/FormLabel.svelte";
+    import type {HTMLInputAttributes} from "svelte/elements";
 
-    export let value: Date | undefined;
-    export let name: string = "";
-    export let label: string | undefined = undefined;
-    export let time: boolean = false;
+    interface Props {
+        value: Date | undefined;
+        name?: string;
+        label?: string | undefined;
+        time?: boolean;
+        oninput?: HTMLInputAttributes["oninput"];
+    }
 
-    let wrapperElement: HTMLElement;
-    let dateString: string | undefined;
+    let {
+        value = $bindable(),
+        name = "",
+        label = undefined,
+        time = false,
+        oninput = undefined
+    }: Props = $props();
+
+    let wrapperElement: HTMLElement | undefined = $state();
+    let dateString: string | undefined = $derived(toDateString(value));
     
-    $: dateString = toDateString(value);
     
     export function focus() {
-        (wrapperElement.firstElementChild as HTMLInputElement).focus();
+        (wrapperElement!.firstElementChild as HTMLInputElement).focus();
     }
     
     function toDateString(date: Date | undefined) {
@@ -40,6 +51,7 @@
         const target = event.target as HTMLInputElement;
         value = new Date(target.value);
     }
+    
 </script>
 
 <div class="wrapper" bind:this={wrapperElement}>
@@ -52,20 +64,20 @@
             <input type="datetime-local"
                    id="input-{name}"
                    bind:value={dateString}
-                   on:input
+                   {oninput}
                    {name} />
         {:else}
             <input type="date"
                    id="input-{name}"
-                   on:input
-                   on:change={handleDateChange}
+                   {oninput}
+                   onchange={handleDateChange}
                    {name} />
         {/if}
     {:else}
         <input type="date"
                id="input-{name}"
                bind:value={value}
-               on:input
+               {oninput}
                {name} />
     {/if}
 </div>

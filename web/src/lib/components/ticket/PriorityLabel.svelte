@@ -3,8 +3,15 @@
     import type {TicketPriority} from "../../../gen/planeraClient";
     import {TicketStatus} from "../../../gen/planeraClient";
 
-    export let priority: TicketPriority;
-    export let status: TicketStatus | undefined;
+    interface Props {
+        priority: TicketPriority;
+        status: TicketStatus | undefined;
+    }
+
+    let {
+        priority = $bindable(),
+        status = $bindable()
+    }: Props = $props();
 </script>
 
 <span class="priority priority-{priorityToName(priority)}"

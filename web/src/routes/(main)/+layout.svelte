@@ -17,12 +17,17 @@
     import {browser} from "$app/environment";
     import {subscribeToPushNotifications} from "$lib/notifications";
 
-    export let data: {
+    interface Props {
+        data: {
         projects: ProjectDto[],
         invitations: ProjectDto[],
         error: boolean,
         authenticationInfo: AuthenticationInfo,
     };
+        children?: import('svelte').Snippet;
+    }
+
+    let { data = $bindable(), children }: Props = $props();
 
     onMount(async () => {
         invitations.set(data.invitations);
@@ -102,6 +107,6 @@
         </SidebarGroup>
     </Sidebar>
     <MainArea>
-        <slot />
+        {@render children?.()}
     </MainArea>
 </PageLayout>
