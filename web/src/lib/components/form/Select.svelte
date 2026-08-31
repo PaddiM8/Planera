@@ -4,10 +4,8 @@
 </script>
 
 <script lang="ts">
-    import { run } from 'svelte/legacy';
-
     import {Icon, ChevronDown} from "svelte-hero-icons";
-    import {createEventDispatcher, onMount} from "svelte";
+    import {onMount} from "svelte";
 
     interface Props {
         choices: string[];
@@ -15,6 +13,7 @@
         selectedIndex?: number | undefined;
         width?: string | undefined;
         name?: string | undefined;
+        onchange?: (value: string) => void;
     }
 
     let {
@@ -22,18 +21,18 @@
         selectedValue = $bindable(""),
         selectedIndex = $bindable(0),
         width = undefined,
-        name = undefined
+        name = undefined,
+        onchange = undefined,
     }: Props = $props();
 
     const menuId = `menu-${$lastMenuId++}`;
     let menuElement: HTMLElement | undefined = $state();
-    const dispatcher = createEventDispatcher();
 
     if (selectedValue) {
         selectedIndex = choices.indexOf(selectedValue);
     }
     
-    run(() => {
+    $effect(() => {
         if (selectedIndex !== undefined) {
             selectedValue = choices[selectedIndex];
         }
@@ -48,7 +47,9 @@
     function handleItemClick(item: string) {
         selectedValue = item;
         selectedIndex = choices.indexOf(selectedValue);
-        dispatcher("change", item);
+        if (onchange) {
+            onchange(item);
+        }
     }
 
     function handleKeyDown(e: KeyboardEvent) {

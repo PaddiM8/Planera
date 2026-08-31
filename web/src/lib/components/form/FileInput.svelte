@@ -1,29 +1,30 @@
 <script lang="ts">
     import Button from "$lib/components/form/Button.svelte";
-    import {createEventDispatcher} from "svelte";
+    import type {ChangeEventHandler} from "svelte/elements";
 
     interface Props {
         text?: string;
         name?: string | undefined;
         accept?: string[] | undefined;
+        onchange?: ChangeEventHandler<HTMLInputElement>;
     }
 
-    let { text = $bindable("Browse"), name = undefined, accept = undefined }: Props = $props();
+    let {
+        text = $bindable("Browse"),
+        name = undefined, 
+        accept = undefined,
+        onchange = undefined,
+    }: Props = $props();
 
-    let inputElement: HTMLInputElement = $state();
-    const dispatcher = createEventDispatcher();
-
-    function handleChange(e) {
-        dispatcher("change", e);
-    }
+    let inputElement: HTMLInputElement = $state()!;
 </script>
 
 <input type="file"
        name={name}
        accept={accept?.join(",")}
        bind:this={inputElement}
-       onchange={handleChange} />
-<Button bind:value={text} on:click={inputElement?.click()} />
+       {onchange} />
+<Button bind:value={text} onclick={() => inputElement?.click()} />
 
 <style lang="sass">
     input

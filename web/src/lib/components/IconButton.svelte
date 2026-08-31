@@ -1,7 +1,4 @@
 <script lang="ts">
-    import { createBubbler } from 'svelte/legacy';
-
-    const bubble = createBubbler();
     import {Icon} from "svelte-hero-icons";
     import type {MouseEventHandler} from "svelte/elements";
 

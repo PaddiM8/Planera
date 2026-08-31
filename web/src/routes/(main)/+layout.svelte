@@ -59,10 +59,10 @@
         invitations.update(x => [project, ...x]);
     }
     
-    async function handleDrop(event: CustomEvent) {
-        const project = data.projects[event.detail.startIndex];
-        delete data.projects[event.detail.startIndex];
-        data.projects.splice(event.detail.dropIndex, 0, project);
+    async function handleDrop(value: { startIndex: number, dropIndex: number }) {
+        const project = data.projects[value.startIndex];
+        delete data.projects[value.startIndex];
+        data.projects.splice(value.dropIndex, 0, project);
         data.projects = [...data.projects].filter(x => x);
         
         await $userHub?.invoke("setPinnedProjects", data.projects.map(p => p.id));
@@ -98,9 +98,9 @@
                               value={project.name}
                               draggable
                               settingsSrc="/projects/{project.author?.username}/{project.slug}/settings"
-                              on:drop={handleDrop}>
+                              ondrop={handleDrop}>
                     <UserIcon type="project"
-                              name="{project.name}"
+                              name={project.name}
                               image={getAvatarUrl(project.iconPath, "small")} />
                 </SidebarEntry>
             {/each}

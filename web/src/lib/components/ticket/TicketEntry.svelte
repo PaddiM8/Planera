@@ -17,9 +17,13 @@
     }
 
     let {
-        ticket = $bindable(),
+        ticket,
         isOverview = $bindable(false),
     }: Props = $props();
+    
+    let status = $derived(ticket.status);
+    let priority = $derived(ticket.priority);
+    let assignees = $derived(ticket.assignees);
 
     let showTouchOverlay = $state(false);
     let preventTouch = $state(false);
@@ -50,10 +54,9 @@
             );
 
             toast.info("Added assignee successfully.");
-            ticket.assignees = [...ticket.assignees!];
         } catch {
             toast.error("Failed to add assignee.");
-            ticket.assignees = ticket.assignees?.filter(x => x.id !== $user.id);
+            assignees = assignees?.filter(x => x.id !== $user.id);
         }
     }
 
@@ -106,12 +109,13 @@
     }
 </script>
 
-<div class="ticket {isOverview ? 'is-overview' : ''}" class:has-status={ticket.status}>
+<div class="ticket {isOverview ? 'is-overview' : ''}" class:has-status={status}>
     <button class="touch-overlay" onclick={openTouchOverlay}>
         {#if showTouchOverlay}
             <span class="menu">
                 <span class="row">
-                    {#if ticket.status === TicketStatus.None}
+                    <!-- svelte-ignore node_invalid_placement_ssr -->
+                    {#if status === TicketStatus.None}
                         <button class="item" onclick={() => setStatus(TicketStatus.Done)}>
                             <span class="icon done">
                                 <Icon src={Check} />
@@ -136,6 +140,7 @@
                         </button>
                     {/if}
                 </span>
+                <!-- svelte-ignore node_invalid_placement_ssr -->
                 <span class="row">
                     <button class="item" onclick={() => !preventTouch && goto(ticketUrl)}>
                         <span class="name">Open</span>
@@ -148,15 +153,15 @@
         {/if}
     </button>
     <div class="top">
-        {#if ticket.status === TicketStatus.Done}
+        {#if status === TicketStatus.Done}
             <button class="status done" onclick={() => setStatus(TicketStatus.None)}>
                 <Icon src={Check} />
             </button>
-        {:else if ticket.status === TicketStatus.Inactive}
+        {:else if status === TicketStatus.Inactive}
             <button class="status inactive" onclick={() => setStatus(TicketStatus.None)}>
                 <Icon src={Minus} />
             </button>
-        {:else if ticket.status === TicketStatus.Closed}
+        {:else if status === TicketStatus.Closed}
             <button class="status closed" onclick={() => setStatus(TicketStatus.None)}>
                 <Icon src={XMark} />
             </button>
@@ -200,17 +205,17 @@
         {/if}
     </span>
     <div class="bottom">
-        <PriorityLabel bind:priority={ticket.priority}
-                       bind:status={ticket.status} />
+        <PriorityLabel bind:priority={priority}
+                       bind:status={status} />
         <span class="assignees">
-            {#each ticket.assignees as assignee}
+            {#each assignees as assignee}
                 <span class="assignee">
                     <UserIcon name={assignee.username ?? ""}
                               image={getAvatarUrl(assignee.avatarPath, "small")}
                               type="user" />
                 </span>
             {/each}
-            {#if !ticket.assignees?.some(x => x.username === $user.username) && !isOverview}
+            {#if !assignees?.some(x => x.username === $user?.username) && !isOverview}
                 <button class="assignee add-button" onclick={assignToMe}>
                     <span class="icon">
                         <Icon src={Plus} />
@@ -221,7 +226,7 @@
         </span>
         <div class="right">
             {#if ticket.deadline}
-                <span class="deadline {ticket.status !== TicketStatus.Done && ticket.status !== TicketStatus.Closed ? getDeadlineClockClass() : ''}">
+                <span class="deadline {status !== TicketStatus.Done && status !== TicketStatus.Closed ? getDeadlineClockClass() : ''}">
                     <Icon src={Clock} />
                     <time>{formatDate(ticket.deadline, true)}</time>
                 </span>

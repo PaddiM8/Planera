@@ -8,7 +8,7 @@
 	let { children }: Props = $props();
 
 	const draggerWidth = 10;
-	let sidebarElement: HTMLElement = $state();
+	let sidebarElement: HTMLElement = $state()!;
 	let dragging = false;
 
 	onMount(() => {
@@ -109,11 +109,7 @@
 			return true;
 		}
 		
-		if (target.scrollLeft > 0) {
-			return true;
-		}
-		
-		return false;
+		return target.scrollLeft > 0;
 	}
 
 	function close() {
@@ -129,8 +125,8 @@
 	{@render children?.()}
 </aside>
 <!-- svelte-ignore a11y_click_events_have_key_events -->
-<div class="outside" onclick={close}></div>
-<div class="dragger" style="width: {draggerWidth}px" ontouchstart={startDrag}></div>
+<div class="outside" onclick={close} role="button" tabindex="-1"></div>
+<div class="dragger" style="width: {draggerWidth}px" ontouchstart={startDrag} role="button" tabindex="-1"></div>
 
 <style lang="sass">
     @use "../../../values"

@@ -1,6 +1,4 @@
 <script lang="ts">
-    import { run } from 'svelte/legacy';
-
     import { enhance } from "$app/forms";
     import type {ProblemDetails} from "$lib/problemDetails";
     import {onMount} from "svelte";
@@ -31,13 +29,13 @@
         reset = true,
         horizontal = false,
         smallMargins = false,
-        validState = true,
+        validState = $bindable(true),
         promptWhenModified = false,
         refresh = true,
         children
     }: Props = $props();
 
-    let form: HTMLFormElement = $state();
+    let form: HTMLFormElement | undefined = $state();
     let isModified = $state(false);
     let isSubmitting = $state(false);
 
@@ -62,7 +60,7 @@
 
         // Svelte events for the Editor component don't seem to bubble,
         // so we also need to listen to regular JavaScript events.
-        form.addEventListener("input", () => isModified = true);
+        form?.addEventListener("input", () => isModified = true);
 
         return () => window.removeEventListener("beforeunload", handleBeforeUnload);
     });
@@ -78,7 +76,7 @@
         }
 
         if (beforeSubmit) {
-            await beforeSubmit(e);
+            await beforeSubmit(e as any);
         }
 
         return async ({ result, update }) => {
@@ -107,7 +105,7 @@
 
     function showErrors(problem: ProblemDetails | undefined) {
         // Remove existing errors
-        for (const error of form.querySelectorAll(".form-error")) {
+        for (const error of form!.querySelectorAll(".form-error")) {
             (error as HTMLElement).parentElement?.removeChild(error);
         }
 
@@ -116,7 +114,7 @@
         }
 
         for (const fieldName in problem!.errors) {
-            const field = form.querySelector(`[name="${fieldName}"]`);
+            const field = form!.querySelector(`[name="${fieldName}"]`);
             if (!field) {
                 continue;
             }
@@ -132,10 +130,11 @@
         if (e.ctrlKey && e.key === "Enter") {
             e.preventDefault();
             e.stopPropagation();
-            form.requestSubmit();
+            form?.requestSubmit();
         }
     }
-    run(() => {
+
+    $effect(() => {
         if (browser) {
             const primaryButton = form?.querySelector("button.primary, input.primary");
             const canSubmit = !isSubmitting && validState;
@@ -146,13 +145,15 @@
             }
         }
     });
-    run(() => {
+
+    $effect(() => {
         if (form && browser) {
             showErrors(problem);
         }
     });
 </script>
 
+<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 <form method="POST"
       {action}
       enctype="multipart/form-data"

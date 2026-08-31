@@ -1,7 +1,7 @@
 <script lang="ts">
     interface Props {
         headers: Array<string>;
-        children?: import('svelte').Snippet;
+        children?: import("svelte").Snippet;
     }
 
     let { headers, children }: Props = $props();

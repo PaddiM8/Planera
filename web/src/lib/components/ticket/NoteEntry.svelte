@@ -5,7 +5,6 @@
     import {dialog} from "$lib/dialog";
     import {projectHub} from "../../../routes/(main)/projects/[user]/[slug]/store";
     import {toast} from "$lib/toast";
-    import {createEventDispatcher} from "svelte";
     import Input from "$lib/components/form/Input.svelte";
     import Button from "$lib/components/form/Button.svelte";
     import Form from "$lib/components/form/Form.svelte";
@@ -16,13 +15,18 @@
         note: NoteDto;
         editAction: string;
         problem: ProblemDetails;
+        onremove?: (id: number) => void,
     }
 
-    let { note = $bindable(), editAction, problem }: Props = $props();
+    let {
+        note = $bindable(),
+        editAction,
+        problem,
+        onremove = undefined,
+    }: Props = $props();
 
     let isEditing = $state(false);
-    let editedContent: string = $state();
-    const dispatcher = createEventDispatcher();
+    let editedContent: string = $state()!;
 
     async function setStatus(status: TicketStatus) {
         try {
@@ -42,7 +46,10 @@
         try {
             await $projectHub!.invoke("removeNote", note.id);
             toast.info("Removed note successfully.");
-            dispatcher("remove", note.id);
+            
+            if (onremove) {
+                onremove(note.id!);
+            }
         } catch {
             toast.error("Failed to remove note.");
         }
@@ -81,21 +88,21 @@
                 <IconButton value="Close"
                             icon={XMark}
                             color="red"
-                            on:click={() => setStatus(TicketStatus.Closed)} />
+                            onclick={() => setStatus(TicketStatus.Closed)} />
                 <IconButton value="Inactive"
                             icon={Minus}
                             color="blue"
-                            on:click={() => setStatus(TicketStatus.Inactive)} />
+                            onclick={() => setStatus(TicketStatus.Inactive)} />
                 <IconButton value="Done"
                             icon={Check}
                             color="green"
-                            on:click={() => setStatus(TicketStatus.Done)} />
+                            onclick={() => setStatus(TicketStatus.Done)} />
             </div>
             <div class="buttons">
                 <IconButton icon={Trash}
-                            on:click={handleRemove} />
+                            onclick={handleRemove} />
                 <IconButton icon={PencilSquare}
-                             on:click={handleEdit} />
+                             onclick={handleEdit} />
             </div>
         {/if}
     </div>
@@ -109,7 +116,7 @@
             <input type="hidden" name="id" value={note.id} />
 
             <Input name="content" value={editedContent} placeholder="Write something..." />
-            <Button value="Cancel" on:click={() => isEditing = false} />
+            <Button value="Cancel" onclick={() => isEditing = false} />
             <Button value="Edit" primary submit />
         </Form>
     {:else}

@@ -2,7 +2,6 @@
     import SuggestionList from "$lib/components/form/SuggestionList.svelte";
     import UserIcon from "$lib/components/UserIcon.svelte";
     import {getAvatarUrl} from "$lib/clients";
-    import {createEventDispatcher} from "svelte";
 
     interface Props {
         placeholder?: string | undefined;
@@ -13,6 +12,8 @@
         outputKey?: string | undefined;
         label?: string | undefined;
         name?: string;
+        onadd?: (value: any) => void;
+        onremove?: (value: any) => void;
     }
 
     let {
@@ -23,20 +24,21 @@
         key = undefined,
         outputKey = undefined,
         label = undefined,
-        name = ""
+        name = "",
+        onadd = undefined,
+        onremove = undefined,
     }: Props = $props();
 
     export function reset() {
         values = [];
     }
 
-    let blockAreaElement: HTMLElement = $state();
-    let inputElement: HTMLInputElement = $state();
+    let blockAreaElement: HTMLElement = $state()!;
+    let inputElement: HTMLInputElement = $state()!;
     let value: string = $state("");
     let isFocused: boolean = $state(false);
     let selectedSuggestion: any = $state(undefined);
-    let suggestionList: SuggestionList = $state();
-    const dispatcher = createEventDispatcher();
+    let suggestionList: SuggestionList = $state()!;
 
     function getValue(obj: any) {
         return key
@@ -46,13 +48,17 @@
 
     function addBlock(value: any) {
         values = [...values, value];
-        dispatcher("add", value);
+        if (onadd) {
+            onadd(value);
+        }
     }
 
     function popBlock() {
         const children = blockAreaElement.children;
         if (children.length > 0) {
-            dispatcher("remove", values[values.length - 1]);
+            if (onremove) {
+                onremove(values[values.length - 1]);
+            }
             values = values.slice(0, values.length - 1);
         }
     }
@@ -91,8 +97,8 @@
 
     function handleBlockClick(item: any) {
         values = values.filter(x => {
-            if (x == item) {
-                dispatcher("remove", item);
+            if (x == item && onremove) {
+                onremove(item);
             }
 
             return x != item;

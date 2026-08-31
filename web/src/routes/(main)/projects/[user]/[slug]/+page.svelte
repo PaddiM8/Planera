@@ -20,30 +20,42 @@
 
     interface Props {
         data: {
-        project: ProjectDto,
-        sorting: TicketSorting,
-        filter: TicketFilter,
-        tickets: TicketDto[],
-    };
+            project: ProjectDto,
+            sorting: TicketSorting,
+            filter: TicketFilter,
+            tickets: TicketDto[],
+        };
         form: {
-        errors: { string: string[] } | undefined,
-        problem: ProblemDetails,
-    };
+            errors: { string: string[] } | undefined,
+            problem: ProblemDetails,
+        };
     }
 
     let { data = $bindable(), form }: Props = $props();
 
+    let tickets = $state(data.tickets);
+    let filter = $state(data.filter);
+    let project = $state(data.project);
+    let sorting = $state(data.sorting);
+
+    $effect(() => {
+        tickets = data.tickets;
+        filter = data.filter;
+        project = data.project;
+        sorting = data.sorting;
+    });
+
     let editor: any | undefined = $state();
-    let titleValue: string = $state();
-    let titleInput: Input = $state();
-    let assigneesInput: BlockInput = $state();
-    let priorityInput: MultiButton = $state();
+    let titleValue: string | undefined = $state();
+    let titleInput: Input | undefined = $state();
+    let assigneesInput: BlockInput | undefined = $state();
+    let priorityInput: MultiButton | undefined = $state();
     let deadlineValue: Date | undefined = $state();
     let isFormLoading = $state(false);
     let ticketListElement: TicketList | undefined = $state();
 
-    let isSubmitDisabled = $derived(titleValue?.length < 2 || isFormLoading);
-    let validFormState = $derived(titleValue?.length >= 2);
+    let isSubmitDisabled = $derived(Boolean(titleValue && titleValue.length < 2 || isFormLoading));
+    let validFormState = $derived(Boolean(titleValue && titleValue.length >= 2));
 
     onMount(async () => {
         localStorage.setItem("lastVisited", window.location.pathname);
@@ -79,19 +91,19 @@
 </script>
 
 <svelte:head>
-    <title>{data.project.name} - Planera</title>
+    <title>{project.name} - Planera</title>
 </svelte:head>
 
 <section class="description">
     <div class="top">
         <div class="icon">
-            <UserIcon name={data.project.name ?? ""}
-                      image={getAvatarUrl(data.project.iconPath, "big")}
+            <UserIcon name={project.name ?? ""}
+                      image={getAvatarUrl(project.iconPath, "big")}
                       type="project" />
         </div>
-        <h1>{data.project.name}</h1>
+        <h1>{project.name}</h1>
     </div>
-    <h3>{data.project.description}</h3>
+    <h3>{project.description}</h3>
 </section>
 
 <section class="new-ticket">
@@ -101,7 +113,7 @@
           promptWhenModified
           problem={form?.problem}
           bind:validState={validFormState}>
-        <input type="hidden" name="projectId" value={data.project.id} />
+        <input type="hidden" name="projectId" value={project.id} />
 
         <Input type="text"
                name="title"
@@ -109,12 +121,12 @@
                bind:value={titleValue}
                bind:this={titleInput} />
 
-        {#if data.project.enableTicketDescriptions}
+        {#if project.enableTicketDescriptions}
             <Editor placeholder="Describe the ticket..."
                     bind:this={editor} />
         {/if}
 
-        <div class="bottom-row {data.project.enableTicketAssignees && data.project.enableTicketDeadlines ? '' : 'single-line'}">
+        <div class="bottom-row {project.enableTicketAssignees && project.enableTicketDeadlines ? '' : 'single-line'}">
             <div class="fields">
                 <span class="group">
                     <span class="label">
@@ -127,7 +139,7 @@
                                  defaultValue="Normal"
                                  bind:this={priorityInput} />
                 </span>
-                {#if data.project.enableTicketAssignees}
+                {#if project.enableTicketAssignees}
                 <span class="group">
                     <span class="label">
                         <Label value="Assigned To" />
@@ -142,7 +154,7 @@
                 </span>
                 {/if}
 
-                {#if data.project.enableTicketDeadlines}
+                {#if project.enableTicketDeadlines}
                 <span class="group">
                     <span class="label">
                         <Label value="Deadline" />
@@ -160,10 +172,10 @@
 </section>
 
 <TicketList bind:this={ticketListElement}
-            bind:project={data.project}
-            bind:sorting={data.sorting}
-            bind:filter={data.filter}
-            bind:tickets={data.tickets} />
+            bind:project={project}
+            bind:sorting={sorting}
+            bind:filter={filter}
+            bind:tickets={tickets} />
 
 <style lang="sass">
     section

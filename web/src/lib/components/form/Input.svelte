@@ -1,9 +1,5 @@
 <script lang="ts">
-    import { createBubbler } from 'svelte/legacy';
-
-    const bubble = createBubbler();
-    import type {EventHandler, HTMLInputAttributes, HTMLInputTypeAttribute} from "svelte/elements";
-    import {createEventDispatcher} from "svelte";
+    import type {HTMLInputAttributes, HTMLInputTypeAttribute} from "svelte/elements";
     import Button from "$lib/components/form/Button.svelte";
     import FormLabel from "$lib/components/form/FormLabel.svelte";
 

@@ -1,6 +1,4 @@
 <script lang="ts">
-    import { run } from 'svelte/legacy';
-
     import Input from "$lib/components/form/Input.svelte";
     import Button from "$lib/components/form/Button.svelte";
     import Form from "$lib/components/form/Form.svelte";
@@ -10,7 +8,7 @@
 
     let { form } = $props();
 
-    run(() => {
+    $effect(() => {
         if (browser && form?.mailSent) {
             toast.info("Confirmation email sent.", 7500);
         }

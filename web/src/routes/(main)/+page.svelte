@@ -4,14 +4,17 @@
     
     interface Props {
         data: {
-        project: ProjectDto,
-        sorting: TicketSorting,
-        filter: TicketFilter,
-        tickets: TicketDto[],
-    };
+            sorting: TicketSorting,
+            filter: TicketFilter,
+            tickets: TicketDto[],
+        };
     }
+    
+    let { data }: Props = $props();
 
-    let { data = $bindable() }: Props = $props();
+    let sorting = $derived(data.sorting);
+    let filter = $derived(data.filter);
+    let tickets = $derived(data.tickets);
 </script>
 
 <svelte:head>
@@ -20,7 +23,7 @@
 
 <h1>Overview</h1>
 
-<TicketList bind:sorting={data.sorting}
-            bind:filter={data.filter}
-            bind:tickets={data.tickets}
+<TicketList bind:sorting={sorting}
+            bind:filter={filter}
+            bind:tickets={tickets}
             isOverview/>

@@ -1,6 +1,4 @@
 <script lang="ts">
-    import { run } from 'svelte/legacy';
-
     import "@fontsource-variable/inter/standard.css";
     import UserIcon from "$lib/components/UserIcon.svelte";
     import ContextMenu from "$lib/components/ContextMenu.svelte";
@@ -19,12 +17,12 @@
 
     interface Props {
         data: {
-        user: UserDto,
-        authenticationInfo: AuthenticationInfo,
-        locale: string,
-        systemTheme: string | undefined,
-    };
-        children?: import('svelte').Snippet;
+            user: UserDto,
+            authenticationInfo: AuthenticationInfo,
+            locale: string,
+            systemTheme: string | undefined,
+        };
+        children?: import("svelte").Snippet;
     }
 
     let { data = $bindable(), children }: Props = $props();
@@ -55,9 +53,9 @@
         return `<link rel="stylesheet" href="/themes/${themeName}.css">`;
     }
 
-    run(() => {
+    $effect(() => {
         if (data.user) {
-            $user = data.user;
+            user.set(data.user);
         }
     });
 

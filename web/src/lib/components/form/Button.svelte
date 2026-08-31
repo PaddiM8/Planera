@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {createEventDispatcher} from "svelte";
+    import type {MouseEventHandler} from "svelte/elements";
 
     interface Props {
         value: string;
@@ -7,6 +7,7 @@
         submit?: boolean;
         danger?: boolean;
         disabled?: boolean;
+        onclick?: MouseEventHandler<HTMLElement>;
     }
 
     let {
@@ -14,15 +15,11 @@
         primary = false,
         submit = false,
         danger = false,
-        disabled = false
+        disabled = $bindable(false),
+        onclick = $bindable()
     }: Props = $props();
 
-    const dispatch = createEventDispatcher();
-    let element: HTMLElement = $state();
-
-    function handleClick(e: any) {
-        dispatch("click", e.details);
-    }
+    let element: HTMLElement = $state()!;
 
     export function click() {
         element.click();
@@ -41,7 +38,7 @@
             class:primary
             class:danger
             {disabled}
-            onclick={handleClick}
+            {onclick}
             bind:this={element}>{value}</button>
 {/if}
 

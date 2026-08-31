@@ -2,7 +2,6 @@
     import Form from "$lib/components/form/Form.svelte";
     import Button from "$lib/components/form/Button.svelte";
     import {PersonalAccessTokenMetadataDto} from "../../../../gen/planeraClient.js";
-    import {invalidateAll} from "$app/navigation";
     import {dialog} from "$lib/dialog.js";
     import {toast} from "$lib/toast.js";
     import {userHub} from "../store.js";
@@ -10,12 +9,14 @@
 
     interface Props {
         data: {
-        personalAccessTokenMetadata: PersonalAccessTokenMetadataDto | null,
-    };
+            personalAccessTokenMetadata: PersonalAccessTokenMetadataDto | null,
+        };
         form: any;
     }
 
     let { data = $bindable(), form }: Props = $props();
+    
+    let personalAccessTokenMetadata = $derived(data.personalAccessTokenMetadata);
 
     function afterSubmit(success: boolean) {
         if (success) {
@@ -32,7 +33,7 @@
 
         try {
             await $userHub!.invoke("revokePersonalAccessToken");
-            data.personalAccessTokenMetadata = null;
+            personalAccessTokenMetadata = null;
         } catch (ex) {
             console.log(ex);
             toast.error("Failed to revoke personal access token");
@@ -62,10 +63,10 @@
 
 <h2>Personal Access Token</h2>
 <section class="pat">
-    {#if data.personalAccessTokenMetadata?.createdAtUtc}
+    {#if personalAccessTokenMetadata?.createdAtUtc}
         <div class="validity">
             <span class="label">Valid from</span>
-            <span class="created-at">{formatDate(data.personalAccessTokenMetadata.createdAtUtc)}</span>
+            <span class="created-at">{formatDate(personalAccessTokenMetadata.createdAtUtc)}</span>
         </div>
 
         {#if form?.token}
@@ -77,7 +78,7 @@
         <Form action="?/createPersonalAccessToken" {afterSubmit}>
             <Button value="Regenerate" submit disabled={form?.token} />
         </Form>
-        <Button value="Revoke" danger on:click={revoke} />
+        <Button value="Revoke" danger onclick={revoke} />
     {:else}
         <Form action="?/createPersonalAccessToken" {afterSubmit}>
             <Button value="Create New" primary submit />

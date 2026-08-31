@@ -1,6 +1,4 @@
 <script lang="ts">
-    import { run } from 'svelte/legacy';
-
     import UserIcon from "$lib/components/UserIcon.svelte";
     import {createEventDispatcher} from "svelte";
     import {getAvatarUrl} from "$lib/clients";
@@ -24,7 +22,7 @@
         showUserIcons = false,
         selectedIndex = $bindable(0),
         selectedValue = $bindable(undefined),
-        ignored = []
+        ignored = $bindable([])
     }: Props = $props();
 
     let shownItems: any[] = $state([]);
@@ -36,13 +34,13 @@
             : obj;
     }
 
-    run(() => {
+    $effect(() => {
         if (shownItems.length > 0) {
             selectedValue = shownItems[selectedIndex];
         }
     });
 
-    run(() => {
+    $effect(() => {
         const indexedItems = items.map((x, i) => {
             return { ...x, index: i };
         });
@@ -79,7 +77,9 @@
         <span class="item"
               data-index={i}
               class:selected={i === selectedIndex}
-              onmousedown={() => handleItemClick(i)}>
+              onmousedown={() => handleItemClick(i)}
+              role="button"
+              tabindex="0">
             {#if showUserIcons}
                 <span class="icon">
                     <UserIcon name={getValue(item)}

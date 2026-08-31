@@ -6,9 +6,6 @@
     import {toast} from "$lib/toast";
     import {onMount} from "svelte";
     import type {AuthenticationInfo} from "../../../gen/planeraClient";
-    import {goto} from "$app/navigation";
-    import IconButton from "$lib/components/IconButton.svelte";
-    import {Icon} from "svelte-hero-icons";
 
     interface Props {
         form: any;
@@ -22,7 +19,7 @@
     
     let isEmailConfirmationFailure: boolean = $derived(form?.problem &&
             Object.keys(form.problem).some(x => x === "email"));
-    let usernameValue: string = $state();
+    let usernameValue: string = $state()!;
 
     onMount(() => {
         if (data?.emailConfirmed) {

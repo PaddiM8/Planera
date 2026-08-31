@@ -29,25 +29,36 @@
 
     interface Props {
         form: {
-        problem: ProblemDetails,
-        addNoteProblem: ProblemDetails,
-        editNoteProblem: ProblemDetails,
-    };
+            problem: ProblemDetails,
+            addNoteProblem: ProblemDetails,
+            editNoteProblem: ProblemDetails,
+        };
         data: {
-        project: ProjectDto,
-        ticket: TicketDto,
-    };
+            project: ProjectDto,
+            ticket: TicketDto,
+        };
     }
 
-    let { form, data = $bindable() }: Props = $props();
+    let {
+        form,
+        data = $bindable(),
+    }: Props = $props();
+    
+    let priority = $derived(data.ticket.priority);
+    let status = $derived(data.ticket.status);
+    let assignees = $derived(data.ticket.assignees);
+    let notes = $state(data.ticket.notes);
+
+    $effect(() => {
+        notes = data.ticket.notes ?? [];
+    });
 
     let isEditing = $state(false);
     let editor: any = $state();
-    let selectedPriorityName: string | undefined = $state();
+    let selectedPriorityName: string | undefined = $state(TicketPriority[data?.ticket?.priority ?? 0]);
     let previousPriority = data?.ticket?.priority;
     
     onMount(() => {
-        selectedPriorityName = TicketPriority[data?.ticket?.priority ?? 0];
         projectHub.subscribe(hub => hub?.on("onUpdateTicket", onUpdateTicket));
     });
 
@@ -111,8 +122,8 @@
         }
     }
 
-    async function handlePriorityChange(e: CustomEvent) {
-        const priority = TicketPriority[e.detail];
+    async function handlePriorityChange(value: any) {
+        const priority = TicketPriority[value];
         try {
             await $projectHub!.invoke(
                 "setTicketPriority",
@@ -132,8 +143,7 @@
         }
     }
 
-    async function handleAddAssignee(e: CustomEvent) {
-        const assignee = e.detail as UserDto;
+    async function handleAddAssignee(assignee: UserDto) {
         try {
             await $projectHub!.invoke(
                 "addTicketAssignee",
@@ -149,8 +159,7 @@
         }
     }
 
-    async function handleRemoveAssignee(e: CustomEvent) {
-        const assignee = e.detail as UserDto;
+    async function handleRemoveAssignee(assignee: UserDto) {
         try {
             await $projectHub!.invoke(
                 "removeTicketAssignee",
@@ -232,7 +241,7 @@
         {/if}
 
         <div class="buttons">
-            <Button value="Cancel" on:click={handleCancel} />
+            <Button value="Cancel" onclick={handleCancel} />
             <Button value="Edit" primary submit />
         </div>
     </Form>
@@ -270,8 +279,8 @@
         </div>
     </div>
     <div class="description">{@html data.ticket.description}</div>
-    <PriorityLabel bind:priority={data.ticket.priority}
-                   bind:status={data.ticket.status} />
+    <PriorityLabel bind:priority={priority}
+                   bind:status={status} />
 </div>
 
 <div class="bottom-row">
@@ -285,7 +294,7 @@
                      foregroundColors={["var(--on-none)", "var(--on-low)", "var(--on-normal)", "var(--on-high)", "var(--on-severe)"]}
                      defaultValue="Normal"
                      bind:selectedValue={selectedPriorityName}
-                     on:change={handlePriorityChange}/>
+                     onchange={handlePriorityChange}/>
     </span>
 
     {#if data.project.enableTicketAssignees}
@@ -299,9 +308,9 @@
                         outputKey="id"
                         name="assignee"
                         showUserIcons={true}
-                        bind:values={data.ticket.assignees}
-                        on:add={handleAddAssignee}
-                        on:remove={handleRemoveAssignee} />
+                        bind:values={assignees}
+                        onadd={handleAddAssignee}
+                        onremove={handleRemoveAssignee} />
         </span>
     {/if}
 
@@ -350,11 +359,11 @@
 </Form>
 
 <section class="notes">
-    {#each data?.ticket.notes as _, i}
-        <NoteEntry bind:note={data.ticket.notes[i]}
+    {#each notes as _, i}
+        <NoteEntry bind:note={notes[i]}
                    editAction="?/editNote"
                    problem={form?.editNoteProblem}
-                   on:remove={e => data.ticket.notes = data.ticket.notes.filter(x => x.id !== e.detail)} />
+                   onremove={id => notes = notes.filter(x => x.id !== id)} />
     {/each}
 </section>
 

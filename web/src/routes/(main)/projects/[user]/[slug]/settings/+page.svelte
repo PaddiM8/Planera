@@ -6,7 +6,14 @@
     import {toast} from "$lib/toast";
     import {dialog} from "$lib/dialog";
     import {participants} from "../../../../store";
-    import {NotificationKinds, NotificationTriggerDto, type ProjectDto} from "../../../../../../gen/planeraClient";
+    import {
+        NotificationActionKind,
+        NotificationKinds,
+        NotificationThresholdUnit,
+        NotificationTriggerDto,
+        NotificationTriggerKind,
+        type ProjectDto
+    } from "../../../../../../gen/planeraClient";
     import {projectHub} from "../store";
     import {getAvatarUrl} from "$lib/clients";
     import AvatarPicker from "$lib/components/form/AvatarPicker.svelte";
@@ -22,25 +29,32 @@
 
     interface Props {
         data: {
-        project: ProjectDto,
-    };
+            project: ProjectDto,
+        };
         form: any;
     }
 
-    let { data = $bindable(), form }: Props = $props();
+    let { data, form }: Props = $props();
+    let notificationTriggers = $state<NotificationTriggerDto[]>([]);
+    let project = $derived(data.project);
 
-    let deleteFormSlugValue: string = $state();
+    $effect(() => {
+        notificationTriggers = data.project?.notificationTriggers ?? [];
+    });
+    
+    let deleteFormSlugValue: string = $state()!;
 
-    let enableNotifications = $state(data.project.me?.enabledNotificationKinds?.includes(NotificationKinds.Core)
+    let enableNotifications = $derived(data.project.me?.enabledNotificationKinds?.includes(NotificationKinds.Core)
         ? "true"
         : "false");
-    let notifyDeadlines = data.project.me?.enabledNotificationKinds?.includes(NotificationKinds.DeadlineOtherTicket)
+    // svelte-ignore state_referenced_locally
+    let notifyDeadlines = project.me?.enabledNotificationKinds?.includes(NotificationKinds.DeadlineOtherTicket)
         ? "all-tickets"
-        : data.project.me?.enabledNotificationKinds?.includes(NotificationKinds.DeadlineMyTicket) ? "my-tickets" : "none";
+        : project.me?.enabledNotificationKinds?.includes(NotificationKinds.DeadlineMyTicket) ? "my-tickets" : "none";
 
     async function handleAddParticipant(name: string): Promise<boolean> {
         try {
-            await $projectHub!.invoke("invite", data.project.id, name);
+            await $projectHub!.invoke("invite", project.id, name);
             toast.info(`Invited user "${name}".`);
 
             return true;
@@ -58,7 +72,7 @@
         }
 
         try {
-            await $projectHub!.invoke("removeParticipant", data.project.id, name);
+            await $projectHub!.invoke("removeParticipant", project.id, name);
             toast.info(`Removed user "${name}".`);
 
             return true;
@@ -84,12 +98,19 @@
     }
     
     function handleAddNotificationTrigger() {
-        data.project.notificationTriggers = [...data.project.notificationTriggers ?? [], new NotificationTriggerDto()];
+        const notificationTrigger = {
+            trigger: NotificationTriggerKind.TimeUntilDeadline,
+            thresholdUnit: NotificationThresholdUnit.Days,
+            threshold: "",
+            action: NotificationActionKind.PushNotification,
+        } as NotificationTriggerDto;
+
+        notificationTriggers.push(notificationTrigger);
     }
     
     async function handleSaveNotificationTriggers() {
         try {
-            await $projectHub!.invoke("setNotificationTriggers", data.project.id, data.project.notificationTriggers);
+            await $projectHub!.invoke("setNotificationTriggers", project.id, notificationTriggers);
             toast.info("Saved notification triggers successfully.");
         } catch (ex) {
             console.log(ex);
@@ -98,9 +119,9 @@
     }
     
     function handleRemoveNotificationTrigger(notificationTrigger: NotificationTriggerDto) {
-        const index = data.project.notificationTriggers?.indexOf(notificationTrigger);
+        const index = notificationTriggers?.indexOf(notificationTrigger);
         if (index !== undefined && index !== -1) {
-            data.project.notificationTriggers = data.project.notificationTriggers!
+            notificationTriggers = notificationTriggers!
                 .filter(t => t != notificationTrigger);
         }
     }
@@ -120,16 +141,16 @@
           promptWhenModified
           reset={false}>
         <AvatarPicker name="icon"
-                      entityName={data.project.name ?? ""}
-                      src={getAvatarUrl(data.project.iconPath, "big")}
+                      entityName={project.name ?? ""}
+                      src={getAvatarUrl(project.iconPath, "big")}
                       type="project" />
         <Input type="text"
-               value={data.project.name}
+               value={project.name}
                label="Name"
                name="name"
                placeholder="Project name..." />
         <Input type="text"
-               value={data.project.description}
+               value={project.description}
                label="Description"
                name="description"
                placeholder="Project description..." />
@@ -137,26 +158,26 @@
         <div class="group">
             <FormLabel value="Project Descriptions" />
             <MultiButton yesNo
-                         selectedValue={data.project.enableTicketDescriptions ? "true" : "false"}
+                         selectedValue={project.enableTicketDescriptions ? "true" : "false"}
                          name="enableTicketDescriptions" />
         </div>
 
         <div class="group">
             <FormLabel value="Project Assignees" />
             <MultiButton yesNo
-                         selectedValue={data.project.enableTicketAssignees ? "true" : "false"}
+                         selectedValue={project.enableTicketAssignees ? "true" : "false"}
                          name="enableTicketAssignees" />
         </div>
 
         <div class="group">
             <FormLabel value="Deadlines" />
             <MultiButton yesNo
-                         selectedValue={data.project.enableTicketDeadlines ? "true" : "false"}
+                         selectedValue={project.enableTicketDeadlines ? "true" : "false"}
                          name="enableTicketDeadlines" />
         </div>
 
         <div class="buttons">
-            <a href="/projects/{data.project.author?.username}/{data.project.slug}">
+            <a href="/projects/{project.author?.username}/{data.project.slug}">
                 <Button value="Cancel" />
             </a>
             <Button value="Update" primary submit />
@@ -181,13 +202,13 @@
 
 <hr>
 
-<h2>Notifications for {data.project.me?.user.username}</h2>
+<h2>Notifications for {project.me?.user.username}</h2>
 <section class="notifications">
     <Form action="?/configureNotifications"
           problem={form?.problem}
           afterSubmit={afterSubmitConfigureNotifications}
           reset={false}>
-        <input type="hidden" name="projectId" value={data.project.id} />
+        <input type="hidden" name="projectId" value={project.id} />
         <div>
             <FormLabel value="Enable notifications" />
             <MultiButton yesNo
@@ -215,7 +236,7 @@
 <section class="notification-triggers">
     <div class="container">
         <Table headers={["Event", "Threshold", "Action", ""]}>
-            {#each data.project.notificationTriggers ?? [] as notificationTrigger}
+            {#each notificationTriggers as notificationTrigger (notificationTrigger)}
                 <TableRow>
                     <TableCell>
                         <Select choices={["Time until deadline"]}
@@ -243,8 +264,8 @@
         </Table>
     </div>
     <div class="buttons">
-        <Button value="Add" on:click={handleAddNotificationTrigger} />
-        <Button value="Save" primary on:click={handleSaveNotificationTriggers} />
+        <Button value="Add" onclick={handleAddNotificationTrigger} />
+        <Button value="Save" primary onclick={handleSaveNotificationTriggers} />
     </div>
 </section>
 
@@ -254,9 +275,9 @@
 <section class="delete">
     <Form action="?/delete"
           afterSubmit={() => goto("/")}
-          validState={deleteFormSlugValue === data.project.slug}>
-        <p>Type <strong>{data.project.slug}</strong> to confirm that you want to delete the project.</p>
-        <input type="hidden" name="projectId" value={data.project.id} />
+          validState={deleteFormSlugValue === project.slug}>
+        <p>Type <strong>{project.slug}</strong> to confirm that you want to delete the project.</p>
+        <input type="hidden" name="projectId" value={project.id} />
         <Input placeholder="Project slug..." bind:value={deleteFormSlugValue} />
         <Button value="Delete" danger primary submit />
     </Form>

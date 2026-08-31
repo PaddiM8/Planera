@@ -8,7 +8,7 @@
 </script>
 
 <!-- svelte-ignore a11y_label_has_associated_control -->
-<label class="label" {forId}>{value}</label>
+<label class="label" for={forId}>{value}</label>
 
 <style lang="sass">
     label

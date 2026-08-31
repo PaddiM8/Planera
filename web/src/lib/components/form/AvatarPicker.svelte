@@ -2,6 +2,7 @@
     import UserIcon from "$lib/components/UserIcon.svelte";
     import FileInput from "$lib/components/form/FileInput.svelte";
     import Button from "$lib/components/form/Button.svelte";
+    import type {SvelteComponent} from "svelte";
 
     interface Props {
         name: string;
@@ -17,11 +18,11 @@
         type
     }: Props = $props();
 
-    let avatarInput: HTMLInputElement = $state();
+    let avatarInput: SvelteComponent = $state()!;
 
-    async function handleAvatarFile(e) {
-        const target = e.detail.target as HTMLInputElement;
-        if (target.files.length == 0) {
+    async function handleAvatarFile(event: Event) {
+        const target = event.target as HTMLInputElement;
+        if (target.files?.length == 0) {
             return;
         }
 
@@ -50,7 +51,7 @@
             canvas.height = newHeight;
 
             const context = canvas.getContext("2d");
-            context.drawImage(image, 0, 0, newWidth, newHeight);
+            context!.drawImage(image, 0, 0, newWidth, newHeight);
 
             src = canvas.toDataURL(file.type);
         };
@@ -72,11 +73,11 @@
     </div>
     <FileInput accept={["image/png", "image/jpeg"]}
                bind:this={avatarInput}
-               on:change={handleAvatarFile} />
+               onchange={handleAvatarFile} />
     <input type="hidden"
            {name}
            bind:value={src} />
-    <Button value="Clear" on:click={handleClear} />
+    <Button value="Clear" onclick={handleClear} />
 </div>
 
 <style lang="sass">

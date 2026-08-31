@@ -2,7 +2,6 @@
     import {Cog, Icon} from "svelte-hero-icons";
     import {page} from "$app/stores";
     import {invitations} from "../../../routes/(main)/store";
-    import {createEventDispatcher} from "svelte";
 
     interface Props {
         src: string;
@@ -11,6 +10,7 @@
         draggable?: boolean;
         settingsSrc?: string | undefined;
         children?: import('svelte').Snippet;
+        ondrop?: (value: { startIndex: number, dropIndex: number }) => void,
     }
 
     let {
@@ -19,12 +19,11 @@
         unreadCount = 0,
         draggable = false,
         settingsSrc = undefined,
-        children
+        children,
+        ondrop = undefined,
     }: Props = $props();
-
-    const dispatch = createEventDispatcher();
     
-    let outerElement: HTMLElement = $state();
+    let outerElement: HTMLElement = $state()!;
     let isDragging = false;
 
     function withTrailingSlash(value: string) {
@@ -56,8 +55,8 @@
             }
         }
 
-        if (dropIndex != -1) {
-            dispatch("drop", {
+        if (dropIndex != -1 && ondrop) {
+            ondrop({
                 startIndex: startIndex,
                 dropIndex: dropIndex,
             });
@@ -127,44 +126,46 @@
         {#if unreadCount > 0}
             <span class="unread-count">{$invitations.length}</span>
         {/if}
-        {#if settingsSrc}
-            <a class="settings" href={settingsSrc}>
-                <Icon src={Cog} />
-            </a>
-        {/if}
     </a>
+    {#if settingsSrc}
+        <a class="settings" href={settingsSrc}>
+            <Icon src={Cog} />
+        </a>
+    {/if}
 </div>
 
 <style lang="sass">
     .outer
         display: flex
-        flex-direction: column
-        
-    .entry
-        display: flex
-        align-items: center
         gap: 0.4em
 
         padding: var(--vertical-padding) var(--horizontal-padding)
         margin-top: 0.2em
 
         border-radius: var(--radius)
-        color: var(--on-background)
-        text-decoration: none
-        font-weight: 425
         cursor: pointer
         -webkit-tap-highlight-color: transparent
 
-        &:hover, &.selected
+        &:hover, &.selected, &:has(.entry.selected)
             background-color: var(--background-hover)
-
+            
             .settings
                 display: block
+
+    .entry
+        display: flex
+        align-items: center
+        width: 100%
+        height: 100%
+        color: var(--on-background)
+        text-decoration: none
+        font-weight: 425
 
         .icon
             width: 1.5em
             height: 1.5em
             color: var(--sidebar-icon-color)
+            margin-right: 0.4em
 
         .unread-count
             $size: 1.3em

@@ -1,6 +1,4 @@
 <script lang="ts">
-    import { run } from 'svelte/legacy';
-
     import Input from "$lib/components/form/Input.svelte";
     import TicketEntry from "$lib/components/ticket/TicketEntry.svelte";
     import {onDestroy, onMount} from "svelte";
@@ -47,8 +45,6 @@
     let searchQuery: string | undefined = $state();
     const filterMap: { [key: string]: TicketFilter } = {};
     let filterKeys: string[] = $state([]);
-    let sortingString: string | undefined = $state();
-    let filterString: string | undefined = $state();
 
     const sortingMap: { [key: string]: TicketSorting } = {
         "Newest": TicketSorting.Newest,
@@ -60,6 +56,19 @@
     let reachedEndOfTickets = false;
     let isLoadingMore = false;
 
+    let sortingString = $derived(getKeyFromValue(sortingMap, sorting ?? TicketSorting.Newest));
+    let filterString = $derived(getKeyFromValue(filterMap, filter ?? TicketFilter.All));
+
+    $effect(() => {
+        refreshFilterMap();
+    });
+
+    $effect(() => {
+        if ($projectHub) {
+            $projectHub.off("onUpdateTicket", onUpdateTicket);
+            $projectHub.on("onUpdateTicket", onUpdateTicket);
+        }
+    });
 
     function refreshFilterMap() {
         for (const key in filterMap) {
@@ -85,28 +94,7 @@
         }
 
         filterKeys = Object.keys(filterMap);
-
-        // Since the keys changed, the currently selected filter value needs to change
-        // as well
-        if (filter) {
-            setFilter(filterString?.split(" ").at(0) ?? "");
-        }
     }
-
-    function setFilter(name: string) {
-        filterString = filterKeys.find(key => key.startsWith(name))
-            ?? filterKeys[0];
-    }
-
-    function updateSortingWithoutQuerying(newSorting?: TicketSorting, newFilter?: TicketFilter) {
-        const newSortingString = getKeyFromValue(sortingMap, newSorting ?? TicketSorting.Newest)!;
-        const newFilterString = getKeyFromValue(filterMap, newFilter ?? TicketFilter.All)!;
-        if (sorting  == undefined || newSortingString !== sortingString || filter == undefined || newFilterString !== filterString) {
-            sortingString = newSortingString;
-            filterString = newFilterString;
-        }
-    }
-
 
     onDestroy(() => {
         $projectHub?.off("onUpdateTicket", onUpdateTicket);
@@ -193,6 +181,8 @@
                 }
 
                 ticket[key] = value;
+                tickets[index] = ticket;
+                tickets = [...tickets];
             }
         }
     }
@@ -284,18 +274,6 @@
             }
         }, 500);
     }
-    run(() => {
-        updateSortingWithoutQuerying(sorting, filter);
-    });
-    run(() => {
-        refreshFilterMap();
-    });
-    run(() => {
-        if ($projectHub) {
-            $projectHub.off("onUpdateTicket", onUpdateTicket);
-            $projectHub.on("onUpdateTicket", onUpdateTicket);
-        }
-    });
 </script>
 
 <section class="tickets">
@@ -306,15 +284,15 @@
                oninput={query} />
         <div class="sorting">
             <Select bind:choices={filterKeys}
-                    bind:selectedValue={filterString}
-                    on:change={query} />
+                    bind:selectedValue={filterString!}
+                    onchange={query} />
             <Select choices={Object.keys(sortingMap)}
-                    bind:selectedValue={sortingString}
-                    on:change={query} />
+                    bind:selectedValue={sortingString!}
+                    onchange={query} />
         </div>
     </div>
-    {#each tickets as _, i}
-        <TicketEntry bind:ticket={tickets[i]} bind:isOverview={isOverview} />
+    {#each tickets as ticket (ticket.id)}
+        <TicketEntry ticket={ticket} bind:isOverview={isOverview} />
     {/each}
 </section>
 

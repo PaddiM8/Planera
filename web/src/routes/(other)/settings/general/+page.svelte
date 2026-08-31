@@ -75,7 +75,7 @@ function afterSubmitConfigureNotifications(success: boolean) {
     <FormLabel value="Theme" />
     <Select choices={["System", "Light", "Dark"]}
             bind:selectedValue={themeName}
-            on:change={updateTheme} />
+            onchange={updateTheme} />
 </section>
 
 <hr>
@@ -91,7 +91,7 @@ function afterSubmitConfigureNotifications(success: boolean) {
             <MultiButton yesNo
                          name="enable-notifications"
                          bind:selectedValue={enableNotifications}
-                         on:change={handleEnableNotifications} />
+                         onchange={handleEnableNotifications} />
         </div>
 
         <div>

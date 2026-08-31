@@ -29,15 +29,13 @@
         handleRemove
     }: Props = $props();
 
-    let inputValue: string = $state();
-    let error: string;
-    let addButton = $state();
+    let inputValue: string = $state()!;
+    let addButton: Button = $state()!;
 
     async function handleClickAdd() {
         const success = await handleAdd(inputValue);
         if (success) {
             inputValue = "";
-            error = "";
         }
     }
 
@@ -67,7 +65,7 @@
             <Button value={addButtonText}
                     primary
                     bind:this={addButton}
-                    on:click={handleClickAdd} />
+                    onclick={handleClickAdd} />
         </div>
     {/if}
 

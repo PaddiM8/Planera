@@ -13,7 +13,7 @@
         data: {
         project: ProjectDto,
     };
-        children?: import('svelte').Snippet;
+        children?: import("svelte").Snippet;
     }
 
     let { data, children }: Props = $props();
@@ -64,10 +64,11 @@
 
     }
 
-    run(() => {
+    $effect(() => {
         connectToProject(data?.project.id);
     });
-    run(() => {
+
+    $effect(() => {
         if (data) {
             $participants = data.project.participants ?? [];
         }

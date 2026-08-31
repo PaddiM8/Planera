@@ -34,7 +34,7 @@
         <div class="invitation">
             <div class="about">
                 <span class="name">
-                    <a href="/projects/{invitation.author.username}/{invitation.slug}">
+                    <a href="/projects/{invitation.author!.username}/{invitation.slug}">
                         {invitation.name}
                     </a>
                 </span>
@@ -43,11 +43,11 @@
             <IconButton value="Decline"
                         icon={XMark}
                         color="red"
-                        on:click={() => handleDecline(invitation)} />
+                        onclick={() => handleDecline(invitation)} />
             <IconButton value="Accept"
                         icon={Check}
                         color="green"
-                        on:click={() => handleAccept(invitation)} />
+                        onclick={() => handleAccept(invitation)} />
         </div>
     {/each}
 </section>

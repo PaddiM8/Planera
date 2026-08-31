@@ -1,5 +1,6 @@
 <script lang="ts">
-    import {createEventDispatcher, onMount} from "svelte";
+    import {onMount} from "svelte";
+    import type {ChangeEventHandler} from "svelte/elements";
 
     interface Props {
         choices?: string[];
@@ -11,6 +12,7 @@
         disabled?: boolean;
         name?: string | undefined;
         yesNo?: boolean | undefined;
+        onchange?: (value: string) => void;
     }
 
     let {
@@ -22,10 +24,9 @@
         defaultValue = undefined,
         disabled = false,
         name = undefined,
-        yesNo = undefined
+        yesNo = undefined,
+        onchange = undefined,
     }: Props = $props();
-    
-    const dispatcher = createEventDispatcher();
     
     if (yesNo) {
         choices = ["No", "Yes"];
@@ -51,7 +52,9 @@
     function handleChange(e: Event, value: string) {
         if ((e.target as HTMLInputElement).checked) {
             selectedValue = value;
-            dispatcher("change", value);
+            if (onchange) {
+                onchange(value);
+            }
         }
     }
 </script>

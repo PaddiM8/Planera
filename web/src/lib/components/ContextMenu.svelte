@@ -1,6 +1,4 @@
 <script lang="ts">
-    import { run } from 'svelte/legacy';
-
     interface Props {
         target: HTMLElement | undefined;
         children?: import('svelte').Snippet;
@@ -8,11 +6,11 @@
 
     let { target = $bindable(), children }: Props = $props();
 
-    let element: HTMLElement = $state();
+    let element: HTMLElement = $state()!;
     let componentWidth: number = $state(0);
     let canBeClosed = $state(true);
 
-    run(() => {
+    $effect(() => {
         if (target && element) {
             const rect = target.getBoundingClientRect();
             const top = rect.top + rect.height;
