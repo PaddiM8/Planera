@@ -16,6 +16,6 @@ export default defineConfig({
 	},
 	ssr: {
 		// Without this, there would be SSR errors in production builds
-		noExternal: process.env.NODE_ENV === "development" ? [] : ["lexical"],
-	},
+		noExternal: process.env.NODE_ENV === "development" ? [] : ["@paddim8/svelte-lexical", /^@lexical\//, "lexical"]
+	}
 });

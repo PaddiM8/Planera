@@ -59,7 +59,6 @@
     const generateHtmlFromNodes = lexicalHtml.$generateHtmlFromNodes;
     const generateNodesFromDOM = lexicalHtml.$generateNodesFromDOM;
     import * as lexical from "lexical";
-    import InsertImageDialog from "$lib/components/editor/InsertImageDialog.svelte";
     import {insertImageDialog} from "../../../routes/store";
     const createParagraphNode = lexical.$createParagraphNode;
     const getSelection = lexical.$getSelection;
