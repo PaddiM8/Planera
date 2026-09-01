@@ -15,7 +15,7 @@ export async function subscribeToPushNotifications(userHub: HubConnection, vapid
         return;
     }
 
-    if (Notification.permission === "granted" || Notification.permission === "denied") {
+    if (Notification.permission === "granted" || Notification.permission === "denied" || window.localStorage.getItem("notificationsDenied") === "true") {
         return;
     }
 
@@ -40,6 +40,8 @@ async function requestPermission() {
     if (await dialog.yesNo("Allow notifications?", "You might, for example, be notified about upcoming deadlines.")) {
         return await Notification.requestPermission() === "granted";
     }
+    
+    window.localStorage.setItem("notificationsDenied", "true");
     
     return false;
 }
