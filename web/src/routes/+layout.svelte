@@ -11,9 +11,10 @@
     import {getAvatarUrl} from "$lib/clients";
     import {user} from "./(main)/store";
     import {page} from "$app/stores";
-    import {theme} from "./store"
+    import {insertImageDialog, theme} from "./store"
     import {browser} from "$app/environment";
     import {setContext} from "svelte";
+    import InsertImageDialog from "$lib/components/editor/InsertImageDialog.svelte";
 
     interface Props {
         data: {
@@ -79,6 +80,7 @@
 
 <Toast />
 <YesNoDialog />
+<InsertImageDialog bind:this={$insertImageDialog} />
 
 <ContextMenu bind:target={contextMenuTarget}>
     <Label value="@{data.user?.username}" />

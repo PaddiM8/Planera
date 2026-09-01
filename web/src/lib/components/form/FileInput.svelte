@@ -17,6 +17,19 @@
     }: Props = $props();
 
     let inputElement: HTMLInputElement = $state()!;
+    
+    export async function getBase64Url(): Promise<string | null> {
+        if (!inputElement.files) {
+            return null;
+        }
+
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(inputElement.files![0]);
+            reader.onload = () => resolve(reader.result as string);
+            reader.onerror = (error) => reject(error);
+        });
+    }
 </script>
 
 <input type="file"

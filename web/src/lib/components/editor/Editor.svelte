@@ -48,7 +48,8 @@
         $getRoot as getRoot,
         FloatingLinkEditorPlugin,
         CodeHighlightPlugin,
-        CodeActionMenuPlugin, InsertImageDropDownItem, InsertImageDialog,
+        CodeActionMenuPlugin,
+        InsertImageDropDownItem,
     } from "@paddim8/svelte-lexical";
     import "./editor.css";
     import TaskEditorTheme from "$lib/components/editor/ticketEditorTheme";
@@ -58,6 +59,8 @@
     const generateHtmlFromNodes = lexicalHtml.$generateHtmlFromNodes;
     const generateNodesFromDOM = lexicalHtml.$generateNodesFromDOM;
     import * as lexical from "lexical";
+    import InsertImageDialog from "$lib/components/editor/InsertImageDialog.svelte";
+    import {insertImageDialog} from "../../../routes/store";
     const createParagraphNode = lexical.$createParagraphNode;
     const getSelection = lexical.$getSelection;
 
@@ -96,6 +99,7 @@
 
     onMount(() => {
         editor = composer!.getEditor();
+        editor.extensions.openInsertImageDialog = () => $insertImageDialog.open(editor);
         
         for (const toolbarButton of editorShellElement!.querySelectorAll(".toolbar button")) {
             toolbarButton.setAttribute("tabIndex", "-1");
@@ -169,9 +173,9 @@
 
 <Composer {initialConfig} bind:this={composer}>
     <div class="editor-shell" class:has-focus={hasFocus} bind:this={editorShellElement}>
-        <Toolbar   >
+        <Toolbar>
             {#snippet children({ editor, activeEditor, blockType })}
-                        <UndoButton />
+                <UndoButton />
                 <RedoButton />
                 <Divider />
                 {#if activeEditor === editor}
@@ -231,8 +235,6 @@
                 <CodeHighlightPlugin />
                 <CodeActionMenuPlugin anchorElem={editorElement} />
             {/if}
-
-            <InsertImageDialog />
         </div>
     </div>
 </Composer>

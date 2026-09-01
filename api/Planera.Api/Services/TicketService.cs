@@ -30,6 +30,8 @@ public class TicketService(
         RegexOptions.Compiled | RegexOptions.Multiline
     );
 
+    private static readonly Regex _dataImageRegex = new("^data:image/\\w+;base64,", RegexOptions.Compiled);
+
     public static ErrorOr<T> TicketNotFoundError<T>()
         => Error.Conflict("Ticket.NotFound", "Ticket was not found.");
 
@@ -560,8 +562,8 @@ public class TicketService(
             if (filesToRemove != null && src.StartsWith(urlPrefix) && filesToRemove.Contains(src))
                 filesToRemove.Remove(src);
 
-            // Only base64 encoded png images should be saved.
-            if (!src.StartsWith("data:image/png;base64,"))
+            // Only base64 encoded images should be saved.
+            if (!_dataImageRegex.IsMatch(src))
                 continue;
 
             var bytes = Convert.FromBase64String(src.Split(",")[1]);
@@ -582,7 +584,7 @@ public class TicketService(
             ticketBody,
             matches =>
             {
-                if (matches.Groups.Count < 3 || !matches.Groups[2].Value.StartsWith("data:image/png;base64,"))
+                if (matches.Groups.Count < 3 || !_dataImageRegex.IsMatch(matches.Groups[2].Value))
                     return matches.Value;
 
                 var newFileName = newFileNames.Dequeue()!;

@@ -1,11 +1,24 @@
 <script lang="ts">
     interface Props {
-        id: string;
+        id?: string;
         title: string;
-        children?: import('svelte').Snippet;
+        children?: import("svelte").Snippet;
     }
 
     let { id, title, children }: Props = $props();
+    let dialogElement: HTMLElement = $state()!;
+    let dialogBackgroundElement: HTMLElement = $state()!;
+
+    export function open() {
+        dialogBackgroundElement?.classList.add("shown");
+        dialogElement.classList.add("shown");
+        dialogElement.focus();
+    }
+
+    export function close() {
+        dialogBackgroundElement?.classList.remove("shown");
+        dialogElement.classList.remove("shown");
+    }
 
     function handleKeyDown(e: KeyboardEvent) {
         const dialog = e.target as HTMLElement;
@@ -19,8 +32,8 @@
     }
 </script>
 
-<div id="dialog-background"></div>
-<div id={id} class="dialog" tabindex="0" onkeydown={handleKeyDown}>
+<div bind:this={dialogBackgroundElement} id="dialog-background"></div>
+<div bind:this={dialogElement} id={id} class="dialog" tabindex="0" onkeydown={handleKeyDown} role="dialog">
     <h1>{title}</h1>
     {@render children?.()}
 </div>
