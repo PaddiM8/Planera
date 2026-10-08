@@ -56,6 +56,8 @@
     let reachedEndOfTickets = false;
     let isLoadingMore = false;
 
+    refreshFilterMap();
+
     let sortingString = $derived(getKeyFromValue(sortingMap, sorting ?? TicketSorting.Newest));
     let filterString = $derived(getKeyFromValue(filterMap, filter ?? TicketFilter.All));
 
