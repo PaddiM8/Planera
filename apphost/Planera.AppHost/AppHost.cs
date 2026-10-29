@@ -6,7 +6,7 @@ var builder = DistributedApplication.CreateBuilder(args);
 // Backend
 var postgres = builder
     .AddPostgres("Postgres")
-    .WithHostPort(5433)
+    .WithHostPort(5434)
     .WithDataVolume()
     .WithLifetime(ContainerLifetime.Persistent);
 var postgresDatabase = postgres.AddDatabase("PlaneraDatabase");

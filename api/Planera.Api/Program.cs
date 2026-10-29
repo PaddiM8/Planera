@@ -217,11 +217,17 @@ if (oidcConfig.Exists() && !string.IsNullOrWhiteSpace(oidcConfig["ProviderId"]))
             options.CorrelationCookie.Path = callbackPath;
             options.NonceCookie.Path = callbackPath;
 
-            bool useHttps = !oidcConfig.GetValue<bool>("UseHttp");
-            if (!useHttps)
+            string? redirectUrl = string.IsNullOrWhiteSpace(builder.Configuration["FrontendUrl"])
+                ? null
+                : builder.Configuration["FrontendUrl"]!.TrimEnd('/') + callbackPath;
+
+            if (redirectUrl?.StartsWith("http://") is true)
             {
                 options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.None;
+                options.CorrelationCookie.SameSite = SameSiteMode.Lax;
                 options.NonceCookie.SecurePolicy = CookieSecurePolicy.None;
+                options.NonceCookie.SameSite = SameSiteMode.Lax;
+                options.ResponseMode = OpenIdConnectResponseMode.Query;
             }
 
             options.Events = new OpenIdConnectEvents
@@ -231,7 +237,7 @@ if (oidcConfig.Exists() && !string.IsNullOrWhiteSpace(oidcConfig["ProviderId"]))
                     builder.Configuration.GetValue<bool>("DisableRegistration")
                 ),
                 OnTicketReceived = OpenIdEventHandler.OnTicketReceivedAsync,
-                OnRedirectToIdentityProvider = context => OpenIdEventHandler.OnRedirectToIdentityProvider(context, callbackPath, useHttps),
+                OnRedirectToIdentityProvider = context => OpenIdEventHandler.OnRedirectToIdentityProvider(context, callbackPath, redirectUrl),
             };
         });
 }

@@ -57,6 +57,7 @@
       PLANERA_SMTP__PASSWORD: ""
       PLANERA_SMTP__SENDER: ""
       # OIDC (optional)
+      # Redirect URL: https://yourdomain.com/api/signin-oidc
       PLANERA_OIDC__PROVIDERID: ""
       PLANERA_OIDC__PROVIDERNAME: ""
       PLANERA_OIDC__PROVIDERURL: ""
