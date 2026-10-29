@@ -107,11 +107,11 @@ public static class OpenIdEventHandler
         context.Response.Redirect("/");
     }
 
-    public static Task OnRedirectToIdentityProvider(RedirectContext context, string callbackPath)
+    public static Task OnRedirectToIdentityProvider(RedirectContext context, string callbackPath, bool useHttps)
     {
         var uriBuilder = new UriBuilder(context.ProtocolMessage.RedirectUri)
         {
-            Scheme = "https",
+            Scheme = useHttps ? "https" : "http",
             Port = -1,
         };
         context.ProtocolMessage.RedirectUri = uriBuilder.Uri.GetLeftPart(UriPartial.Authority) + callbackPath;

@@ -176,6 +176,14 @@ var authenticationBuilder = builder
 
 if (oidcConfig.Exists() && !string.IsNullOrWhiteSpace(oidcConfig["ProviderId"]))
 {
+    if (oidcConfig.GetValue<bool>("UseHttp"))
+    {
+        authenticationBuilder.AddCookie(options =>
+        {
+            options.Cookie.SecurePolicy = CookieSecurePolicy.None;
+        });
+    }
+
     builder.Services.Configure<ForwardedHeadersOptions>(options =>
     {
         options.ForwardedHeaders = ForwardedHeaders.XForwardedHost | ForwardedHeaders.XForwardedProto;
@@ -205,10 +213,17 @@ if (oidcConfig.Exists() && !string.IsNullOrWhiteSpace(oidcConfig["ProviderId"]))
             options.MapInboundClaims = false;
             options.TokenValidationParameters.NameClaimType = JwtRegisteredClaimNames.Name;
             options.TokenValidationParameters.RoleClaimType = "roles";
-            
+
             options.CorrelationCookie.Path = callbackPath;
             options.NonceCookie.Path = callbackPath;
-            
+
+            bool useHttps = !oidcConfig.GetValue<bool>("UseHttp");
+            if (!useHttps)
+            {
+                options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.None;
+                options.NonceCookie.SecurePolicy = CookieSecurePolicy.None;
+            }
+
             options.Events = new OpenIdConnectEvents
             {
                 OnTokenValidated = context => OpenIdEventHandler.OnTokenValidatedAsync(
@@ -216,7 +231,7 @@ if (oidcConfig.Exists() && !string.IsNullOrWhiteSpace(oidcConfig["ProviderId"]))
                     builder.Configuration.GetValue<bool>("DisableRegistration")
                 ),
                 OnTicketReceived = OpenIdEventHandler.OnTicketReceivedAsync,
-                OnRedirectToIdentityProvider = context => OpenIdEventHandler.OnRedirectToIdentityProvider(context, callbackPath),
+                OnRedirectToIdentityProvider = context => OpenIdEventHandler.OnRedirectToIdentityProvider(context, callbackPath, useHttps),
             };
         });
 }
