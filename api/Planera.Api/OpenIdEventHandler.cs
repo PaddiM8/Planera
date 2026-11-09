@@ -63,11 +63,10 @@ public static class OpenIdEventHandler
             context.Fail("User registration is disabled.");
             return;
         }
-        
+
         if (username == null)
         {
-            context.Fail("Missing username address.");
-            return;
+            username = email.Split('@')[0];
         }
         
         var authenticationService = context.HttpContext.RequestServices.GetRequiredService<PlaneraAuthenticationService>();
@@ -97,7 +96,7 @@ public static class OpenIdEventHandler
         context.Response.Cookies.Append("token", jwt, new CookieOptions
         {
             HttpOnly = true,
-            Secure = true,
+            Secure = context.Request.IsHttps,
             SameSite = SameSiteMode.Lax,
             Path = "/",
             MaxAge = TimeSpan.FromDays(365),
