@@ -131,6 +131,17 @@ public class NotificationScheduler(DataContext dataContext)
         }
     }
     
+    public async Task RemoveForTicketAsync(Ticket ticket)
+    {
+        var objectId = ticket.Id.ToString();
+        await _dataContext
+            .NotificationQueue
+            .Where(x => x.TargetKind == NotificationTargetKind.Project)
+            .Where(x => x.TargetId == ticket.ProjectId)
+            .Where(x => x.ObjectId == objectId)
+            .ExecuteDeleteAsync();
+    }
+
     public async Task ScheduleForTicketAsync(
         Ticket ticket,
         string authorName, 

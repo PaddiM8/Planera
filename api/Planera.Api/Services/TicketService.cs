@@ -358,14 +358,7 @@ public class TicketService(
             await using var transaction = await _dataContext.Database.BeginTransactionAsync();
             _dataContext.Tickets.Remove(ticket);
             await _dataContext.SaveChangesAsync();
-
-            await _notificationScheduler.ScheduleForTicketAsync(
-                ticket,
-                project.Author.UserName!,
-                project,
-                project.NotificationTriggers,
-                isNew: false
-            );
+            await _notificationScheduler.RemoveForTicketAsync(ticket);
             await transaction.CommitAsync();
 
             return new ErrorOr<Deleted>();
