@@ -162,7 +162,7 @@
         let combinedTickets = [...tickets, ...queryResult.tickets];
         // De-duplicate
         combinedTickets = Array.from(
-            new Map(combinedTickets.map(x => [x.id, x])).values()
+            new Map(combinedTickets.map(x => [ticketKey(x), x])).values()
         );
         tickets = combinedTickets;
 
@@ -173,8 +173,14 @@
         isLoadingMore = false;
     }
 
+    // Ticket IDs are only unique within a project, so the overview (which
+    // lists tickets from several projects) needs the project ID in the key.
+    function ticketKey(ticket: TicketDto) {
+        return `${ticket.projectId}:${ticket.id}`;
+    }
+
     function onUpdateTicket(projectId: string, ticketId: number, newFields: TicketDto) {
-        const index = tickets.findIndex(x => x.id === ticketId);
+        const index = tickets.findIndex(x => x.projectId === projectId && x.id === ticketId);
         if (index !== -1) {
             for (const [key, value] of Object.entries(newFields)) {
                 const ticket = (tickets as any)[index];
@@ -293,7 +299,7 @@
                     onchange={query} />
         </div>
     </div>
-    {#each tickets as ticket (ticket.id)}
+    {#each tickets as ticket (ticketKey(ticket))}
         <TicketEntry ticket={ticket} bind:isOverview={isOverview} />
     {/each}
 </section>
